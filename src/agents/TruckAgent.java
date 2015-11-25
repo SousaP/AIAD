@@ -16,5 +16,4 @@ public class TruckAgent extends Worker {
 	private Credit credit;
 	private int batteryLeft;
 	private int loadLeft;
-	private int position[];
 }

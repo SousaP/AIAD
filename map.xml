@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<map xmax="20" ymax="20">
+	<dump>
+		<x>10</x>
+		<y>10</y>
+	</dump>
+	<charge>
+		<x>14</x>
+		<y>10</y>
+	</charge>
+	<wareHouse>
+		<x>2</x>
+		<y>2</y>
+	</wareHouse>
+	<store>
+		<x>2</x>
+		<y>2</y>
+	</store>
+	<hand>
+		<x>8</x>
+		<y>0</y>
+	</hand>
+</map>
