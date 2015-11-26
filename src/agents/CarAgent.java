@@ -3,7 +3,6 @@ package agents;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
-import credit.Credit;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -26,12 +25,15 @@ public class CarAgent extends Worker {
 	private static Tool f1;
 	private static Tool f2;
 
-	private Credit credit;
 	private int batteryLeft;
 	private int loadLeft;
 	
 
 	protected void setup(){
+		f1 = new Tool("f1");
+		f2 = new Tool("f2");
+		
+	
 		super.setup();
 	}
 	

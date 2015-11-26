@@ -3,7 +3,6 @@ package agents;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
-import credit.Credit;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -23,12 +22,11 @@ public class DroneAgent extends Worker {
 	private static int BATTERY_CAPACITY = 250;
 	private static int LOAD_CAPACITY = 100;
 	private static Tool f1;
-	
-	private Credit credit;
 	private int batteryLeft;
 	private int loadLeft;
 	
 	protected void setup(){
+		f1 = new Tool("f1");
 		super.setup();
 	}
 	

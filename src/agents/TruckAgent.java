@@ -3,7 +3,6 @@ package agents;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
-import credit.Credit;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -24,12 +23,13 @@ public class TruckAgent extends Worker {
 	private static int LOAD_CAPACITY = 1000;
 	private static Tool f2;
 	private static Tool f3;
-	
-	private Credit credit;
 	private int batteryLeft;
 	private int loadLeft;
 	
 	protected void setup(){
+		
+		f2 = new Tool("f2");
+		f3 = new Tool("f3");
 		super.setup();
 	}
 	

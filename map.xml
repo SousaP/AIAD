@@ -20,4 +20,59 @@
 		<x>8</x>
 		<y>0</y>
 	</hand>
+	<road>
+	<x_init>0</x_init>
+	<y_init>0</y_init>
+	<x_final>9</x_final>
+	<y_final>0</y_final>
+	</road>
+	<road>
+	<x_init>1</x_init>
+	<y_init>0</y_init>
+	<x_final>1</x_final>
+	<y_final>3</y_final>
+	</road>
+	<road>
+	<x_init>4</x_init>
+	<y_init>0</y_init>
+	<x_final>4</x_final>
+	<y_final>9</y_final>
+	</road>
+	<road>
+	<x_init>1</x_init>
+	<y_init>3</y_init>
+	<x_final>3</x_final>
+	<y_final>3</y_final>
+	</road>
+	<road>
+	<x_init>2</x_init>
+	<y_init>3</y_init>
+	<x_final>2</x_final>
+	<y_final>6</y_final>
+	</road>
+	<road>
+	<x_init>4</x_init>
+	<y_init>4</y_init>
+	<x_final>9</x_final>
+	<y_final>4</y_final>
+	</road>
+	<road>
+	<x_init>0</x_init>
+	<y_init>6</y_init>
+	<x_final>2</x_final>
+	<y_final>6</y_final>
+	</road>
+	<road>
+	<x_init>4</x_init>
+	<y_init>9</y_init>
+	<x_final>9</x_final>
+	<y_final>9</y_final>
+	</road>
+	<road>
+	<x_init>9</x_init>
+	<y_init>4</y_init>
+	<x_final>9</x_final>
+	<y_final>9</y_final>
+	</road>
+	
 </map>

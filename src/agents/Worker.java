@@ -3,9 +3,11 @@ package agents;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
+import Path.PathLenght;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import job.Job;
 import jade.core.*;
 
 import javax.xml.parsers.*;
@@ -23,23 +25,26 @@ public class Worker extends Agent {
 	List<Store> stores;
 	List<Warehouse> houses;
 	int xmax, ymax;
-
+	PathLenght mapProblem;
+	List<Job> Jobs_Created;
+	Job myJob;	
+	double credit;
 	int position[];
-	
-	String[] splitArguments(Object[] args)
-	{
+
+	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
 		return strin_tempo.split(";");
-		
+
 	}
 
 	protected void setup() {
+		credit = 0;
 		position = new int[2];
-		
+
 		String[] args = splitArguments(getArguments());
-		
+
 		if (args != null && args.length > 0) {
-			
+
 			position[0] = Integer.parseInt(args[0]);
 			position[1] = Integer.parseInt(args[1]);
 
@@ -54,12 +59,10 @@ public class Worker extends Agent {
 		hands = new ArrayList<HandByHand>();
 		stores = new ArrayList<Store>();
 		houses = new ArrayList<Warehouse>();
-
+		Jobs_Created = new ArrayList<Job>();
 		System.out.println("Hello World. ");
 		readMap();
 		System.out.println("I read the map ");
-
-		addBehaviour(new myBehaviour(this));
 
 	}
 
@@ -131,6 +134,44 @@ public class Worker extends Agent {
 
 				}
 			}
+
+			int[][] GRID = new int[10][10];
+			/*
+			 * <x_init>0</x_init> <y_init>0</y_init> <x_final>9</x_final>
+			 * <y_final>0</y_final>
+			 */
+			NodeList roads = doc.getElementsByTagName("road");
+			for (int temp = 0; temp < roads.getLength(); temp++) {
+				Node nNode = roads.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					
+					
+					Element eElement = (Element) nNode;
+					int x_init = Integer.parseInt(eElement.getElementsByTagName("x_init").item(0).getTextContent());
+					int y_init = Integer.parseInt(eElement.getElementsByTagName("y_init").item(0).getTextContent());
+					int x_final = Integer.parseInt(eElement.getElementsByTagName("x_final").item(0).getTextContent());
+					int y_final = Integer.parseInt(eElement.getElementsByTagName("y_final").item(0).getTextContent());
+
+					if (x_init == x_final) {
+						for (int y = 0; y <= Math.abs(y_final - y_init); y++)
+							if (y_final > y_init)
+								GRID[y_init + y][x_init] = 1;
+							else
+								GRID[y_init - y][x_init] = 1;
+
+					} else if (y_init == y_final) {
+						for (int x = 0; x <= Math.abs(x_final - x_init); x++)
+							if (x_final > x_init)
+								GRID[y_init][x_init + x] = 1;
+							else
+								GRID[y_init][x_init - x] = 1;
+
+					}
+				}
+			}
+			
+			mapProblem = new PathLenght(GRID);
+			System.out.println(mapProblem.toStringGrid());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -145,25 +186,4 @@ public class Worker extends Agent {
 		}
 	}
 
-	class myBehaviour extends SimpleBehaviour {
-		/**
-		* 
-		*/
-		private static final long serialVersionUID = 1L;
-
-		public myBehaviour(Agent a) {
-			super(a);
-		}
-
-		public void action() {
-			// ...this is where the real programming goes !!
-		}
-
-		private boolean finished = false;
-
-		public boolean done() {
-			return finished;
-		}
-
-	} // ----------- End myBehaviour
 }
