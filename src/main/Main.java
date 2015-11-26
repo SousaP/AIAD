@@ -1,6 +1,7 @@
 package main;
 
-import agents.CarAgent;
+
+import PingPong.PingPong;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import sajas.core.Agent;
@@ -22,7 +23,7 @@ public class Main extends Repast3Launcher {
 		boolean runMode = !BATCH_MODE; // BATCH_MODE or !BATCH_MODE
 		SimInit init = new SimInit();
 		init.setNumRuns(10);   // works only in batch mode
-		init.loadModel(new Main(), null, BATCH_MODE);
+		init.loadModel(new Main(), null, runMode);
 	}
 	
 	private void launchAgents() {

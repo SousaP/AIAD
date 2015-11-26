@@ -1,3 +1,4 @@
+package PingPong;
 import jade.core.*;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
