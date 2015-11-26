@@ -15,7 +15,6 @@ import java.util.List;
 
 import locals.*;
 
-
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
 	List<BatteryChargeCenter> chargers;
@@ -27,21 +26,42 @@ public class Worker extends Agent {
 
 	int position[];
 	
-	protected void setup() 
-    { 
+	String[] splitArguments(Object[] args)
+	{
+		String strin_tempo = (String) args[0];
+		return strin_tempo.split(";");
+		
+	}
+
+	protected void setup() {
+		position = new int[2];
+		
+		String[] args = splitArguments(getArguments());
+		
+		if (args != null && args.length > 0) {
+			
+			position[0] = Integer.parseInt(args[0]);
+			position[1] = Integer.parseInt(args[1]);
+
+			System.out.println("Posicao X " + position[0]);
+			System.out.println("Posicao Y " + position[1]);
+
+		} else {
+			System.out.println("Não especificou o tipo");
+		}
 		chargers = new ArrayList<BatteryChargeCenter>();
 		dumps = new ArrayList<Dump>();
 		hands = new ArrayList<HandByHand>();
 		stores = new ArrayList<Store>();
 		houses = new ArrayList<Warehouse>();
-		
-		 System.out.println("Hello World. ");
-    readMap();
-    System.out.println("I read the map ");
-   
-        addBehaviour( new myBehaviour( this ) );
-    
-    }
+
+		System.out.println("Hello World. ");
+		readMap();
+		System.out.println("I read the map ");
+
+		addBehaviour(new myBehaviour(this));
+
+	}
 
 	void readMap() {
 		try {
@@ -51,8 +71,7 @@ public class Worker extends Agent {
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
 			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			
-			
+
 			NodeList dumpList = doc.getElementsByTagName("dump");
 			for (int temp = 0; temp < dumpList.getLength(); temp++) {
 				Node nNode = dumpList.item(temp);
@@ -60,7 +79,7 @@ public class Worker extends Agent {
 					Element eElement = (Element) nNode;
 					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
 					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					dumps.add(new Dump(Integer.parseInt(x_temp),Integer.parseInt(y_temp)));
+					dumps.add(new Dump(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
 
 				}
 			}
@@ -72,7 +91,7 @@ public class Worker extends Agent {
 					Element eElement = (Element) nNode;
 					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
 					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					chargers.add(new BatteryChargeCenter(Integer.parseInt(x_temp),Integer.parseInt(y_temp)));
+					chargers.add(new BatteryChargeCenter(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
 
 				}
 			}
@@ -84,7 +103,7 @@ public class Worker extends Agent {
 					Element eElement = (Element) nNode;
 					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
 					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					hands.add(new HandByHand(Integer.parseInt(x_temp),Integer.parseInt(y_temp)));
+					hands.add(new HandByHand(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
 
 				}
 			}
@@ -96,7 +115,7 @@ public class Worker extends Agent {
 					Element eElement = (Element) nNode;
 					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
 					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					stores.add(new Store(Integer.parseInt(x_temp),Integer.parseInt(y_temp)));
+					stores.add(new Store(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
 
 				}
 			}
@@ -108,7 +127,7 @@ public class Worker extends Agent {
 					Element eElement = (Element) nNode;
 					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
 					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					houses.add(new Warehouse(Integer.parseInt(x_temp),Integer.parseInt(y_temp)));
+					houses.add(new Warehouse(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
 
 				}
 			}
@@ -125,28 +144,26 @@ public class Worker extends Agent {
 			e.printStackTrace();
 		}
 	}
-	
-	 class myBehaviour extends SimpleBehaviour 
-     {   
-         /**
-		 * 
-		 */
+
+	class myBehaviour extends SimpleBehaviour {
+		/**
+		* 
+		*/
 		private static final long serialVersionUID = 1L;
 
-		public myBehaviour(Agent a) { 
-             super(a);  
-         }
-         
-         public void action() 
-         {
-            //...this is where the real programming goes !!
-         }
-         
-         private boolean finished = false;
-         
-         public boolean done() {  
-             return finished;  
-         }
-         
-     } // ----------- End myBehaviour
+		public myBehaviour(Agent a) {
+			super(a);
+		}
+
+		public void action() {
+			// ...this is where the real programming goes !!
+		}
+
+		private boolean finished = false;
+
+		public boolean done() {
+			return finished;
+		}
+
+	} // ----------- End myBehaviour
 }
