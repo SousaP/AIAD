@@ -1,8 +1,8 @@
 package locals;
 
 public class Warehouse extends Local {
-	public Warehouse(int x, int y)
+	public Warehouse(int i, int j,String n	)
 	{
-		super(x,y);
+		super(i,j,n);
 	}
 }

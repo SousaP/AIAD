@@ -1,9 +1,10 @@
 package agents;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.ListenableUndirectedWeightedGraph;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
-import Path.PathLenght;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -13,23 +14,26 @@ import jade.core.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import locals.*;
 
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
-	List<BatteryChargeCenter> chargers;
-	List<Dump> dumps;
-	List<HandByHand> hands;
-	List<Store> stores;
-	List<Warehouse> houses;
+	List<Local> chargers;
+	List<Local> dumps;
+	List<Local> hands;
+	List<Local> stores;
+	List<Local> houses;
 	int xmax, ymax;
-	PathLenght mapProblem;
+	private ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
+			DefaultWeightedEdge.class);
+	HashMap<String,Local> map = new HashMap<String,Local>();
 	List<Job> Jobs_Created;
 	Job myJob;	
 	double credit;
-	int position[];
+	String position;
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -39,26 +43,23 @@ public class Worker extends Agent {
 
 	protected void setup() {
 		credit = 0;
-		position = new int[2];
 
 		String[] args = splitArguments(getArguments());
 
 		if (args != null && args.length > 0) {
 
-			position[0] = Integer.parseInt(args[0]);
-			position[1] = Integer.parseInt(args[1]);
+			position = args[0];
 
-			System.out.println("Posicao X " + position[0]);
-			System.out.println("Posicao Y " + position[1]);
+			System.out.println("Posicao " + position);
 
 		} else {
 			System.out.println("Não especificou o tipo");
 		}
-		chargers = new ArrayList<BatteryChargeCenter>();
-		dumps = new ArrayList<Dump>();
-		hands = new ArrayList<HandByHand>();
-		stores = new ArrayList<Store>();
-		houses = new ArrayList<Warehouse>();
+		chargers = new ArrayList<Local>();
+		dumps = new ArrayList<Local>();
+		hands = new ArrayList<Local>();
+		stores = new ArrayList<Local>();
+		houses = new ArrayList<Local>();
 		Jobs_Created = new ArrayList<Job>();
 		System.out.println("Hello World. ");
 		readMap();
@@ -67,6 +68,8 @@ public class Worker extends Agent {
 	}
 
 	void readMap() {
+		
+		
 		try {
 			File inputFile = new File("map.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -75,103 +78,86 @@ public class Worker extends Agent {
 			doc.getDocumentElement().normalize();
 			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
+			NodeList nodes = doc.getElementsByTagName("points");
+			for (int temp = 0; temp < nodes.getLength(); temp++) {
+				Node nNode = nodes.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String name = eElement.getAttribute("name");
+					int i_temp = Integer.parseInt(eElement.getElementsByTagName("i").item(0).getTextContent());
+					int j_temp = Integer.parseInt(eElement.getElementsByTagName("j").item(0).getTextContent());
+					Local local_tempo = new Local(i_temp,j_temp,name);
+					cityMap.addVertex(local_tempo);
+					 map.put(name, local_tempo);
+					
+					
+				}
+			}
+			
+			NodeList edgeList = doc.getElementsByTagName("edge");
+			for (int temp = 0; temp < edgeList.getLength(); temp++) {
+				Node nNode = edgeList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String i_temp = eElement.getElementsByTagName("p1").item(0).getTextContent();
+					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();				
+					cityMap.addEdge(map.get(i_temp), map.get(j_temp));
+				}
+			}
+			
 			NodeList dumpList = doc.getElementsByTagName("dump");
 			for (int temp = 0; temp < dumpList.getLength(); temp++) {
 				Node nNode = dumpList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
-					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					dumps.add(new Dump(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
-
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					dumps.add(map.get(node_temp));
 				}
 			}
-
 			NodeList chargeList = doc.getElementsByTagName("charge");
 			for (int temp = 0; temp < chargeList.getLength(); temp++) {
 				Node nNode = chargeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
-					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					chargers.add(new BatteryChargeCenter(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
-
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					chargers.add(map.get(node_temp));
 				}
 			}
-
-			NodeList handsList = doc.getElementsByTagName("hand");
-			for (int temp = 0; temp < handsList.getLength(); temp++) {
-				Node nNode = handsList.item(temp);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element eElement = (Element) nNode;
-					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
-					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					hands.add(new HandByHand(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
-
-				}
-			}
-
-			NodeList storesList = doc.getElementsByTagName("store");
-			for (int temp = 0; temp < storesList.getLength(); temp++) {
-				Node nNode = storesList.item(temp);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element eElement = (Element) nNode;
-					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
-					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					stores.add(new Store(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
-
-				}
-			}
-
 			NodeList houseList = doc.getElementsByTagName("wareHouse");
 			for (int temp = 0; temp < houseList.getLength(); temp++) {
 				Node nNode = houseList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					String x_temp = eElement.getElementsByTagName("x").item(0).getTextContent();
-					String y_temp = eElement.getElementsByTagName("y").item(0).getTextContent();
-					houses.add(new Warehouse(Integer.parseInt(x_temp), Integer.parseInt(y_temp)));
-
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					houses.add(map.get(node_temp));
 				}
 			}
-
-			int[][] GRID = new int[10][10];
-			/*
-			 * <x_init>0</x_init> <y_init>0</y_init> <x_final>9</x_final>
-			 * <y_final>0</y_final>
-			 */
-			NodeList roads = doc.getElementsByTagName("road");
-			for (int temp = 0; temp < roads.getLength(); temp++) {
-				Node nNode = roads.item(temp);
+			NodeList storeList = doc.getElementsByTagName("store");
+			for (int temp = 0; temp < storeList.getLength(); temp++) {
+				Node nNode = storeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					
-					
 					Element eElement = (Element) nNode;
-					int x_init = Integer.parseInt(eElement.getElementsByTagName("x_init").item(0).getTextContent());
-					int y_init = Integer.parseInt(eElement.getElementsByTagName("y_init").item(0).getTextContent());
-					int x_final = Integer.parseInt(eElement.getElementsByTagName("x_final").item(0).getTextContent());
-					int y_final = Integer.parseInt(eElement.getElementsByTagName("y_final").item(0).getTextContent());
-
-					if (x_init == x_final) {
-						for (int y = 0; y <= Math.abs(y_final - y_init); y++)
-							if (y_final > y_init)
-								GRID[y_init + y][x_init] = 1;
-							else
-								GRID[y_init - y][x_init] = 1;
-
-					} else if (y_init == y_final) {
-						for (int x = 0; x <= Math.abs(x_final - x_init); x++)
-							if (x_final > x_init)
-								GRID[y_init][x_init + x] = 1;
-							else
-								GRID[y_init][x_init - x] = 1;
-
-					}
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					stores.add(map.get(node_temp));
 				}
 			}
-			
-			mapProblem = new PathLenght(GRID);
-			System.out.println(mapProblem.toStringGrid());
+			NodeList handList = doc.getElementsByTagName("hand");
+			for (int temp = 0; temp < handList.getLength(); temp++) {
+				Node nNode = handList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					hands.add(map.get(node_temp));
+				}
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

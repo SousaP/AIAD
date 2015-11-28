@@ -1,8 +1,8 @@
 package locals;
 
 public class BatteryChargeCenter extends Local {
-	public BatteryChargeCenter(int x, int y)
+	public BatteryChargeCenter(int i, int j,String n)
 	{
-		super(x,y);
+		super(i,j,n);
 	}
 }

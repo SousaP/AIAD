@@ -1,8 +1,8 @@
 package locals;
 
 public class HandByHand extends Local {
-	public HandByHand(int x, int y)
+	public HandByHand(int i, int j,String n)
 	{
-		super(x,y);
+		super(i,j,n);
 	}
 }

@@ -1,8 +1,8 @@
 package locals;
 
 public class Store extends Local {
-	public Store(int x, int y)
+	public Store(int i, int j,String n)
 	{
-		super(x,y);
+		super(i,j,n);
 	}
 }

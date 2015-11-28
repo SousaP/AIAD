@@ -1,78 +1,126 @@
 <?xml version="1.0"?>
 <map xmax="20" ymax="20">
+	<points name="A">
+		<i>0</i>
+		<j>0</j>
+	</points>
+	<points name="B">
+		<i>0</i>
+		<j>9</j>
+	</points>
+	<points name="C">
+		<i>0</i>
+		<j>1</j>
+	</points>
+	<points name="D">
+		<i>0</i>
+		<j>4</j>
+	</points>
+	<points name="E">
+		<i>3</i>
+		<j>1</j>
+	</points>
+	<points name="F">
+		<i>3</i>
+		<j>4</j>
+	</points>
+	<points name="G">
+		<i>4</i>
+		<j>4</j>
+	</points>
+	<points name="H">
+		<i>4</i>
+		<j>9</j>
+	</points>
+	<points name="I">
+		<i>6</i>
+		<j>0</j>
+	</points>
+	<points name="J">
+		<i>6</i>
+		<j>2</j>
+	</points>
+	<points name="K">
+		<i>9</i>
+		<j>4</j>
+	</points>
+	<points name="L">
+		<i>9</i>
+		<j>9</j>
+	</points>
+	<points name="M">
+		<i>3</i>
+		<j>2</j>
+	</points>
+	<edge>
+		<p1>A</p1>
+		<p2>C</p2>
+	</edge>
+	<edge>
+		<p1>C</p1>
+		<p2>D</p2>
+	</edge>
+	<edge>
+		<p1>D</p1>
+		<p2>B</p2>
+	</edge>
+	<edge>
+		<p1>C</p1>
+		<p2>E</p2>
+	</edge>
+	<edge>
+		<p1>E</p1>
+		<p2>M</p2>
+	</edge>
+	<edge>
+		<p1>M</p1>
+		<p2>F</p2>
+	</edge>
+	<edge>
+		<p1>D</p1>
+		<p2>F</p2>
+	</edge>
+	<edge>
+		<p1>F</p1>
+		<p2>G</p2>
+	</edge>
+	<edge>
+		<p1>M</p1>
+		<p2>J</p2>
+	</edge>
+	<edge>
+		<p1>J</p1>
+		<p2>I</p2>
+	</edge>
+	<edge>
+		<p1>G</p1>
+		<p2>H</p2>
+	</edge>
+	<edge>
+		<p1>G</p1>
+		<p2>K</p2>
+	</edge>
+	<edge>
+		<p1>H</p1>
+		<p2>L</p2>
+	</edge>
+	<edge>
+		<p1>K</p1>
+		<p2>L</p2>
+	</edge>
 	<dump>
-		<x>10</x>
-		<y>10</y>
+		<node>G</node>
 	</dump>
 	<charge>
-		<x>14</x>
-		<y>10</y>
+		<node>L</node>
 	</charge>
 	<wareHouse>
-		<x>2</x>
-		<y>2</y>
+		<node>B</node>
 	</wareHouse>
 	<store>
-		<x>2</x>
-		<y>2</y>
+		<node>I</node>
 	</store>
 	<hand>
-		<x>8</x>
-		<y>0</y>
+		<node>E</node>
 	</hand>
-	<road>
-	<x_init>0</x_init>
-	<y_init>0</y_init>
-	<x_final>9</x_final>
-	<y_final>0</y_final>
-	</road>
-	<road>
-	<x_init>1</x_init>
-	<y_init>0</y_init>
-	<x_final>1</x_final>
-	<y_final>3</y_final>
-	</road>
-	<road>
-	<x_init>4</x_init>
-	<y_init>0</y_init>
-	<x_final>4</x_final>
-	<y_final>9</y_final>
-	</road>
-	<road>
-	<x_init>1</x_init>
-	<y_init>3</y_init>
-	<x_final>3</x_final>
-	<y_final>3</y_final>
-	</road>
-	<road>
-	<x_init>2</x_init>
-	<y_init>3</y_init>
-	<x_final>2</x_final>
-	<y_final>6</y_final>
-	</road>
-	<road>
-	<x_init>4</x_init>
-	<y_init>4</y_init>
-	<x_final>9</x_final>
-	<y_final>4</y_final>
-	</road>
-	<road>
-	<x_init>0</x_init>
-	<y_init>6</y_init>
-	<x_final>2</x_final>
-	<y_final>6</y_final>
-	</road>
-	<road>
-	<x_init>4</x_init>
-	<y_init>9</y_init>
-	<x_final>9</x_final>
-	<y_final>9</y_final>
-	</road>
-	<road>
-	<x_init>9</x_init>
-	<y_init>4</y_init>
-	<x_final>9</x_final>
-	<y_final>9</y_final>
-	</road>
-	
 </map>

@@ -2,9 +2,9 @@ package locals;
 
 public class Dump extends Local {
 	
-	public Dump(int x, int y)
+	public Dump(int i, int j,String n)
 	{
-		super(x,y);
+		super(i,j,n);
 	}
 
 }
