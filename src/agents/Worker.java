@@ -203,6 +203,7 @@ public class Worker extends GuiAgent  {
 		while(iter.hasNext()){
 			DefaultWeightedEdge edge = iter.next();
 			System.out.println(edge);
+		
 		}
 		return length;
 	}

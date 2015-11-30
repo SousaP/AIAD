@@ -36,6 +36,7 @@ public class SimulationAgent extends GuiAgent {
 	public List<Local> hands;
 	public List<Local> stores;
 	public List<Local> houses;
+	public List<Local> agents;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	HashMap<String, Local> map = new HashMap<String, Local>();
@@ -201,6 +202,7 @@ public class SimulationAgent extends GuiAgent {
 		hands = new ArrayList<Local>();
 		stores = new ArrayList<Local>();
 		houses = new ArrayList<Local>();
+		agents = new ArrayList<Local>();
 
 		readMap();
 		window = new SimulationFrame(this);
