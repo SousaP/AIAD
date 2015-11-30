@@ -108,8 +108,11 @@ public class Worker extends GuiAgent  {
 					Element eElement = (Element) nNode;
 					
 					String i_temp = eElement.getElementsByTagName("p1").item(0).getTextContent();
-					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();				
-					cityMap.addEdge(map.get(i_temp), map.get(j_temp));
+					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();	
+					DefaultWeightedEdge e_temp = cityMap.addEdge(map.get(i_temp), map.get(j_temp));
+					cityMap.setEdgeWeight(e_temp, Math.sqrt(
+							Math.pow((map.get(i_temp).getI() - map.get(j_temp).getI()), 2)
+							+ Math.pow((map.get(i_temp).getJ() - map.get(j_temp).getJ()), 2)));
 				}
 			}
 			
