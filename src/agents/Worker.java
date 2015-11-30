@@ -4,8 +4,10 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedWeightedGraph;
-import org.w3c.dom.*;
 import org.w3c.dom.Node;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import locals.*;
 import tools.Tool;
@@ -193,11 +196,10 @@ public class Worker extends GuiAgent  {
 	}
 	
 	double pathlength(Local origin, Local destiny) {
-		DijkstraShortestPath dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(cityMap, origin, destiny);
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(cityMap, origin, destiny);
 		double length = dijkstra.getPathLength();
-		GraphPath temp = dijkstra.getPath();
-		List<DefaultWeightedEdge> listEdge = temp.getEdgeList();
-		Iterator<DefaultWeightedEdge> iter = listEdge.iterator();
+		List<DefaultWeightedEdge> temp = dijkstra.getPathEdgeList();
+		Iterator<DefaultWeightedEdge> iter = temp.iterator();
 		while(iter.hasNext()){
 			DefaultWeightedEdge edge = iter.next();
 			System.out.println(edge);
