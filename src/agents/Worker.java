@@ -204,5 +204,4 @@ public class Worker extends GuiAgent  {
 		}
 		return length;
 	}
-
 }
