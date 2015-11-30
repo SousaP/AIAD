@@ -1,5 +1,6 @@
 package agents;
 
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedWeightedGraph;
 import org.w3c.dom.*;
@@ -17,6 +18,7 @@ import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import locals.*;
@@ -69,6 +71,8 @@ public class Worker extends GuiAgent  {
 		Jobs_Created = new ArrayList<Job>();
 		System.out.println("Hello World. ");
 		readMap();
+		double len = pathlength(map.get("A"), map.get("M"));
+		System.out.println(len);
 		System.out.println("I read the map ");
 
 	}
@@ -187,4 +191,9 @@ public class Worker extends GuiAgent  {
 		
 	}
 
+	double pathlength(Local origin, Local destiny) {
+		DijkstraShortestPath dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(cityMap, origin, destiny);
+		double length = dijkstra.getPathLength();
+		return length;
+	}
 }
