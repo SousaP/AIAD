@@ -141,6 +141,11 @@ public class SimulationFrame extends JFrame {
 			g.setColor(Color.ORANGE);
 			g.fillRect(myAgent.hands.get(i).getJ() *  50 + 75,myAgent.hands.get(i).getI() * 50 + 75, 10, 10);
 			}
+		
+		for(int i = 0; i < myAgent.agentsFinal.size(); i++){
+			g.setColor(Color.WHITE);
+			g.fillOval(myAgent.agentsFinal.get(i).getJ() *  50 + 75,myAgent.agentsFinal.get(i).getI() * 50 + 75, 10, 10);
+			}
 	}
 	
 public double getShortestDistance(Local source, Local dest) {

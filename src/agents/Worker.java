@@ -9,11 +9,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import job.Job;
 import jade.core.*;
 
@@ -78,6 +82,7 @@ public class Worker extends GuiAgent  {
 		System.out.println("I read the map ");
 		double len = pathlength(map.get("A"), map.get("L"));
 		System.out.println(len);
+		addBehaviour(new OfferRequestsServer());
 
 	}
 
@@ -207,4 +212,40 @@ public class Worker extends GuiAgent  {
 		}
 		return length;
 	}
+
+	private class OfferRequestsServer extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		public OfferRequestsServer() {
+			super();
+		}
+
+		public void action() {
+			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// CFP Message received. Process it
+				String sintoma = msg.getContent();
+				ACLMessage reply = msg.createReply();
+				
+				
+				
+				
+				if(msg.getConversationId() == "posicao"){
+					
+					reply.setPerformative(ACLMessage.INFORM);
+					System.out.println("Posicao " +getLocalName()+ " " + position);
+					reply.setContent(getLocalName()+";"+map.get(position).getI()+";"+map.get(position).getJ());
+					
+					send(reply);
+					
+				}
+
+			} else {
+				block();
+			}
+		}
+	} // End of inner class OfferRequestsServer
+
+
 }

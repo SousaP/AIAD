@@ -18,16 +18,15 @@ public class Main {
 
 
             AgentController agent = cc.createNewAgent("Worker 1",
-                    "agents.Ambiente",new Object[] { "A ; f1"} );
-            AgentController worker = cc.createNewAgent("Worker 2",
-            
-            		"agents.Worker",new Object[] { "B ; f2"} );
+                    "agents.Ambiente",new Object[] { "A;f1"} );
+          /*  AgentController worker = cc.createNewAgent("Worker 2",
+            		"agents.Worker",new Object[] { "B;f2"} ); */
             AgentController simulation = cc.createNewAgent("simulation","Simulation.SimulationAgent", null);
     		simulation.start();
 
             
             agent.start();            
-            worker.start();
+            //worker.start();
            
            
         } catch(Exception e) {

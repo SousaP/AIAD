@@ -36,67 +36,97 @@ public class SimulationAgent extends GuiAgent {
 	public List<Local> hands;
 	public List<Local> stores;
 	public List<Local> houses;
-	public List<Local> agents;
+	
+	public List<Local> agentsFinal;
+	public List<Local> agentsReceiving;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	HashMap<String, Local> map = new HashMap<String, Local>();
-
-
 
 	private class checkAgentsBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 		private int n = 0;
 		private AID[] recursos;
 		private MessageTemplate mt;
+		private int step = 0;
+		private int repliesCnt = 0;
+
 		// construtor do behaviour
 		public checkAgentsBehaviour(Agent a) {
 			super(a);
 		}
 
 		public void action() {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			DFAgentDescription template = new DFAgentDescription();
-			
-			try {
-				DFAgentDescription[] result = DFService.search(myAgent, template); 
-				//System.out.println("Encontrei estes recursos:");
-				recursos = new AID[result.length];
-				for (int i = 0; i < result.length; ++i) {
-					recursos[i] = result[i].getName();
-					System.out.println(recursos[i].getName());
+			switch (step) {
+			case 0:
+				repliesCnt = 0;
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					
 				}
+
+				try {
+					DFAgentDescription template = new DFAgentDescription();
+					DFAgentDescription[] result = DFService.search(myAgent, template);
+					// System.out.println("Encontrei estes recursos:");
+					recursos = new AID[result.length];
+					for (int i = 0; i < result.length; ++i) {
+						recursos[i] = result[i].getName();
+						//System.out.println(recursos[i].getName());
+					}
+				} catch (FIPAException fe) {
+					fe.printStackTrace();
+				}
+
+				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+				for (int i = 0; i < recursos.length; ++i) {
+					cfp.addReceiver(recursos[i]);
+				}
+				cfp.setContent("localizacao");
+				cfp.setConversationId("posicao");
+				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																		// value
+				myAgent.send(cfp);
+				// Prepare the template to get proposals
+				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("posicao"),
+						MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+
+				System.out.println("Perguntou pelas posicoes");
+				step = 1;
+				break;
+
+			case 1:
+				ACLMessage reply = receive(mt);
+				if (reply != null) {
+					// Reply received
+					if (reply.getPerformative() == ACLMessage.INFORM) {
+						// This is an offer
+						String resposta = reply.getContent().toString();						
+						String[] conjuntoSintomas = resposta.split(";");
+						
+						agentsReceiving.add(new Local(Integer.parseInt(conjuntoSintomas[1]),Integer.parseInt(conjuntoSintomas[2]),conjuntoSintomas[0]));
+
+						// This is the best offer at present
+
+					}
+					repliesCnt++;
+					if (repliesCnt == recursos.length - 1) {
+						agentsFinal = new ArrayList<Local>(agentsReceiving);
+						window.repaint();
+						agentsReceiving.clear();
+						step = 0;
+					}
+				} else {
+					block();
+				}
+				break;
+
 			}
-			catch (FIPAException fe) {
-				fe.printStackTrace();
-			}
-			
-			
-			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-			for (int i = 0; i < recursos.length; ++i) {
-				cfp.addReceiver(recursos[i]);
-			} 
-			cfp.setContent("localizacao");
-			cfp.setConversationId("posicao");
-			cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
-			myAgent.send(cfp);
-			// Prepare the template to get proposals
-			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("posicao"),
-					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
-			
-			System.out.println("Mensagem enviada");
-		
 		}
 
-
 	}
-	
+
 	public SimulationAgent() {
 		super();
 	}
@@ -109,7 +139,6 @@ public class SimulationAgent extends GuiAgent {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 
 			NodeList nodes = doc.getElementsByTagName("points");
 			for (int temp = 0; temp < nodes.getLength(); temp++) {
@@ -202,8 +231,8 @@ public class SimulationAgent extends GuiAgent {
 		hands = new ArrayList<Local>();
 		stores = new ArrayList<Local>();
 		houses = new ArrayList<Local>();
-		agents = new ArrayList<Local>();
-
+		agentsFinal = new ArrayList<Local>();
+		agentsReceiving = new ArrayList<Local>();
 		readMap();
 		window = new SimulationFrame(this);
 
@@ -222,9 +251,7 @@ public class SimulationAgent extends GuiAgent {
 		addBehaviour(new checkAgentsBehaviour(this));
 
 		System.out.println("simulationAgent criado");
-		
-		
-		
+
 	}
 
 	public SimulationFrame getWindow() {
@@ -238,6 +265,5 @@ public class SimulationAgent extends GuiAgent {
 		String transition = (String) event.getParameter(3);
 		// addBehaviour(new SendTimeBehaviour(day, hour, minute, transition));
 	}
-
 
 }
