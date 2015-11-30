@@ -24,10 +24,18 @@ import jade.core.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+
 
 import locals.*;
 import tools.Tool;
@@ -203,15 +211,21 @@ public class Worker extends GuiAgent  {
 	double pathlength(Local origin, Local destiny) {
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(cityMap, origin, destiny);
 		double length = dijkstra.getPathLength();
-		List<DefaultWeightedEdge> temp = dijkstra.getPathEdgeList();
-		Iterator<DefaultWeightedEdge> iter = temp.iterator();
-		while(iter.hasNext()){
-			DefaultWeightedEdge edge = iter.next();
+		GraphPath<Local, DefaultWeightedEdge> temp = dijkstra.getPath();
+		Set<DefaultWeightedEdge> edges = temp.getGraph().edgeSet();
+		edges.toArray();
+		Iterator<DefaultWeightedEdge> iter = edges.iterator();
+
+		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
+		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
+		while(iter1.hasNext()){
+			DefaultWeightedEdge edge = iter1.next();
 
 			System.out.println(cityMap.getEdgeTarget(edge).getName());
 		}
 		return length;
 	}
+
 
 	private class OfferRequestsServer extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
@@ -248,4 +262,41 @@ public class Worker extends GuiAgent  {
 	} // End of inner class OfferRequestsServer
 
 
+	
+	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
+	    for (Entry<Job, Double> entry : map.entrySet()) {
+	        if (Objects.equals(value, entry.getValue())) {
+	            return entry.getKey();
+	        }                   
+	    }
+	    return null;
+	}
+	
+	List<Job> orderJobs (List<Job> jobs_available) {
+		//Precisa de um produto -> Pode precisar de uma ferramenta
+		//(reward * 3 - time)/fine
+		HashMap<Job, Double> map = new HashMap<Job, Double>();
+		
+		Iterator<Job> it = jobs_available.iterator();
+		while(it.hasNext()){
+			map.put(it.next(), it.next().getProbabilityOfChoose());
+		}
+    
+        SortedSet<Double> values = new TreeSet<Double>(map.values());
+        List<Job> sorted_jobs = null;
+        
+        Iterator itera = values.iterator();
+
+        while(itera.hasNext()){
+        	Iterator temp = itera;
+        	sorted_jobs.add(getKeyByValue(map, values.first()));
+        	values.remove(temp); 
+        }
+        
+        return sorted_jobs;
+	}
+
+
 }
+	
+

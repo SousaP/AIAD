@@ -33,4 +33,10 @@ public class Job {
 	}
 	
 	
+	//Helps the agent to sort jobs in order to pick the most profitable one
+	public double getProbabilityOfChoose(){
+		return ((reward*3 - time)/fine);
+	}
+	
+	
 }
