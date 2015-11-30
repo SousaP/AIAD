@@ -4,8 +4,10 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedWeightedGraph;
-import org.w3c.dom.*;
 import org.w3c.dom.Node;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
@@ -22,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -29,6 +32,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+=======
+import java.util.Set;
+>>>>>>> origin/master
 
 import locals.*;
 import tools.Tool;
@@ -207,6 +213,14 @@ public class Worker extends GuiAgent  {
 		Set<DefaultWeightedEdge> edges = temp.getGraph().edgeSet();
 		edges.toArray();
 		Iterator<DefaultWeightedEdge> iter = edges.iterator();
+
+		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
+		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
+		while(iter1.hasNext()){
+			DefaultWeightedEdge edge = iter1.next();
+
+			System.out.println(cityMap.getEdgeTarget(edge).getName());
+		}
 		return length;
 	}
 	
@@ -232,10 +246,10 @@ public class Worker extends GuiAgent  {
         SortedSet<Double> values = new TreeSet<Double>(map.values());
         List<Job> sorted_jobs = null;
         
-        Iterator iter = values.iterator();
+        Iterator itera = values.iterator();
 
-        while(iter.hasNext()){
-        	Iterator temp = iter;
+        while(itera.hasNext()){
+        	Iterator temp = itera;
         	sorted_jobs.add(getKeyByValue(map, values.first()));
         	values.remove(temp); 
         }
