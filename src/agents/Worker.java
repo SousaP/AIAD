@@ -202,8 +202,8 @@ public class Worker extends GuiAgent  {
 		Iterator<DefaultWeightedEdge> iter = temp.iterator();
 		while(iter.hasNext()){
 			DefaultWeightedEdge edge = iter.next();
-			System.out.println(edge);
-		
+
+			System.out.println(cityMap.getEdgeTarget(edge).getName());
 		}
 		return length;
 	}
