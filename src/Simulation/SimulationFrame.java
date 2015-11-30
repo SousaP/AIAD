@@ -1,5 +1,6 @@
 package Simulation;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -45,8 +46,19 @@ public class SimulationFrame extends JFrame {
 
 		 System.out.println("PATH GetSucessors");
 		 visto = new ArrayList<String>();
-		desenhaGrafo(g,myAgent.map.get("A"));		
+		 
+		 Line2D line = new Line2D.Double(10, 10, 40, 40);
+        /* g2.setColor(Color.blue);
+         g2.setStroke(new BasicStroke(10));
+         g2.draw(line); */
+		 
+		 g.drawRect(10,10,1000,1000);  
+		    g.setColor(Color.GREEN);  
+		    g.fillRect(10,10,1000,1000);  
+		 desenhaGrafo(g,myAgent.map.get("A"));		
 		
+		 
+		 
 		 System.out.println("PATH END");
 			
 	}
@@ -75,24 +87,28 @@ public class SimulationFrame extends JFrame {
 			System.out.println("Source " + tempSource.getName());
 			System.out.println("Targ " + tempTarg.getName());
 			
-			visto.add(tempSource.getName());
 			
-			g.drawRect(tempTarg.getI() * 15 + 2, tempTarg.getJ() * 60, 60, 60);
+			
+			
+			
+			g.drawRect( tempTarg.getJ() *  15 + 100,tempTarg.getI() * 15 + 100, 10, 10);
 			g.setColor(Color.BLACK);
-			g.fillRect(tempTarg.getI() * 15 + 2, tempTarg.getJ() * 60, 60, 60);
+			g.fillRect(tempTarg.getJ() *  15 + 100,tempTarg.getI() * 15 + 100, 10, 10);
 			
 			
-			g.drawRect(tempSource.getI() * 15 + 2, tempSource.getJ() * 60, 60, 60);
+			g.drawRect( tempSource.getJ() *  15 + 100, tempSource.getI() * 15 + 100, 10, 10);
 			g.setColor(Color.BLACK);
-			g.fillRect(tempSource.getI() * 15 +2, tempSource.getJ() * 60, 60, 60);
+			g.fillRect( tempSource.getJ() *  15 + 100, tempSource.getI() * 15 + 100, 10, 10);
 			
 			if(init.getName() == tempSource.getName()){
+				visto.add(tempSource.getName());
 				if( !visto.contains(tempTarg.getName())){
 					desenhaGrafo(g,tempTarg);
 				}
 			}
 			else if(init.getName() == tempTarg.getName())
 			{
+				visto.add(tempTarg.getName());
 				if( !visto.contains(tempSource.getName())){
 					desenhaGrafo(g,tempSource);
 				}	
