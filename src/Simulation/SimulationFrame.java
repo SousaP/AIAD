@@ -42,9 +42,8 @@ public class SimulationFrame extends JFrame {
 	public void paint(Graphics g) {
 		super.paint(g); // fixes the immediate problem.
 		Graphics2D g2 = (Graphics2D) g;
-		
 
-		 System.out.println("PATH GetSucessors");
+
 		 visto = new ArrayList<String>();
 		 
 		 Line2D line = new Line2D.Double(10, 10, 40, 40);
@@ -58,9 +57,6 @@ public class SimulationFrame extends JFrame {
 		 desenhaGrafo(g2,myAgent.map.get("A"));
 		 desenhaLocais(g2);
 		
-		 
-		 
-		 System.out.println("PATH END");
 			
 	}
 	
