@@ -1,7 +1,9 @@
 package Simulation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,10 +21,16 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
+import job.Job;
 import locals.Local;
 
 public class SimulationAgent extends GuiAgent {
 	private SimulationFrame window;
+	public List<Local> chargers;
+	public List<Local> dumps;
+	public List<Local> hands;
+	public List<Local> stores;
+	public List<Local> houses;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	HashMap<String,Local> map = new HashMap<String,Local>();
@@ -31,7 +39,7 @@ public class SimulationAgent extends GuiAgent {
 		super();
 	}
 
-	void readMap() {
+void readMap() {
 		
 		
 		try {
@@ -68,10 +76,60 @@ public class SimulationAgent extends GuiAgent {
 					String i_temp = eElement.getElementsByTagName("p1").item(0).getTextContent();
 					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();				
 					cityMap.addEdge(map.get(i_temp), map.get(j_temp));
-					
 				}
 			}
 			
+			NodeList dumpList = doc.getElementsByTagName("dump");
+			for (int temp = 0; temp < dumpList.getLength(); temp++) {
+				Node nNode = dumpList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					dumps.add(map.get(node_temp));
+				}
+			}
+			NodeList chargeList = doc.getElementsByTagName("charge");
+			for (int temp = 0; temp < chargeList.getLength(); temp++) {
+				Node nNode = chargeList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					chargers.add(map.get(node_temp));
+				}
+			}
+			NodeList houseList = doc.getElementsByTagName("wareHouse");
+			for (int temp = 0; temp < houseList.getLength(); temp++) {
+				Node nNode = houseList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					houses.add(map.get(node_temp));
+				}
+			}
+			NodeList storeList = doc.getElementsByTagName("store");
+			for (int temp = 0; temp < storeList.getLength(); temp++) {
+				Node nNode = storeList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					stores.add(map.get(node_temp));
+				}
+			}
+			NodeList handList = doc.getElementsByTagName("hand");
+			for (int temp = 0; temp < handList.getLength(); temp++) {
+				Node nNode = handList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+					hands.add(map.get(node_temp));
+				}
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,6 +137,12 @@ public class SimulationAgent extends GuiAgent {
 
 
 	protected void setup(){
+		
+		chargers = new ArrayList<Local>();
+		dumps = new ArrayList<Local>();
+		hands = new ArrayList<Local>();
+		stores = new ArrayList<Local>();
+		houses = new ArrayList<Local>();
 		
 		readMap();
 		window = new SimulationFrame(this);
