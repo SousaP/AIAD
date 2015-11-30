@@ -15,12 +15,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import job.Job;
 import locals.Local;
 
@@ -33,15 +38,70 @@ public class SimulationAgent extends GuiAgent {
 	public List<Local> houses;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
-	HashMap<String,Local> map = new HashMap<String,Local>();
+	HashMap<String, Local> map = new HashMap<String, Local>();
 
+
+
+	private class checkAgentsBehaviour extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+		private int n = 0;
+		private AID[] recursos;
+		private MessageTemplate mt;
+		// construtor do behaviour
+		public checkAgentsBehaviour(Agent a) {
+			super(a);
+		}
+
+		public void action() {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			DFAgentDescription template = new DFAgentDescription();
+			
+			try {
+				DFAgentDescription[] result = DFService.search(myAgent, template); 
+				//System.out.println("Encontrei estes recursos:");
+				recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					System.out.println(recursos[i].getName());
+				}
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+			
+			
+			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+			for (int i = 0; i < recursos.length; ++i) {
+				cfp.addReceiver(recursos[i]);
+			} 
+			cfp.setContent("localizacao");
+			cfp.setConversationId("posicao");
+			cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+			myAgent.send(cfp);
+			// Prepare the template to get proposals
+			mt = MessageTemplate.and(MessageTemplate.MatchConversationId("posicao"),
+					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+			
+			System.out.println("Mensagem enviada");
+		
+		}
+
+
+	}
+	
 	public SimulationAgent() {
 		super();
 	}
 
-void readMap() {
-		
-		
+	void readMap() {
+
 		try {
 			File inputFile = new File("map.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -55,37 +115,36 @@ void readMap() {
 				Node nNode = nodes.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
+
 					String name = eElement.getAttribute("name");
 					int i_temp = Integer.parseInt(eElement.getElementsByTagName("i").item(0).getTextContent());
 					int j_temp = Integer.parseInt(eElement.getElementsByTagName("j").item(0).getTextContent());
-					Local local_tempo = new Local(i_temp,j_temp,name);
+					Local local_tempo = new Local(i_temp, j_temp, name);
 					cityMap.addVertex(local_tempo);
-					 map.put(name, local_tempo);
-					
-					
+					map.put(name, local_tempo);
+
 				}
 			}
-			
+
 			NodeList edgeList = doc.getElementsByTagName("edge");
 			for (int temp = 0; temp < edgeList.getLength(); temp++) {
 				Node nNode = edgeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
+
 					String i_temp = eElement.getElementsByTagName("p1").item(0).getTextContent();
-					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();				
+					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();
 					cityMap.addEdge(map.get(i_temp), map.get(j_temp));
 				}
 			}
-			
+
 			NodeList dumpList = doc.getElementsByTagName("dump");
 			for (int temp = 0; temp < dumpList.getLength(); temp++) {
 				Node nNode = dumpList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					dumps.add(map.get(node_temp));
 				}
 			}
@@ -94,8 +153,8 @@ void readMap() {
 				Node nNode = chargeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					chargers.add(map.get(node_temp));
 				}
 			}
@@ -104,8 +163,8 @@ void readMap() {
 				Node nNode = houseList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					houses.add(map.get(node_temp));
 				}
 			}
@@ -114,8 +173,8 @@ void readMap() {
 				Node nNode = storeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					stores.add(map.get(node_temp));
 				}
 			}
@@ -124,8 +183,8 @@ void readMap() {
 				Node nNode = handList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					hands.add(map.get(node_temp));
 				}
 			}
@@ -135,15 +194,14 @@ void readMap() {
 		}
 	}
 
+	protected void setup() {
 
-	protected void setup(){
-		
 		chargers = new ArrayList<Local>();
 		dumps = new ArrayList<Local>();
 		hands = new ArrayList<Local>();
 		stores = new ArrayList<Local>();
 		houses = new ArrayList<Local>();
-		
+
 		readMap();
 		window = new SimulationFrame(this);
 
@@ -159,10 +217,12 @@ void readMap() {
 			fe.printStackTrace();
 		}
 
-		addBehaviour(new ReceiveInformBehaviour());
-		addBehaviour(new ReceiveRequestBehaviour());
-		
+		addBehaviour(new checkAgentsBehaviour(this));
+
 		System.out.println("simulationAgent criado");
+		
+		
+		
 	}
 
 	public SimulationFrame getWindow() {
@@ -174,6 +234,8 @@ void readMap() {
 		Integer hour = (Integer) event.getParameter(1);
 		Integer minute = (Integer) event.getParameter(2);
 		String transition = (String) event.getParameter(3);
-		//addBehaviour(new SendTimeBehaviour(day, hour, minute, transition));
+		// addBehaviour(new SendTimeBehaviour(day, hour, minute, transition));
 	}
+
+
 }
