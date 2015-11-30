@@ -17,10 +17,12 @@ import java.util.List;
 
 import locals.*;
 import tools.Tool;
+
 public class Ambiente extends Worker {
-	
-	protected void setup(){
-		
+	ambientBehaviour b;
+
+	protected void setup() {
+
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -33,13 +35,12 @@ public class Ambiente extends Worker {
 			e.printStackTrace();
 		}
 		super.setup();
-		
-		
-		
-		
+
+		b = new ambientBehaviour(this);
+		addBehaviour(b);
+
 	}
-	
-	
+
 	protected void takeDown() {
 		// retira registo no DF
 		try {
@@ -49,13 +50,10 @@ public class Ambiente extends Worker {
 		}
 	}
 
-	class myBehaviour extends SimpleBehaviour {
-		/**
-		* 
-		*/
+	class ambientBehaviour extends SimpleBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		public myBehaviour(Agent a) {
+		public ambientBehaviour(Agent a) {
 			super(a);
 		}
 

@@ -8,6 +8,8 @@ import org.w3c.dom.Node;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.gui.GuiAgent;
+import jade.gui.GuiEvent;
 import job.Job;
 import jade.core.*;
 
@@ -19,7 +21,7 @@ import java.util.List;
 
 import locals.*;
 
-public class Worker extends Agent {
+public class Worker extends GuiAgent  {
 	private static final long serialVersionUID = 1L;
 	List<Local> chargers;
 	List<Local> dumps;
@@ -170,6 +172,12 @@ public class Worker extends Agent {
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void onGuiEvent(GuiEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

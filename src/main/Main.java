@@ -1,5 +1,6 @@
 package main;
 
+import agents.Worker;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -17,9 +18,18 @@ public class Main {
 
 
             AgentController agent = cc.createNewAgent("Worker 1",
-                    "agents.Worker",new Object[] { "A"} );
+                    "agents.Ambiente",new Object[] { "A"} );
+            AgentController worker = cc.createNewAgent("Worker 2",
             
-            agent.start();
+            		"agents.Worker",new Object[] { "B"} );
+            AgentController simulation = cc.createNewAgent("simulation","Simulation.SimulationAgent", null);
+    		simulation.start();
+
+            
+            agent.start();            
+            worker.start();
+           
+           
         } catch(Exception e) {
             System.err.println(e.getMessage());
             return;
