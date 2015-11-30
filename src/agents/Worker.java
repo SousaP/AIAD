@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import locals.*;
+import tools.Tool;
 
 public class Worker extends GuiAgent  {
 	private static final long serialVersionUID = 1L;
@@ -28,6 +29,7 @@ public class Worker extends GuiAgent  {
 	List<Local> hands;
 	List<Local> stores;
 	List<Local> houses;
+	List<Tool> tools;
 	int xmax, ymax;
 	private ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
@@ -48,9 +50,11 @@ public class Worker extends GuiAgent  {
 
 		String[] args = splitArguments(getArguments());
 
+		tools = new ArrayList<Tool>();
 		if (args != null && args.length > 0) {
 
 			position = args[0];
+			tools.add(new Tool(args[1]));
 
 			System.out.println("Posicao " + position);
 

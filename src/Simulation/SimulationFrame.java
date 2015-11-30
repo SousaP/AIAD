@@ -28,7 +28,7 @@ public class SimulationFrame extends JFrame {
 
 	public SimulationFrame(SimulationAgent simulationAgent) {
 		super();
-		setSize(600, 600);
+		setSize(1000, 600);
 		setTitle("Simulation");
 		myAgent = simulationAgent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,10 +85,10 @@ public class SimulationFrame extends JFrame {
 			Local tempTarg = myAgent.cityMap.getEdgeTarget(edge);
 			Local tempSource = myAgent.cityMap.getEdgeSource(edge);
 			
-			g.drawRect( tempTarg.getJ() *  15 + 100,tempTarg.getI() * 15 + 100, 10, 10);
+			g.drawRect( tempTarg.getJ() * 75 + 100,tempTarg.getI() * 15 + 100, 10, 10);
 			g.setColor(Color.BLACK);
-			g.fillRect(tempTarg.getJ() *  15 + 100,tempTarg.getI() * 15 + 100, 10, 10);
-			g.drawLine(tempTarg.getJ() *  15 + 105, tempTarg.getI() * 15 + 105, tempSource.getJ() *  15 + 105, tempSource.getI() *  15 + 105);
+			g.fillRect(tempTarg.getJ() *  75 + 100,tempTarg.getI() * 15 + 100, 10, 10);
+			g.drawLine(tempTarg.getJ() *  75 + 105, tempTarg.getI() * 15 + 105, tempSource.getJ() *  15 + 105, tempSource.getI() *  15 + 105);
 			
 			
 			g.fillRect( tempSource.getJ() *  15 + 100, tempSource.getI() * 15 + 100, 10, 10);
@@ -114,34 +114,36 @@ public class SimulationFrame extends JFrame {
 
 	void desenhaLocais(Graphics2D g){
 		for(int i = 0; i < myAgent.chargers.size(); i++){
-		g.drawRect( myAgent.chargers.get(i).getJ() *  15 + 100,myAgent.chargers.get(i).getI() * 15 + 100, 10, 10);
+		g.drawRect( myAgent.chargers.get(i).getJ() *  75 + 100,myAgent.chargers.get(i).getI() * 15 + 100, 10, 10);
 		g.setColor(Color.YELLOW);
-		g.fillRect(myAgent.chargers.get(i).getJ() *  15 + 100,myAgent.chargers.get(i).getI() * 15 + 100, 10, 10);
+		g.fillRect(myAgent.chargers.get(i).getJ() *  75 + 100,myAgent.chargers.get(i).getI() * 15 + 100, 10, 10);
 		}
 		
 		for(int i = 0; i < myAgent.dumps.size(); i++){
-			g.drawRect( myAgent.dumps.get(i).getJ() *  15 + 100,myAgent.dumps.get(i).getI() * 15 + 100, 10, 10);
+			g.drawRect( myAgent.dumps.get(i).getJ() *  75 + 100,myAgent.dumps.get(i).getI() * 15 + 100, 10, 10);
 			g.setColor(Color.BLUE);
-			g.fillRect(myAgent.dumps.get(i).getJ() *  15 + 100,myAgent.dumps.get(i).getI() * 15 + 100, 10, 10);
+			g.fillRect(myAgent.dumps.get(i).getJ() *  75 + 100,myAgent.dumps.get(i).getI() * 15 + 100, 10, 10);
 			}
 		
 		for(int i = 0; i < myAgent.stores.size(); i++){
-			g.drawRect( myAgent.stores.get(i).getJ() *  15 + 100,myAgent.stores.get(i).getI() * 15 + 100, 10, 10);
+			g.drawRect( myAgent.stores.get(i).getJ() *  75 + 100,myAgent.stores.get(i).getI() * 15 + 100, 10, 10);
 			g.setColor(Color.RED);
-			g.fillRect(myAgent.stores.get(i).getJ() *  15 + 100,myAgent.stores.get(i).getI() * 15 + 100, 10, 10);
+			g.fillRect(myAgent.stores.get(i).getJ() *  75 + 100,myAgent.stores.get(i).getI() * 15 + 100, 10, 10);
 			}
 		
 		for(int i = 0; i < myAgent.houses.size(); i++){
-			g.drawRect( myAgent.houses.get(i).getJ() *  15 + 100,myAgent.houses.get(i).getI() * 15 + 100, 10, 10);
+			g.drawRect( myAgent.houses.get(i).getJ() *  75 + 100,myAgent.houses.get(i).getI() * 15 + 100, 10, 10);
 			g.setColor(Color.MAGENTA);
-			g.fillRect(myAgent.houses.get(i).getJ() *  15 + 100,myAgent.houses.get(i).getI() * 15 + 100, 10, 10);
+			g.fillRect(myAgent.houses.get(i).getJ() *  75 + 100,myAgent.houses.get(i).getI() * 15 + 100, 10, 10);
 			}
 		
 		for(int i = 0; i < myAgent.hands.size(); i++){
-			g.drawRect( myAgent.hands.get(i).getJ() *  15 + 100,myAgent.hands.get(i).getI() * 15 + 100, 10, 10);
+			g.drawRect( myAgent.hands.get(i).getJ() *  75 + 100,myAgent.hands.get(i).getI() * 15 + 100, 10, 10);
 			g.setColor(Color.ORANGE);
-			g.fillRect(myAgent.hands.get(i).getJ() *  15 + 100,myAgent.hands.get(i).getI() * 15 + 100, 10, 10);
+			g.fillRect(myAgent.hands.get(i).getJ() *  75 + 100,myAgent.hands.get(i).getI() * 15 + 100, 10, 10);
 			}
 	}
+	
+	
 }
 
