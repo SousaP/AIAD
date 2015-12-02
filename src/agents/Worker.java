@@ -47,7 +47,7 @@ public class Worker extends GuiAgent {
 	List<Local> houses;
 	List<Tool> tools;
 	int xmax, ymax;
-	private ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
+	ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
@@ -260,30 +260,45 @@ public class Worker extends GuiAgent {
 
 		Local Destiny;
 		List<DefaultWeightedEdge> caminho;
+		int counter;
+		DefaultWeightedEdge next;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
-			super(w, 2000);
+			super(w, 500);
 
 			this.Destiny = Destiny;
 			this.caminho = caminho;
+			counter = 0;
 		}
 
 		@Override
 		protected void onTick() {
-			if (caminho.size() > 0) {
+			switch (counter) {
+			case 0:
+				if (next != null) {
+					System.out.println("Antes Paragem");
+					position = cityMap.getEdgeTarget(next).getName();
+					if (Destiny.getName() == position) {
+						System.out.println("Paragem");
+						stop();
+						break;
+					}
+				}
 				Iterator<DefaultWeightedEdge> iter1 = caminho.iterator();
-
-				DefaultWeightedEdge edge = iter1.next();
-
-				System.out.println(cityMap.getEdgeTarget(edge).getName());
-				position = map.get(cityMap.getEdgeTarget(edge).getName()).getName();
-				if (Destiny == map.get(cityMap.getEdgeTarget(edge).getName())) {
-					iter1.remove();
-					stop();
-				} else
-					iter1.remove();
+				next = iter1.next();
+				System.out.println(cityMap.getEdgeTarget(next).getName());
+				System.out.println(cityMap.getEdgeWeight(next));
+				counter = (int) (cityMap.getEdgeWeight(next) * 500);
+				System.out.println(counter);
+				iter1.remove();
+				break;
+			default:
+				System.out.println("Not Zero");
+				counter = counter - 500;
+				break;
 
 			}
+
 		}
 	}
 

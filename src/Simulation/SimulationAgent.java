@@ -61,7 +61,7 @@ public class SimulationAgent extends GuiAgent {
 			case 0:
 				repliesCnt = 0;
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					
 				}

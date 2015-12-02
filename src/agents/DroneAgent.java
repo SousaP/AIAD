@@ -1,9 +1,11 @@
 package agents;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
 import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.core.*;
@@ -11,6 +13,7 @@ import jade.core.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import locals.*;
@@ -60,6 +63,38 @@ public class DroneAgent extends Worker {
 			return finished;
 		}
 
+	}
+	
+	private class MoveRequest extends TickerBehaviour{
+		private static final long serialVersionUID = 1L;
+
+		Local Destiny;
+		List<DefaultWeightedEdge> caminho;
+
+		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
+			super(w, 1000);
+
+			this.Destiny = Destiny;
+			this.caminho = caminho;
+		}
+
+		@Override
+		protected void onTick() {
+			if (caminho.size() > 0) {
+				Iterator<DefaultWeightedEdge> iter1 = caminho.iterator();
+
+				DefaultWeightedEdge edge = iter1.next();
+
+				System.out.println(cityMap.getEdgeTarget(edge).getName());
+				position = map.get(cityMap.getEdgeTarget(edge).getName()).getName();
+				if (Destiny == map.get(cityMap.getEdgeTarget(edge).getName())) {
+					iter1.remove();
+					stop();
+				} else
+					iter1.remove();
+
+			}
+		}
 	}
 
 }
