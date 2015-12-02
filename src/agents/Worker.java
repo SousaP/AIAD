@@ -9,9 +9,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.gui.GuiAgent;
@@ -35,12 +35,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-
-
 import locals.*;
 import tools.Tool;
 
-public class Worker extends GuiAgent  {
+public class Worker extends GuiAgent {
 	private static final long serialVersionUID = 1L;
 	List<Local> chargers;
 	List<Local> dumps;
@@ -51,9 +49,9 @@ public class Worker extends GuiAgent  {
 	int xmax, ymax;
 	private ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
-	HashMap<String,Local> map = new HashMap<String,Local>();
+	HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
-	Job myJob;	
+	Job myJob;
 	double credit;
 	String position;
 
@@ -88,15 +86,15 @@ public class Worker extends GuiAgent  {
 		System.out.println("Hello World. ");
 		readMap();
 		System.out.println("I read the map ");
-		double len = pathlength(map.get("A"), map.get("L"));
-		System.out.println(len);
+		// double len = pathlength(map.get("A"), map.get("L"));
+		// System.out.println(len);
 		addBehaviour(new OfferRequestsServer());
+		addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
 
 	}
 
 	void readMap() {
-		
-		
+
 		try {
 			File inputFile = new File("map.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -110,40 +108,39 @@ public class Worker extends GuiAgent  {
 				Node nNode = nodes.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
+
 					String name = eElement.getAttribute("name");
 					int i_temp = Integer.parseInt(eElement.getElementsByTagName("i").item(0).getTextContent());
 					int j_temp = Integer.parseInt(eElement.getElementsByTagName("j").item(0).getTextContent());
-					Local local_tempo = new Local(i_temp,j_temp,name);
+					Local local_tempo = new Local(i_temp, j_temp, name);
 					cityMap.addVertex(local_tempo);
-					 map.put(name, local_tempo);
-					
-					
+					map.put(name, local_tempo);
+
 				}
 			}
-			
+
 			NodeList edgeList = doc.getElementsByTagName("edge");
 			for (int temp = 0; temp < edgeList.getLength(); temp++) {
 				Node nNode = edgeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
+
 					String i_temp = eElement.getElementsByTagName("p1").item(0).getTextContent();
-					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();	
+					String j_temp = eElement.getElementsByTagName("p2").item(0).getTextContent();
 					DefaultWeightedEdge e_temp = cityMap.addEdge(map.get(i_temp), map.get(j_temp));
-					cityMap.setEdgeWeight(e_temp, Math.sqrt(
-							Math.pow((map.get(i_temp).getI() - map.get(j_temp).getI()), 2)
-							+ Math.pow((map.get(i_temp).getJ() - map.get(j_temp).getJ()), 2)));
+					cityMap.setEdgeWeight(e_temp,
+							Math.sqrt(Math.pow((map.get(i_temp).getI() - map.get(j_temp).getI()), 2)
+									+ Math.pow((map.get(i_temp).getJ() - map.get(j_temp).getJ()), 2)));
 				}
 			}
-			
+
 			NodeList dumpList = doc.getElementsByTagName("dump");
 			for (int temp = 0; temp < dumpList.getLength(); temp++) {
 				Node nNode = dumpList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					dumps.add(map.get(node_temp));
 				}
 			}
@@ -152,8 +149,8 @@ public class Worker extends GuiAgent  {
 				Node nNode = chargeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					chargers.add(map.get(node_temp));
 				}
 			}
@@ -162,8 +159,8 @@ public class Worker extends GuiAgent  {
 				Node nNode = houseList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					houses.add(map.get(node_temp));
 				}
 			}
@@ -172,8 +169,8 @@ public class Worker extends GuiAgent  {
 				Node nNode = storeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					stores.add(map.get(node_temp));
 				}
 			}
@@ -182,8 +179,8 @@ public class Worker extends GuiAgent  {
 				Node nNode = handList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
-					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();			
+
+					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					hands.add(map.get(node_temp));
 				}
 			}
@@ -205,11 +202,12 @@ public class Worker extends GuiAgent  {
 	@Override
 	protected void onGuiEvent(GuiEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	double pathlength(Local origin, Local destiny) {
-		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(cityMap, origin, destiny);
+
+	List<DefaultWeightedEdge> pathTo(Local origin, Local destiny) {
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				cityMap, origin, destiny);
 		double length = dijkstra.getPathLength();
 		GraphPath<Local, DefaultWeightedEdge> temp = dijkstra.getPath();
 		Set<DefaultWeightedEdge> edges = temp.getGraph().edgeSet();
@@ -218,14 +216,13 @@ public class Worker extends GuiAgent  {
 
 		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
 		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
-		while(iter1.hasNext()){
+		while (iter1.hasNext()) {
 			DefaultWeightedEdge edge = iter1.next();
 
 			System.out.println(cityMap.getEdgeTarget(edge).getName());
 		}
-		return length;
+		return temp1;
 	}
-
 
 	private class OfferRequestsServer extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
@@ -241,18 +238,15 @@ public class Worker extends GuiAgent  {
 				// CFP Message received. Process it
 				String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
-				
-				
-				
-				
-				if(msg.getConversationId() == "posicao"){
-					
+
+				if (msg.getConversationId() == "posicao") {
+
 					reply.setPerformative(ACLMessage.INFORM);
-					System.out.println("Posicao " +getLocalName()+ " " + position);
-					reply.setContent(getLocalName()+";"+map.get(position).getI()+";"+map.get(position).getJ());
-					
+					System.out.println("Posicao " + getLocalName() + " " + position);
+					reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
+
 					send(reply);
-					
+
 				}
 
 			} else {
@@ -261,42 +255,69 @@ public class Worker extends GuiAgent  {
 		}
 	} // End of inner class OfferRequestsServer
 
+	private class MoveRequest extends TickerBehaviour {
+		private static final long serialVersionUID = 1L;
 
-	
-	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
-	    for (Entry<Job, Double> entry : map.entrySet()) {
-	        if (Objects.equals(value, entry.getValue())) {
-	            return entry.getKey();
-	        }                   
-	    }
-	    return null;
+		Local Destiny;
+		List<DefaultWeightedEdge> caminho;
+
+		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
+			super(w, 2000);
+
+			this.Destiny = Destiny;
+			this.caminho = caminho;
+		}
+
+		@Override
+		protected void onTick() {
+			if (caminho.size() > 0) {
+				Iterator<DefaultWeightedEdge> iter1 = caminho.iterator();
+
+				DefaultWeightedEdge edge = iter1.next();
+
+				System.out.println(cityMap.getEdgeTarget(edge).getName());
+				position = map.get(cityMap.getEdgeTarget(edge).getName()).getName();
+				if (Destiny == map.get(cityMap.getEdgeTarget(edge).getName())) {
+					iter1.remove();
+					stop();
+				} else
+					iter1.remove();
+
+			}
+		}
 	}
-	
-	List<Job> orderJobs (List<Job> jobs_available) {
-		//Precisa de um produto -> Pode precisar de uma ferramenta
-		//(reward * 3 - time)/fine
+
+	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
+		for (Entry<Job, Double> entry : map.entrySet()) {
+			if (Objects.equals(value, entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null;
+	}
+
+	List<Job> orderJobs(List<Job> jobs_available) {
+		// Precisa de um produto -> Pode precisar de uma ferramenta
+		// (reward * 3 - time)/fine
 		HashMap<Job, Double> map = new HashMap<Job, Double>();
-		
+
 		Iterator<Job> it = jobs_available.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			map.put(it.next(), it.next().getProbabilityOfChoose());
 		}
-    
-        SortedSet<Double> values = new TreeSet<Double>(map.values());
-        List<Job> sorted_jobs = null;
-        
-        Iterator itera = values.iterator();
 
-        while(itera.hasNext()){
-        	Iterator temp = itera;
-        	sorted_jobs.add(getKeyByValue(map, values.first()));
-        	values.remove(temp); 
-        }
-        
-        return sorted_jobs;
+		SortedSet<Double> values = new TreeSet<Double>(map.values());
+		List<Job> sorted_jobs = null;
+
+		Iterator itera = values.iterator();
+
+		while (itera.hasNext()) {
+			Iterator temp = itera;
+			sorted_jobs.add(getKeyByValue(map, values.first()));
+			values.remove(temp);
+		}
+
+		return sorted_jobs;
 	}
 
-
 }
-	
-
