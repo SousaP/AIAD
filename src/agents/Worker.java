@@ -224,7 +224,7 @@ public class Worker extends GuiAgent {
 		return temp1;
 	}
 
-	private class OfferRequestsServer extends CyclicBehaviour {
+	class OfferRequestsServer extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
 		public OfferRequestsServer() {
@@ -255,7 +255,7 @@ public class Worker extends GuiAgent {
 		}
 	} // End of inner class OfferRequestsServer
 
-	private class MoveRequest extends TickerBehaviour {
+	public class MoveRequest extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 
 		Local Destiny;
