@@ -88,8 +88,8 @@ public class Worker extends GuiAgent {
 		System.out.println("I read the map ");
 		// double len = pathlength(map.get("A"), map.get("L"));
 		// System.out.println(len);
-		addBehaviour(new OfferRequestsServer());
-		addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
+		//addBehaviour(new OfferRequestsServer());
+		//addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
 
 	}
 
@@ -264,7 +264,7 @@ public class Worker extends GuiAgent {
 		DefaultWeightedEdge next;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
-			super(w, (5-VELOCITY) * 100);
+			super(w, (10-VELOCITY) * 100);
 
 			this.Destiny = Destiny;
 			this.caminho = caminho;
@@ -289,13 +289,13 @@ public class Worker extends GuiAgent {
 				System.out.println(cityMap.getEdgeTarget(next).getName());
 				System.out.println(cityMap.getEdgeWeight(next));
 				
-				counter = (int) (cityMap.getEdgeWeight(next) *(5-VELOCITY) * 100);
+				counter = (int) (cityMap.getEdgeWeight(next) *(10-VELOCITY) * 100);
 				System.out.println(counter);
 				iter1.remove();
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - (5-VELOCITY) * 100;
+				counter = counter - (10-VELOCITY) * 100;
 				break;
 
 			}

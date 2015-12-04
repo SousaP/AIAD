@@ -6,12 +6,15 @@ import org.w3c.dom.Node;
 
 import agents.Worker.MoveRequest;
 import agents.Worker.OfferRequestsServer;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import jade.core.*;
 
 import javax.xml.parsers.*;
@@ -30,8 +33,8 @@ public class DroneAgent extends Worker {
 	private static Tool f1;
 	private int batteryLeft;
 	private int loadLeft;
-	private int i;
-	private int j;
+	private float i;
+	private float j;
 
 	protected void setup() {
 		VELOCITY = 5;
@@ -82,6 +85,36 @@ public class DroneAgent extends Worker {
 
 	}
 
+	class OfferRequestsServer extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		public OfferRequestsServer() {
+			super();
+		}
+
+		public void action() {
+			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// CFP Message received. Process it
+				String sintoma = msg.getContent();
+				ACLMessage reply = msg.createReply();
+
+				if (msg.getConversationId() == "posicao") {
+
+					reply.setPerformative(ACLMessage.INFORM);
+					System.out.println("Posicao: ");
+					reply.setContent("Random" + ";" + (int)i + ";" + (int)j);
+
+					send(reply);
+
+				}
+
+			} else {
+				block();
+			}
+		}
+	}
 	private class MoveRequest extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 
@@ -92,7 +125,7 @@ public class DroneAgent extends Worker {
 		float m;
 
 		public MoveRequest(Worker w, Local Destiny) {
-			super(w, 500);
+			super(w, (10-VELOCITY) * 100);
 
 			this.Destiny = Destiny;
 			counter = 0;
@@ -110,14 +143,16 @@ public class DroneAgent extends Worker {
 				distance = (int) (
 						Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
 								+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)));
-				counter = distance  * 500;
+				counter = distance  * (10-VELOCITY) * 100;
 				step = distance;
 				m = (Destiny.getI() - map.get(position).getI())/(Destiny.getJ() - map.get(position).getJ());
 				System.out.println(counter);
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - 500;
+				counter = counter - (10-VELOCITY) * 100;
+				i++;
+				j = j + m;
 				if(counter == 0)
 					position = Destiny.getName();
 				break;
