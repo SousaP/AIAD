@@ -38,7 +38,7 @@ import java.util.TreeSet;
 import locals.*;
 import tools.Tool;
 
-public class Worker extends GuiAgent {
+public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
 	List<Local> chargers;
 	List<Local> dumps;
@@ -64,16 +64,17 @@ public class Worker extends GuiAgent {
 
 	protected void setup() {
 		credit = 0;
-
-		String[] args = splitArguments(getArguments());
+		
+		
+		String[] args = {};
+		if(getArguments() != null)
+		args = splitArguments(getArguments());
 
 		tools = new ArrayList<Tool>();
-		if (args != null && args.length > 0) {
+		if (args != null && args.length > 1) {
 
 			position = args[0];
 			tools.add(new Tool(args[1]));
-
-			System.out.println("Posicao " + position);
 
 		} else {
 			System.out.println("Não especificou o tipo");
@@ -199,11 +200,6 @@ public class Worker extends GuiAgent {
 		}
 	}
 
-	@Override
-	protected void onGuiEvent(GuiEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
 
 	List<DefaultWeightedEdge> pathTo(Local origin, Local destiny) {
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(

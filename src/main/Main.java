@@ -8,30 +8,25 @@ import jade.wrapper.ContainerController;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Runtime rt = Runtime.instance();
-        Profile p = new ProfileImpl();
-        ContainerController cc = rt.createMainContainer(p);
+	public static void main(String[] args) {
+		Runtime rt = Runtime.instance();
+		Profile p = new ProfileImpl();
+		ContainerController cc = rt.createMainContainer(p);
 
-        try {
+		try {
 
+			AgentController agent = cc.createNewAgent("Worker 1", "agents.DroneAgent", new Object[] { "A;f1" });
+			AgentController ambiente = cc.createNewAgent("ambient", "agents.Ambiente", null);
 
-            AgentController agent = cc.createNewAgent("Worker 1",
-                    "agents.DroneAgent",new Object[] { "A;f1"} );
-          /*  AgentController worker = cc.createNewAgent("Worker 2",
-            		"agents.Worker",new Object[] { "B;f2"} ); */
-            AgentController simulation = cc.createNewAgent("simulation","Simulation.SimulationAgent", null);
-    		simulation.start();
+			AgentController simulation = cc.createNewAgent("simulation", "Simulation.SimulationAgent", null);
+			ambiente.start();
+			simulation.start();
 
-            
-            agent.start();            
-            //worker.start();
-           
-           
-        } catch(Exception e) {
-            System.err.println(e.getMessage());
-            return;
-        }
-    }
+			agent.start();
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			return;
+		}
+	}
 }
-

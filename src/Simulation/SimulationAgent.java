@@ -30,13 +30,14 @@ import job.Job;
 import locals.Local;
 
 public class SimulationAgent extends GuiAgent {
+	private static final long serialVersionUID = 1L;
 	private SimulationFrame window;
 	public List<Local> chargers;
 	public List<Local> dumps;
 	public List<Local> hands;
 	public List<Local> stores;
 	public List<Local> houses;
-	
+
 	public List<Local> agentsFinal;
 	public List<Local> agentsReceiving;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
@@ -45,8 +46,7 @@ public class SimulationAgent extends GuiAgent {
 
 	private class checkAgentsBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
-		private int n = 0;
-		private AID[] recursos;
+		private List<AID> agents = new ArrayList<AID>();
 		private MessageTemplate mt;
 		private int step = 0;
 		private int repliesCnt = 0;
@@ -63,26 +63,28 @@ public class SimulationAgent extends GuiAgent {
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
-					
-				}
 
+				}
+				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 				try {
 					DFAgentDescription template = new DFAgentDescription();
 					DFAgentDescription[] result = DFService.search(myAgent, template);
 					// System.out.println("Encontrei estes recursos:");
-					recursos = new AID[result.length];
+					AID[] recursos = new AID[result.length];
+					agents = new ArrayList<AID>();
 					for (int i = 0; i < result.length; ++i) {
 						recursos[i] = result[i].getName();
-						//System.out.println(recursos[i].getName());
+						if (!recursos[i].getLocalName().contains("simulation")
+								&& !recursos[i].getLocalName().contains("ambient")) {
+							agents.add(recursos[i]);
+							cfp.addReceiver(recursos[i]);
+						}
+
 					}
 				} catch (FIPAException fe) {
 					fe.printStackTrace();
 				}
 
-				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-				for (int i = 0; i < recursos.length; ++i) {
-					cfp.addReceiver(recursos[i]);
-				}
 				cfp.setContent("localizacao");
 				cfp.setConversationId("posicao");
 				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
@@ -102,16 +104,17 @@ public class SimulationAgent extends GuiAgent {
 					// Reply received
 					if (reply.getPerformative() == ACLMessage.INFORM) {
 						// This is an offer
-						String resposta = reply.getContent().toString();						
+						String resposta = reply.getContent().toString();
 						String[] conjuntoSintomas = resposta.split(";");
-						
-						agentsReceiving.add(new Local(Integer.parseInt(conjuntoSintomas[1]),Integer.parseInt(conjuntoSintomas[2]),conjuntoSintomas[0]));
+
+						agentsReceiving.add(new Local(Integer.parseInt(conjuntoSintomas[1]),
+								Integer.parseInt(conjuntoSintomas[2]), conjuntoSintomas[0]));
 
 						// This is the best offer at present
 
 					}
 					repliesCnt++;
-					if (repliesCnt == recursos.length - 1) {
+					if (repliesCnt == agents.size()) {
 						agentsFinal = new ArrayList<Local>(agentsReceiving);
 						window.panel.repaint();
 						agentsReceiving.clear();
