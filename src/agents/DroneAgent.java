@@ -30,6 +30,8 @@ public class DroneAgent extends Worker {
 	private static Tool f1;
 	private int batteryLeft;
 	private int loadLeft;
+	private int i;
+	private int j;
 
 	protected void setup() {
 		VELOCITY = 5;
@@ -46,6 +48,8 @@ public class DroneAgent extends Worker {
 			e.printStackTrace();
 		}
 		super.setup();
+		i = map.get(position).getI();
+		j = map.get(position).getJ();
 		addBehaviour(new OfferRequestsServer());
 		addBehaviour(new MoveRequest(this, map.get("L")));
 	}
@@ -82,16 +86,16 @@ public class DroneAgent extends Worker {
 		private static final long serialVersionUID = 1L;
 
 		Local Destiny;
-		List<DefaultWeightedEdge> caminho;
 		int counter;
-		DefaultWeightedEdge next;
+		int distance;
+		int step;
+		float m;
 
 		public MoveRequest(Worker w, Local Destiny) {
 			super(w, 500);
 
 			this.Destiny = Destiny;
 			counter = 0;
-			next = null;
 		}
 
 		@Override
@@ -103,9 +107,12 @@ public class DroneAgent extends Worker {
 						stop();
 						break;
 				}
-				counter = (int) (
+				distance = (int) (
 						Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
-							+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)) * 500);
+								+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)));
+				counter = distance  * 500;
+				step = distance;
+				m = (Destiny.getI() - map.get(position).getI())/(Destiny.getJ() - map.get(position).getJ());
 				System.out.println(counter);
 				break;
 			default:
