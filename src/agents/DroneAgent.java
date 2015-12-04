@@ -103,8 +103,6 @@ public class DroneAgent extends Worker {
 						stop();
 						break;
 				}
-				System.out.println(cityMap.getEdgeTarget(next).getName());
-				System.out.println(cityMap.getEdgeWeight(next));
 				counter = (int) (
 						Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
 							+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)) * 500);

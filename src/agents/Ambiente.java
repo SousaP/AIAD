@@ -40,8 +40,8 @@ public class Ambiente extends Worker {
 		}
 		super.setup();
 
-		b = new ambientBehaviour(this);
-		addBehaviour(b);
+		//b = new ambientBehaviour(this);
+		//addBehaviour(b);
 
 	}
 
@@ -55,11 +55,13 @@ public class Ambiente extends Worker {
 	}
 
 	class ambientBehaviour extends TickerBehaviour {
+		public ambientBehaviour(Agent a, long period) {
+			super(a, period);
+			// TODO Auto-generated constructor stub
+		}
+
 		private static final long serialVersionUID = 1L;
 
-		public ambientBehaviour(Agent a) {
-			super(a);
-		}
 
 		@Override
 		protected void onTick() {
