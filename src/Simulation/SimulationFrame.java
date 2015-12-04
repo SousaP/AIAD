@@ -21,7 +21,7 @@ import locals.Local;
 
 public class SimulationFrame extends JFrame {
 	private SimulationAgent myAgent;
-	JPanel panel = new JPanel();
+	Panel panel = new Panel();
 	List<String> visto = new ArrayList<String>();
 
 	private List<Local> locais;
@@ -33,7 +33,7 @@ public class SimulationFrame extends JFrame {
 		setTitle("Simulation");
 		myAgent = simulationAgent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(null);
+		
 		getContentPane().add(panel);
 		String startTemp = null;
 		dispose();
@@ -41,24 +41,31 @@ public class SimulationFrame extends JFrame {
 	}
 
 	public void paint(Graphics g) {
-		super.paint(g); // fixes the immediate problem.
-		Graphics2D g2 = (Graphics2D) g;
+		panel.repaint();
+	}
+	
+	
+	class Panel extends JPanel{
+		public void paintComponent(Graphics g) {
+			//super.paint(g); // fixes the immediate problem.
+			Graphics2D g2 = (Graphics2D) g;
 
 
-		 visto = new ArrayList<String>();
-		 
-		 Line2D line = new Line2D.Double(10, 10, 40, 40);
-        /* g2.setColor(Color.blue);
-         g2.setStroke(new BasicStroke(10));
-         g2.draw(line); */
-		 
-		 g.drawRect(10,10,750,750);  
-		    g.setColor(Color.GREEN);  
-		    g.fillRect(10,10,750,750);  
-		 desenhaGrafo(g2,myAgent.map.get("A"));
-		 desenhaLocais(g2);
-		
+			 visto = new ArrayList<String>();
+			 
+			 Line2D line = new Line2D.Double(10, 10, 40, 40);
+	        /* g2.setColor(Color.blue);
+	         g2.setStroke(new BasicStroke(10));
+	         g2.draw(line); */
+			 
+			 g.drawRect(10,10,750,750);  
+			    g.setColor(Color.GREEN);  
+			    g.fillRect(10,10,750,750);  
+			 desenhaGrafo(g2,myAgent.map.get("A"));
+			 desenhaLocais(g2);
 			
+				
+		}
 	}
 	
 	

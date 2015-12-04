@@ -113,7 +113,7 @@ public class SimulationAgent extends GuiAgent {
 					repliesCnt++;
 					if (repliesCnt == recursos.length - 1) {
 						agentsFinal = new ArrayList<Local>(agentsReceiving);
-						window.repaint();
+						window.panel.repaint();
 						agentsReceiving.clear();
 						step = 0;
 					}

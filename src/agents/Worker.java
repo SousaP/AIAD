@@ -83,7 +83,6 @@ public class Worker extends GuiAgent {
 		stores = new ArrayList<Local>();
 		houses = new ArrayList<Local>();
 		Jobs_Created = new ArrayList<Job>();
-		System.out.println("Hello World. ");
 		readMap();
 		System.out.println("I read the map ");
 		// double len = pathlength(map.get("A"), map.get("L"));
