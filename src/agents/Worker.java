@@ -315,21 +315,21 @@ public class Worker extends GuiAgent {
 	List<Job> orderJobs(List<Job> jobs_available) {
 		// Precisa de um produto -> Pode precisar de uma ferramenta
 		// (reward * 3 - time)/fine
-		HashMap<Job, Double> map = new HashMap<Job, Double>();
+		HashMap<Job, Double> map_l = new HashMap<Job, Double>();
 
 		Iterator<Job> it = jobs_available.iterator();
 		while (it.hasNext()) {
-			map.put(it.next(), it.next().getProbabilityOfChoose());
+			map_l.put(it.next(), it.next().getProbabilityOfChoose(map.get(position)));
 		}
 
-		SortedSet<Double> values = new TreeSet<Double>(map.values());
+		SortedSet<Double> values = new TreeSet<Double>(map_l.values());
 		List<Job> sorted_jobs = null;
 
 		Iterator itera = values.iterator();
 
 		while (itera.hasNext()) {
 			Iterator temp = itera;
-			sorted_jobs.add(getKeyByValue(map, values.first()));
+			sorted_jobs.add(getKeyByValue(map_l, values.first()));
 			values.remove(temp);
 		}
 

@@ -1,29 +1,17 @@
 package agents;
 
-import org.w3c.dom.*;
-import org.w3c.dom.Node;
-
-import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.core.*;
+import job.Job.*;
 
-import javax.xml.parsers.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import locals.*;
-import tools.Tool;
 
 public class Ambiente extends Worker {
 	private static final long serialVersionUID = 1L;
 	ambientBehaviour b;
-	Boolean waiting;
 
 	protected void setup() {
 
@@ -40,8 +28,8 @@ public class Ambiente extends Worker {
 		}
 		super.setup();
 
-		//b = new ambientBehaviour(this);
-		//addBehaviour(b);
+		b = new ambientBehaviour(this,1000);
+		addBehaviour(b);
 
 	}
 
@@ -57,12 +45,15 @@ public class Ambiente extends Worker {
 	class ambientBehaviour extends TickerBehaviour {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
-			// TODO Auto-generated constructor stub
 		}
 
 		private static final long serialVersionUID = 1L;
-
-
+		
+		
+		void createRandomJob(){
+			to_do temp;
+		}
+		
 		@Override
 		protected void onTick() {
 			
@@ -71,8 +62,6 @@ public class Ambiente extends Worker {
 			
 			
 		}
-
-		private boolean finished = false;
 
 
 	}

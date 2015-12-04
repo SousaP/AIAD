@@ -1,5 +1,6 @@
 package job;
 
+import locals.Local;
 import product.Product;
 
 public class Job {
@@ -13,8 +14,9 @@ public class Job {
 	double fine;
 	Product product;
 	Boolean done;
+	Local local;
 	
-	public Job(to_do j,type ty, double r, int t, double f, Product p){
+	public Job(to_do j,type ty, double r, int t, double f, Product p, Local l){
 		the_Job = j;
 		job_Type = ty;
 		reward = r;
@@ -22,6 +24,7 @@ public class Job {
 		fine = f;
 		product = p;
 		done = false;
+		local = l;
 	}
 	
 	public void setDone(){
@@ -34,8 +37,12 @@ public class Job {
 	
 	
 	//Helps the agent to sort jobs in order to pick the most profitable one
-	public double getProbabilityOfChoose(){
-		return ((reward*3 - time)/fine);
+	public double getProbabilityOfChoose(Local myLocal){
+		if(the_Job == to_do.TRANSPORT)
+		return ((reward*3 - fine)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
+				+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
+		else
+			return ((reward*3 - fine)/time);
 	}
 	
 	
