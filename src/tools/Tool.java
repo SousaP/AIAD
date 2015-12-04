@@ -7,7 +7,7 @@ public class Tool {
 		this.f = f;
 	}
 	
-	public String toStringGrid() {
+	public String getName() {
 		return f;
 	}
 

@@ -46,6 +46,7 @@ public class Worker extends GuiAgent {
 	List<Local> stores;
 	List<Local> houses;
 	List<Tool> tools;
+	protected static int VELOCITY = 0;
 	int xmax, ymax;
 	ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
@@ -263,7 +264,7 @@ public class Worker extends GuiAgent {
 		DefaultWeightedEdge next;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
-			super(w, 500);
+			super(w, (5-VELOCITY) * 100);
 
 			this.Destiny = Destiny;
 			this.caminho = caminho;
@@ -287,13 +288,14 @@ public class Worker extends GuiAgent {
 				next = iter1.next();
 				System.out.println(cityMap.getEdgeTarget(next).getName());
 				System.out.println(cityMap.getEdgeWeight(next));
-				counter = (int) (cityMap.getEdgeWeight(next) * 500);
+				
+				counter = (int) (cityMap.getEdgeWeight(next) *(5-VELOCITY) * 100);
 				System.out.println(counter);
 				iter1.remove();
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - 500;
+				counter = counter - (5-VELOCITY) * 100;
 				break;
 
 			}

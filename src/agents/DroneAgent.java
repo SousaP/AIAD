@@ -10,6 +10,8 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.core.*;
 
 import javax.xml.parsers.*;
@@ -22,9 +24,7 @@ import locals.*;
 import tools.Tool;
 
 public class DroneAgent extends Worker {
-
-	private static int VELOCITY = 5;
-	private static boolean ROAD = false; // true estrada, false ar
+	private static final long serialVersionUID = 1L;
 	private static int BATTERY_CAPACITY = 250;
 	private static int LOAD_CAPACITY = 100;
 	private static Tool f1;
@@ -32,7 +32,19 @@ public class DroneAgent extends Worker {
 	private int loadLeft;
 
 	protected void setup() {
+		VELOCITY = 5;
 		f1 = new Tool("f1");
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName(getName());
+		sd.setType("DroneAgent");
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
 		super.setup();
 		addBehaviour(new OfferRequestsServer());
 		addBehaviour(new MoveRequest(this, map.get("L")));
@@ -48,9 +60,6 @@ public class DroneAgent extends Worker {
 	}
 
 	class myBehaviour extends SimpleBehaviour {
-		/**
-		* 
-		*/
 		private static final long serialVersionUID = 1L;
 
 		public myBehaviour(Agent a) {

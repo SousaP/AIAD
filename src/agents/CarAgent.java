@@ -6,6 +6,8 @@ import org.w3c.dom.Node;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.core.*;
 
 import javax.xml.parsers.*;
@@ -17,8 +19,7 @@ import locals.*;
 import tools.Tool;
 
 public class CarAgent extends Worker {
-
-	private static int VELOCITY = 3;
+	private static final long serialVersionUID = 1L;
 	private static boolean ROAD = true; // true estrada, false ar
 	private static int BATTERY_CAPACITY = 500;
 	private static int LOAD_CAPACITY = 550;
@@ -32,8 +33,18 @@ public class CarAgent extends Worker {
 	protected void setup(){
 		f1 = new Tool("f1");
 		f2 = new Tool("f2");
-		
-	
+		VELOCITY = 3;
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName(getName());
+		sd.setType("CarAgent");
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
 		super.setup();
 	}
 	
@@ -48,9 +59,6 @@ public class CarAgent extends Worker {
 	}
 
 	class myBehaviour extends SimpleBehaviour {
-		/**
-		* 
-		*/
 		private static final long serialVersionUID = 1L;
 
 		public myBehaviour(Agent a) {
