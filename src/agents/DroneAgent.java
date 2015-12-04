@@ -54,7 +54,7 @@ public class DroneAgent extends Worker {
 		i = map.get(position).getI();
 		j = map.get(position).getJ();
 		addBehaviour(new OfferRequestsServer());
-		addBehaviour(new MoveRequest(this, map.get("L")));
+		addBehaviour(new MoveRequest(this, map.get("B")));
 	}
 
 	protected void takeDown() {
@@ -104,7 +104,7 @@ public class DroneAgent extends Worker {
 
 					reply.setPerformative(ACLMessage.INFORM);
 					System.out.println("Posicao: ");
-					reply.setContent("Random" + ";" + (int)i + ";" + (int)j);
+					reply.setContent("Random" + ";" + (int) i + ";" + (int) j);
 
 					send(reply);
 
@@ -115,6 +115,7 @@ public class DroneAgent extends Worker {
 			}
 		}
 	}
+
 	private class MoveRequest extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 
@@ -125,7 +126,7 @@ public class DroneAgent extends Worker {
 		float m;
 
 		public MoveRequest(Worker w, Local Destiny) {
-			super(w, (10-VELOCITY) * 100);
+			super(w, (10 - VELOCITY) * 100);
 
 			this.Destiny = Destiny;
 			counter = 0;
@@ -136,24 +137,32 @@ public class DroneAgent extends Worker {
 			switch (counter) {
 			case 0:
 				if (Destiny.getName() == position) {
-						System.out.println("Paragem");
-						stop();
-						break;
+					System.out.println("Paragem");
+					stop();
+					break;
 				}
-				distance = (int) (
-						Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
-								+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)));
-				counter = distance  * (10-VELOCITY) * 100;
+				distance = (int) (Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
+						+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)));
+				counter = distance * (10 - VELOCITY) * 100;
 				step = distance;
-				m = (Destiny.getI() - map.get(position).getI())/(Destiny.getJ() - map.get(position).getJ());
+				if (Destiny.getJ() == map.get(position).getJ()) {
+					m = 0;
+				} else if (Destiny.getI() == map.get(position).getI())
+					m = -1;
+				else
+					m = (Destiny.getI() - map.get(position).getI()) / (Destiny.getJ() - map.get(position).getJ());
 				System.out.println(counter);
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - (10-VELOCITY) * 100;
-				i++;
-				j = j + m;
-				if(counter == 0)
+				counter = counter - (10 - VELOCITY) * 100;
+				if (m == -1)
+					j++;
+				else {
+					i++;
+					j = j + m;
+				}
+				if (counter == 0)
 					position = Destiny.getName();
 				break;
 
