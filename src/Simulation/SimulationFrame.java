@@ -33,7 +33,7 @@ public class SimulationFrame extends JFrame {
 		setTitle("Simulation");
 		myAgent = simulationAgent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+	
 		getContentPane().add(panel);
 		String startTemp = null;
 		dispose();

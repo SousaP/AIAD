@@ -12,5 +12,13 @@ public class Product {
 		name = n;
 		Quantidade = Q;
 	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public String getTool(){
+		return t.getName();
+	}
 
 }

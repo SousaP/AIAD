@@ -14,6 +14,7 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
 import jade.lang.acl.ACLMessage;
@@ -36,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import locals.*;
+import sun.rmi.transport.tcp.TCPConnection;
 import tools.Tool;
 
 public class Worker extends Agent {
@@ -55,6 +57,7 @@ public class Worker extends Agent {
 	Job myJob;
 	double credit;
 	String position;
+	Boolean Working;
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -64,11 +67,11 @@ public class Worker extends Agent {
 
 	protected void setup() {
 		credit = 0;
-		
-		
+		Working = false;
+
 		String[] args = {};
-		if(getArguments() != null)
-		args = splitArguments(getArguments());
+		if (getArguments() != null)
+			args = splitArguments(getArguments());
 
 		tools = new ArrayList<Tool>();
 		if (args != null && args.length > 1) {
@@ -89,9 +92,9 @@ public class Worker extends Agent {
 		System.out.println("I read the map ");
 		// double len = pathlength(map.get("A"), map.get("L"));
 		// System.out.println(len);
-		//addBehaviour(new OfferRequestsServer());
-		//addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
-
+		addBehaviour(new OfferRequestsServer());
+		addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
+		addBehaviour(new GetJobBehaviour(this));
 	}
 
 	void readMap() {
@@ -200,7 +203,6 @@ public class Worker extends Agent {
 		}
 	}
 
-
 	List<DefaultWeightedEdge> pathTo(Local origin, Local destiny) {
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
 				cityMap, origin, destiny);
@@ -260,7 +262,7 @@ public class Worker extends Agent {
 		DefaultWeightedEdge next;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
-			super(w, (10-VELOCITY) * 100);
+			super(w, (10 - VELOCITY) * 100);
 
 			this.Destiny = Destiny;
 			this.caminho = caminho;
@@ -284,14 +286,14 @@ public class Worker extends Agent {
 				next = iter1.next();
 				System.out.println(cityMap.getEdgeTarget(next).getName());
 				System.out.println(cityMap.getEdgeWeight(next));
-				
-				counter = (int) (cityMap.getEdgeWeight(next) *(10-VELOCITY) * 100);
+
+				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
 				System.out.println(counter);
 				iter1.remove();
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - (10-VELOCITY) * 100;
+				counter = counter - (10 - VELOCITY) * 100;
 				break;
 
 			}
@@ -332,4 +334,45 @@ public class Worker extends Agent {
 		return sorted_jobs;
 	}
 
+	class GetJobBehaviour extends TickerBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		public GetJobBehaviour(Agent a) {
+			super(a, 1500);
+		}
+
+		@Override
+		public void onTick() {
+			if (!Working) {
+				try {
+					ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+					DFAgentDescription template = new DFAgentDescription();
+					DFAgentDescription[] result;
+
+					result = DFService.search(myAgent, template);
+					// System.out.println("Encontrei estes recursos:");
+					AID[] recursos = new AID[result.length];
+					for (int i = 0; i < result.length; ++i) {
+						recursos[i] = result[i].getName();
+						if (recursos[i].getLocalName().contains("ambient")) {
+							cfp.addReceiver(recursos[i]);
+							break;
+						}
+					}
+
+					cfp.setContent("jobs;?");
+					System.out.println("Perguntou: " + "jobs;?");
+					send(cfp);
+
+				} catch (FIPAException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else
+				return;
+
+		}
+
+	}
 }

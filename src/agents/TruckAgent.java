@@ -28,6 +28,8 @@ public class TruckAgent extends Worker {
 	private int loadLeft;
 	
 	protected void setup(){
+		batteryLeft = BATTERY_CAPACITY;
+		loadLeft = LOAD_CAPACITY;
 		VELOCITY = 1;
 		f2 = new Tool("f2");
 		f3 = new Tool("f3");

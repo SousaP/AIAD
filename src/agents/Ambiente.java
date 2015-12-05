@@ -1,10 +1,12 @@
 package agents;
 
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 import jade.core.*;
 import job.Job;
 import job.Job.*;
@@ -19,6 +21,7 @@ import java.util.Random;
 public class Ambiente extends Worker {
 	private static final long serialVersionUID = 1L;
 	ambientBehaviour b;
+	
 
 	protected void setup() {
 
@@ -36,6 +39,7 @@ public class Ambiente extends Worker {
 		super.setup();
 
 		addBehaviour(new ambientBehaviour(this, 7000));
+		addBehaviour(new SalesBehaviour(this));
 
 	}
 
@@ -50,6 +54,53 @@ public class Ambiente extends Worker {
 
 	public static int getRandomInt(int Min, int Max) {
 		return Min + (int) (Math.random() * ((Max - Min) + 1));
+	}
+	
+	class SalesBehaviour extends CyclicBehaviour {
+		//responde a mensagens das aquisiçoes de trabalho
+		private static final long serialVersionUID = 1L;
+		
+		public SalesBehaviour(Agent a) {
+			super(a);
+		}
+		
+		@Override
+		public void action() {
+			ACLMessage msg = blockingReceive();
+			if (msg.getPerformative() == ACLMessage.INFORM) {
+				System.out.println(getLocalName() + ": recebi " + msg.getContent());
+				ACLMessage reply = msg.createReply();
+				
+				String split[] = msg.getContent().split(";");
+				if(split.length == 0)
+					return;
+				
+				String content = "";
+				if(split[0] == "jobs" && split[1] == "?")
+				for(int i = 0; i < Jobs_Created.size(); i++)
+					if(!Jobs_Created.get(i).isDone() && !Jobs_Created.get(i).beingDone())
+						content = content + Jobs_Created.get(i).toString();
+					
+					
+				System.out.println("Jobs "+ content);
+				reply.setContent(content);
+				// envia mensagem
+				send(reply);
+			}
+
+			
+		}
+		
+	}
+	
+	class GetJobBehaviour extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	class ambientBehaviour extends TickerBehaviour {

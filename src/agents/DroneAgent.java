@@ -37,6 +37,8 @@ public class DroneAgent extends Worker {
 	private float j;
 
 	protected void setup() {
+		batteryLeft = BATTERY_CAPACITY;
+		loadLeft = LOAD_CAPACITY;
 		VELOCITY = 5;
 		f1 = new Tool("f1");
 		DFAgentDescription dfd = new DFAgentDescription();

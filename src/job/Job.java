@@ -1,5 +1,6 @@
 package job;
 
+
 import locals.Local;
 import product.Product;
 
@@ -40,8 +41,6 @@ public class Job {
 		beingDone = false;
 		local = l;
 		
-		
-		System.out.println("Job Created : "+ the_Job.toString() +" "+ job_Type.toString() + " " + reward);
 	}
 	
 	public void setDone(){
@@ -72,6 +71,11 @@ public class Job {
 				+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
 		else
 			return ((reward*3 - fine)/time);
+	}
+	
+	public String toString() { 
+	    return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" +
+	fine + ";" + product.getName() + ";" + product.getTool() + ";" + local +";";
 	}
 	
 
