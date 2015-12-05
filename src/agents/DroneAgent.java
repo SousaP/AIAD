@@ -56,7 +56,7 @@ public class DroneAgent extends Worker {
 		i = map.get(position).getI();
 		j = map.get(position).getJ();
 		addBehaviour(new OfferRequestsServer());
-		addBehaviour(new MoveRequest(this, map.get("B")));
+		addBehaviour(new MoveRequestDrone(this, map.get("M")));
 	}
 
 	protected void takeDown() {
@@ -118,7 +118,7 @@ public class DroneAgent extends Worker {
 		}
 	}
 
-	private class MoveRequest extends TickerBehaviour {
+	private class MoveRequestDrone extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 
 		Local Destiny;
@@ -127,7 +127,7 @@ public class DroneAgent extends Worker {
 		int step;
 		float m;
 
-		public MoveRequest(Worker w, Local Destiny) {
+		public MoveRequestDrone(Worker w, Local Destiny) {
 			super(w, (10 - VELOCITY) * 100);
 
 			this.Destiny = Destiny;

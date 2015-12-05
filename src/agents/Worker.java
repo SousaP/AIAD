@@ -92,9 +92,16 @@ public class Worker extends Agent {
 		System.out.println("I read the map ");
 		// double len = pathlength(map.get("A"), map.get("L"));
 		// System.out.println(len);
+		if(getName().contains("ambient"))
+			return;
+		
+		
+		addBehaviour(new GetJobBehaviour(this));
+		
+		if(getName().contains("Drone"))
+			return;
 		addBehaviour(new OfferRequestsServer());
 		addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
-		addBehaviour(new GetJobBehaviour(this));
 	}
 
 	void readMap() {
@@ -338,7 +345,7 @@ public class Worker extends Agent {
 		private static final long serialVersionUID = 1L;
 
 		public GetJobBehaviour(Agent a) {
-			super(a, 1500);
+			super(a, 2000);
 		}
 
 		@Override
