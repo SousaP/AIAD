@@ -26,7 +26,6 @@ import jade.gui.GuiAgent;
 import jade.gui.GuiEvent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import job.Job;
 import locals.Local;
 
 public class SimulationAgent extends GuiAgent {
@@ -262,11 +261,6 @@ public class SimulationAgent extends GuiAgent {
 	}
 
 	protected void onGuiEvent(GuiEvent event) {
-		Integer day = (Integer) event.getParameter(0);
-		Integer hour = (Integer) event.getParameter(1);
-		Integer minute = (Integer) event.getParameter(2);
-		String transition = (String) event.getParameter(3);
-		// addBehaviour(new SendTimeBehaviour(day, hour, minute, transition));
 	}
 
 }

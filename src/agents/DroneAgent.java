@@ -1,11 +1,5 @@
 package agents;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.w3c.dom.*;
-import org.w3c.dom.Node;
-
-import agents.Worker.MoveRequest;
-import agents.Worker.OfferRequestsServer;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
@@ -16,12 +10,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.core.*;
-
-import javax.xml.parsers.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import locals.*;
 import tools.Tool;
@@ -99,13 +87,13 @@ public class DroneAgent extends Worker {
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
 				// CFP Message received. Process it
-				String sintoma = msg.getContent();
+				//String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
 
 				if (msg.getConversationId() == "posicao") {
 
 					reply.setPerformative(ACLMessage.INFORM);
-					System.out.println("Posicao: ");
+					System.out.println("Posicao " + "Random" + ";" + (int) i + ";" + (int) j);
 					reply.setContent("Random" + ";" + (int) i + ";" + (int) j);
 
 					send(reply);

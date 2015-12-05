@@ -76,16 +76,16 @@ public class Ambiente extends Worker {
 				
 
 				String content = "";
-				System.out.println("split[0]: " + split[0]);
-				System.out.println("split[1]: " + split[1]);
-				System.out.println("Sender: " + msg.getSender());
+				//System.out.println("split[0]: " + split[0]);
+				//System.out.println("split[1]: " + split[1]);
+				//System.out.println("Sender: " + msg.getSender());
 				
 				if (split[0].contains("jobs") && split[1].contains("?"))
 					for (int i = 0; i < Jobs_Created.size(); i++)
 					if(!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone()))
 					{
 						content = content + Jobs_Created.get(i).toString();
-						System.out.println("Jobs identificados: " + Jobs_Created.get(i).toString());
+					//	System.out.println("Jobs identificados: " + Jobs_Created.get(i).toString());
 					}
 
 				reply.setContent(content);
@@ -95,17 +95,6 @@ public class Ambiente extends Worker {
 
 		}
 
-	}
-
-	
-	class GetJobBehaviour extends CyclicBehaviour {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			// TODO Auto-generated method stub
-
-		}
 	}
 
 	class ambientBehaviour extends TickerBehaviour {

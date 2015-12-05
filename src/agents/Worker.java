@@ -10,13 +10,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.gui.GuiAgent;
-import jade.gui.GuiEvent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import job.Job;
@@ -25,7 +22,6 @@ import jade.core.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +33,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import locals.*;
-import sun.rmi.transport.tcp.TCPConnection;
 import tools.Tool;
 
 public class Worker extends Agent {
@@ -213,11 +208,11 @@ public class Worker extends Agent {
 	List<DefaultWeightedEdge> pathTo(Local origin, Local destiny) {
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
 				cityMap, origin, destiny);
-		double length = dijkstra.getPathLength();
+		//double length = dijkstra.getPathLength();
 		GraphPath<Local, DefaultWeightedEdge> temp = dijkstra.getPath();
 		Set<DefaultWeightedEdge> edges = temp.getGraph().edgeSet();
 		edges.toArray();
-		Iterator<DefaultWeightedEdge> iter = edges.iterator();
+		//Iterator<DefaultWeightedEdge> iter = edges.iterator();
 
 		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
 		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
@@ -241,7 +236,7 @@ public class Worker extends Agent {
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
 				// CFP Message received. Process it
-				String sintoma = msg.getContent();
+				//String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
 
 				if (msg.getConversationId() == "posicao") {
@@ -372,7 +367,7 @@ public class Worker extends Agent {
 					send(cfp);
 
 				} catch (FIPAException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}

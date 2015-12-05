@@ -1,21 +1,11 @@
 package agents;
 
-import org.w3c.dom.*;
-import org.w3c.dom.Node;
-
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.core.*;
-
-import javax.xml.parsers.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import locals.*;
 import tools.Tool;
 
 public class CarAgent extends Worker {
