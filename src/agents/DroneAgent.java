@@ -9,6 +9,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import agents.Worker.PositionBehaviour;
 import jade.core.*;
 
 import locals.*;
@@ -23,6 +24,9 @@ public class DroneAgent extends Worker {
 	private int loadLeft;
 	private float i;
 	private float j;
+	
+	PositionBehaviourDrone positionDroneBehav;
+	MoveRequestDrone moveBehav;
 
 	protected void setup() {
 		batteryLeft = BATTERY_CAPACITY;
@@ -43,8 +47,10 @@ public class DroneAgent extends Worker {
 		super.setup();
 		i = map.get(position).getI();
 		j = map.get(position).getJ();
-		addBehaviour(new OfferRequestsServer());
-		addBehaviour(new MoveRequestDrone(this, map.get("M")));
+		positionDroneBehav = new PositionBehaviourDrone();
+		addBehaviour(positionDroneBehav);
+		moveBehav= new MoveRequestDrone(this, map.get("M"));
+		addBehaviour(moveBehav);
 	}
 
 	protected void takeDown() {
@@ -75,10 +81,10 @@ public class DroneAgent extends Worker {
 
 	}
 
-	class OfferRequestsServer extends CyclicBehaviour {
+	class PositionBehaviourDrone extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		public OfferRequestsServer() {
+		public PositionBehaviourDrone() {
 			super();
 		}
 

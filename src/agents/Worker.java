@@ -53,6 +53,10 @@ public class Worker extends Agent {
 	double credit;
 	String position;
 	Boolean Working;
+	GetJobBehaviour jobBehav;
+	PositionBehaviour positionBehav;
+	MoveRequest moveBehav;
+	
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -90,13 +94,15 @@ public class Worker extends Agent {
 		if(getName().contains("ambient"))
 			return;
 		
-		
-		addBehaviour(new GetJobBehaviour(this));
+		jobBehav = new GetJobBehaviour(this);
+		addBehaviour(jobBehav);
 		
 		if(getName().contains("Drone"))
 			return;
-		addBehaviour(new OfferRequestsServer());
-		addBehaviour(new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L"))));
+		positionBehav = new PositionBehaviour();
+		addBehaviour(positionBehav);
+		moveBehav = new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L")));
+		addBehaviour(moveBehav);
 	}
 
 	void readMap() {
@@ -224,10 +230,10 @@ public class Worker extends Agent {
 		return temp1;
 	}
 
-	class OfferRequestsServer extends CyclicBehaviour {
+	class PositionBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		public OfferRequestsServer() {
+		public PositionBehaviour() {
 			super();
 		}
 
@@ -266,6 +272,12 @@ public class Worker extends Agent {
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
 			super(w, (10 - VELOCITY) * 100);
 
+			this.Destiny = Destiny;
+			this.caminho = caminho;
+			counter = 0;
+		}
+		
+		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho){
 			this.Destiny = Destiny;
 			this.caminho = caminho;
 			counter = 0;
@@ -363,7 +375,7 @@ public class Worker extends Agent {
 					}
 
 					cfp.setContent("jobs;?");
-					System.out.println("Perguntou: " + "jobs;?");
+					System.out.println(getLocalName() + " : " + "jobs;?");
 					send(cfp);
 
 				} catch (FIPAException e) {
