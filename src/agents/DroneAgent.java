@@ -99,8 +99,14 @@ public class DroneAgent extends Worker {
 				if (msg.getConversationId() == "posicao") {
 
 					reply.setPerformative(ACLMessage.INFORM);
-					System.out.println("Posicao " + "Random" + ";" + (int) i + ";" + (int) j);
+					if(position == "tripmode"){
+					System.out.println("Posicao: " + (int) i + ";" + (int) j);
 					reply.setContent("Random" + ";" + (int) i + ";" + (int) j);
+					}else{
+						System.out.println("Posicao " + getLocalName() + " " + position);
+						reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
+
+					}
 
 					send(reply);
 
@@ -117,15 +123,18 @@ public class DroneAgent extends Worker {
 
 		Local Destiny;
 		int counter;
+		Local start;
 		int distance;
-		int step;
 		float m;
+		int midpoint;
 
 		public MoveRequestDrone(Worker w, Local Destiny) {
 			super(w, (10 - VELOCITY) * 100);
 
+			start = map.get(w.position);
 			this.Destiny = Destiny;
 			counter = 0;
+			midpoint = 0;
 		}
 
 		@Override
@@ -137,29 +146,26 @@ public class DroneAgent extends Worker {
 					stop();
 					break;
 				}
-				distance = (int) (Math.sqrt(Math.pow(map.get(position).getI() - Destiny.getI(), 2)
-						+ Math.pow((map.get(position).getJ() - Destiny.getJ()), 2)));
-				counter = distance * (10 - VELOCITY) * 100;
-				step = distance;
-				if (Destiny.getJ() == map.get(position).getJ()) {
-					m = 0;
-				} else if (Destiny.getI() == map.get(position).getI())
-					m = -1;
-				else
-					m = (Destiny.getI() - map.get(position).getI()) / (Destiny.getJ() - map.get(position).getJ());
+				distance = (int) (Math.sqrt(
+						Math.pow(start.getI() - Destiny.getI(), 2) + Math.pow((start.getJ() - Destiny.getJ()), 2)));
+				counter = distance * ((10 - VELOCITY) * 100);
+				midpoint = (int) distance / 2;
+				position = "tripmode";
 				System.out.println(counter);
 				break;
 			default:
 				System.out.println("Not Zero");
-				counter = counter - (10 - VELOCITY) * 100;
-				if (m == -1)
-					j++;
-				else {
-					i++;
-					j = j + m;
+				counter = counter - ((10 - VELOCITY) * 100);
+				midpoint--;
+				if (midpoint == 0) {
+					j = (start.getJ() + Destiny.getJ()) / 2;
+					i = (start.getI() + Destiny.getI()) / 2;
 				}
-				if (counter == 0)
+					System.out.println(counter);
+				if (counter == 0) {
 					position = Destiny.getName();
+					System.out.println("STOPED THE COUNTER");
+				}
 				break;
 
 			}
