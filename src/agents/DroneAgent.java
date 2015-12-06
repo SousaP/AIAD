@@ -9,10 +9,17 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import agents.Worker.PositionBehaviour;
+import job.Job;
+import job.Job.to_do;
+import job.Job.type;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import jade.core.*;
 
 import locals.*;
+import product.Product;
 import tools.Tool;
 
 public class DroneAgent extends Worker {
@@ -25,7 +32,7 @@ public class DroneAgent extends Worker {
 	private float i;
 	private float j;
 	
-	PositionBehaviourDrone positionDroneBehav;
+	ReceiveMessageBehaviourDrone positionDroneBehav;
 	MoveRequestDrone moveBehav;
 
 	protected void setup() {
@@ -47,7 +54,7 @@ public class DroneAgent extends Worker {
 		super.setup();
 		i = map.get(position).getI();
 		j = map.get(position).getJ();
-		positionDroneBehav = new PositionBehaviourDrone();
+		positionDroneBehav = new ReceiveMessageBehaviourDrone();
 		addBehaviour(positionDroneBehav);
 		moveBehav= new MoveRequestDrone(this, map.get("M"));
 		addBehaviour(moveBehav);
@@ -81,17 +88,17 @@ public class DroneAgent extends Worker {
 
 	}
 
-	class PositionBehaviourDrone extends CyclicBehaviour {
+	class ReceiveMessageBehaviourDrone extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		public PositionBehaviourDrone() {
+		public ReceiveMessageBehaviourDrone() {
 			super();
 		}
-
+		List<Job> jobs_disponiveis;
 		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
+			ACLMessage msg = blockingReceive();
+			//Perguntar pela posiçao
+			if(msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
 				//String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
@@ -112,7 +119,42 @@ public class DroneAgent extends Worker {
 
 				}
 
-			} else {
+			} 
+			
+			else if (msg.getPerformative() == ACLMessage.INFORM) {
+				//Perguntar pela posiçao Jobs?
+				ACLMessage reply = msg.createReply();
+
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				String content = "";
+				// System.out.println("split[0]: " + split[0]);
+				// System.out.println("split[1]: " + split[1]);
+				 System.out.println("Sender: " + msg.getSender());
+					System.out.println(getLocalName() + ": recebi " + msg.getContent());
+
+				if (split[0].contains("jobs")) {
+					jobs_disponiveis = new ArrayList<Job>();
+					for (int i = 1; i < split.length; i++) {
+
+						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
+								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
+								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], 1),
+								map.get(split[++i])
+
+						));
+
+					}
+					
+					System.out.println("Trabalhos disponiveis: ");
+					for(int i = 0; i < jobs_disponiveis.size(); i++)
+						System.out.println(jobs_disponiveis.get(i).toString());
+
+				}
+			}
+			else {
 				block();
 			}
 		}

@@ -57,7 +57,7 @@ public class Worker extends Agent {
 	String position;
 	Boolean Working;
 	GetJobBehaviour jobBehav;
-	PositionBehaviour positionBehav;
+	ReceiveMessageBehaviour positionBehav;
 	MoveRequest moveBehav;
 
 	String[] splitArguments(Object[] args) {
@@ -101,7 +101,7 @@ public class Worker extends Agent {
 
 		if (getName().contains("Drone"))
 			return;
-		positionBehav = new PositionBehaviour();
+		positionBehav = new ReceiveMessageBehaviour();
 		addBehaviour(positionBehav);
 		moveBehav = new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L")));
 		addBehaviour(moveBehav);
@@ -234,11 +234,11 @@ public class Worker extends Agent {
 		return temp1;
 	}
 
-	class PositionBehaviour extends CyclicBehaviour {
+	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 		
 		List<Job> jobs_disponiveis;
-		public PositionBehaviour() {
+		public ReceiveMessageBehaviour() {
 			super();
 		}
 
