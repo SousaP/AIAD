@@ -75,7 +75,7 @@ public class Job {
 	
 	public String toString() { 
 	    return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" +
-	fine + ";" + product.getName() + ";" + product.getTool() + ";" + local +";";
+	fine + ";" +  product.getTool() + ";" + product.getName()+ ";" + local.getName() +";";
 	}
 	
 

@@ -66,8 +66,10 @@ public class Ambiente extends Worker {
 		@Override
 		public void action() {
 			ACLMessage msg = blockingReceive();
+			
+			
 			if (msg.getPerformative() == ACLMessage.INFORM) {
-				System.out.println(getLocalName() + ": recebi " + msg.getContent());
+				//System.out.println(getLocalName() + ": recebi " + msg.getContent());
 				ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
@@ -75,7 +77,7 @@ public class Ambiente extends Worker {
 					return;
 				
 
-				String content = "";
+				String content = "jobs;";
 				//System.out.println("split[0]: " + split[0]);
 				//System.out.println("split[1]: " + split[1]);
 				//System.out.println("Sender: " + msg.getSender());
@@ -87,7 +89,7 @@ public class Ambiente extends Worker {
 						content = content + Jobs_Created.get(i).toString();
 					//	System.out.println("Jobs identificados: " + Jobs_Created.get(i).toString());
 					}
-
+ 				System.out.println("Jobs identificados: "+content);
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);

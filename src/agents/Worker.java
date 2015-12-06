@@ -17,6 +17,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import job.Job;
+import job.Job.to_do;
+import job.Job.type;
 import jade.core.*;
 
 import javax.xml.parsers.*;
@@ -33,6 +35,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import locals.*;
+import product.Product;
 import tools.Tool;
 
 public class Worker extends Agent {
@@ -56,7 +59,6 @@ public class Worker extends Agent {
 	GetJobBehaviour jobBehav;
 	PositionBehaviour positionBehav;
 	MoveRequest moveBehav;
-	
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -91,18 +93,20 @@ public class Worker extends Agent {
 		System.out.println("I read the map ");
 		// double len = pathlength(map.get("A"), map.get("L"));
 		// System.out.println(len);
-		if(getName().contains("ambient"))
+		if (getName().contains("ambient"))
 			return;
-		
+
 		jobBehav = new GetJobBehaviour(this);
 		addBehaviour(jobBehav);
-		
-		if(getName().contains("Drone"))
+
+		if (getName().contains("Drone"))
 			return;
 		positionBehav = new PositionBehaviour();
 		addBehaviour(positionBehav);
 		moveBehav = new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L")));
 		addBehaviour(moveBehav);
+
+
 	}
 
 	void readMap() {
@@ -214,11 +218,11 @@ public class Worker extends Agent {
 	List<DefaultWeightedEdge> pathTo(Local origin, Local destiny) {
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
 				cityMap, origin, destiny);
-		//double length = dijkstra.getPathLength();
+		// double length = dijkstra.getPathLength();
 		GraphPath<Local, DefaultWeightedEdge> temp = dijkstra.getPath();
 		Set<DefaultWeightedEdge> edges = temp.getGraph().edgeSet();
 		edges.toArray();
-		//Iterator<DefaultWeightedEdge> iter = edges.iterator();
+		// Iterator<DefaultWeightedEdge> iter = edges.iterator();
 
 		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
 		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
@@ -232,17 +236,19 @@ public class Worker extends Agent {
 
 	class PositionBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
-
+		
+		List<Job> jobs_disponiveis;
 		public PositionBehaviour() {
 			super();
 		}
 
 		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
+
+			ACLMessage msg = blockingReceive();
+			//Perguntar pela posiçao
+			if(msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
-				//String sintoma = msg.getContent();
+				// String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
 
 				if (msg.getConversationId() == "posicao") {
@@ -255,7 +261,44 @@ public class Worker extends Agent {
 
 				}
 
-			} else {
+			}
+			else if (msg.getPerformative() == ACLMessage.INFORM) {
+				//Perguntar pela posiçao Jobs?
+				ACLMessage reply = msg.createReply();
+
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				String content = "";
+				// System.out.println("split[0]: " + split[0]);
+				// System.out.println("split[1]: " + split[1]);
+				 System.out.println("Sender: " + msg.getSender());
+					System.out.println(getLocalName() + ": recebi " + msg.getContent());
+
+				if (split[0].contains("jobs")) {
+					jobs_disponiveis = new ArrayList<Job>();
+					for (int i = 1; i < split.length; i++) {
+
+						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
+								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
+								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], 1),
+								map.get(split[++i])
+
+						));
+
+					}
+					
+					System.out.println("Trabalhos disponiveis: ");
+					for(int i = 0; i < jobs_disponiveis.size(); i++)
+						System.out.println(jobs_disponiveis.get(i).toString());
+
+				}
+				System.out.println("Jobs identificados: " + content);
+			}
+			
+			
+			else {
 				block();
 			}
 		}
@@ -276,8 +319,8 @@ public class Worker extends Agent {
 			this.caminho = caminho;
 			counter = 0;
 		}
-		
-		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho){
+
+		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho) {
 			this.Destiny = Destiny;
 			this.caminho = caminho;
 			counter = 0;
@@ -382,11 +425,12 @@ public class Worker extends Agent {
 
 					e.printStackTrace();
 				}
-			}
-			else
+			} else
 				return;
 
 		}
 
 	}
+
+
 }
