@@ -131,8 +131,8 @@ public class DroneAgent extends Worker {
 				String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
-				 System.out.println("Sender: " + msg.getSender());
-					System.out.println(getLocalName() + ": recebi " + msg.getContent());
+				// System.out.println("Sender: " + msg.getSender());
+				//	System.out.println(getLocalName() + ": recebi " + msg.getContent());
 
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
@@ -147,10 +147,10 @@ public class DroneAgent extends Worker {
 
 					}
 					
-					System.out.println("Trabalhos disponiveis: ");
+				/*	System.out.println("Trabalhos disponiveis: ");
 					for(int i = 0; i < jobs_disponiveis.size(); i++)
 						System.out.println(jobs_disponiveis.get(i).toString());
-
+*/
 				}
 			}
 			else {
@@ -192,10 +192,9 @@ public class DroneAgent extends Worker {
 				counter = distance * ((10 - VELOCITY) * 100);
 				midpoint = (int) distance / 2;
 				position = "tripmode";
-				System.out.println(counter);
+			//	System.out.println(counter);
 				break;
 			default:
-				System.out.println("Not Zero");
 				counter = counter - ((10 - VELOCITY) * 100);
 				midpoint--;
 				if (midpoint == 0) {
@@ -205,7 +204,7 @@ public class DroneAgent extends Worker {
 					System.out.println(counter);
 				if (counter == 0) {
 					position = Destiny.getName();
-					System.out.println("STOPED THE COUNTER");
+				//	System.out.println("STOPED THE COUNTER");
 				}
 				break;
 

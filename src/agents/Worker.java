@@ -95,7 +95,7 @@ public class Worker extends Agent {
 		houses = new ArrayList<Local>();
 		Jobs_Created = new ArrayList<Job>();
 		readMap();
-		System.out.println("I read the map ");
+
 		// double len = pathlength(map.get("A"), map.get("L"));
 		// System.out.println(len);
 		if (getName().contains("ambient"))
@@ -125,7 +125,7 @@ public class Worker extends Agent {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+
 
 			NodeList nodes = doc.getElementsByTagName("points");
 			for (int temp = 0; temp < nodes.getLength(); temp++) {
@@ -236,8 +236,6 @@ public class Worker extends Agent {
 		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
 		while (iter1.hasNext()) {
 			DefaultWeightedEdge edge = iter1.next();
-
-			System.out.println(cityMap.getEdgeTarget(edge).getName());
 		}
 		return temp1;
 	}
@@ -255,6 +253,8 @@ public class Worker extends Agent {
 
 			ACLMessage msg = blockingReceive();
 			// Perguntar pela posiçao
+
+			System.out.println(getLocalName() + ": recebi " + msg.getContent());
 			if (msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
 				// String sintoma = msg.getContent();
@@ -263,7 +263,7 @@ public class Worker extends Agent {
 				if (msg.getConversationId() == "posicao") {
 
 					reply.setPerformative(ACLMessage.INFORM);
-					System.out.println("Posicao " + getLocalName() + " " + position);
+					//System.out.println("Posicao " + getLocalName() + " " + position);
 					reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
 
 					send(reply);
@@ -281,8 +281,7 @@ public class Worker extends Agent {
 				String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
-				System.out.println("Sender: " + msg.getSender());
-				System.out.println(getLocalName() + ": recebi " + msg.getContent());
+			//	System.out.println("Sender: " + msg.getSender());
 
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
@@ -297,13 +296,10 @@ public class Worker extends Agent {
 
 					}
 
-					System.out.println("Trabalhos disponiveis: ");
-					for (int i = 0; i < jobs_disponiveis.size(); i++)
-						System.out.println(jobs_disponiveis.get(i).toString());
 					orderJobs(jobs_disponiveis);
 
 				}
-				System.out.println("Jobs identificados: " + content);
+
 			}
 
 			else {
@@ -339,7 +335,7 @@ public class Worker extends Agent {
 			switch (counter) {
 			case 0:
 				if (next != null) {
-					System.out.println("Antes Paragem");
+					//System.out.println("Antes Paragem");
 					position = cityMap.getEdgeTarget(next).getName();
 					if (Destiny.getName() == position) {
 						System.out.println("Paragem");
@@ -349,15 +345,15 @@ public class Worker extends Agent {
 				}
 				Iterator<DefaultWeightedEdge> iter1 = caminho.iterator();
 				next = iter1.next();
-				System.out.println(cityMap.getEdgeTarget(next).getName());
-				System.out.println(cityMap.getEdgeWeight(next));
+				//System.out.println(cityMap.getEdgeTarget(next).getName());
+				//System.out.println(cityMap.getEdgeWeight(next));
 
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
-				System.out.println(counter);
+				//System.out.println(counter);
 				iter1.remove();
 				break;
 			default:
-				System.out.println("Not Zero");
+				//System.out.println("Not Zero");
 				counter = counter - (10 - VELOCITY) * 100;
 				break;
 

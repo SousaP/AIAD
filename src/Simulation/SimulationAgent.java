@@ -65,6 +65,7 @@ public class SimulationAgent extends GuiAgent {
 
 				}
 				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+				//System.out.println(getLocalName() + ": recebi " + cfp.getContent());
 				try {
 					DFAgentDescription template = new DFAgentDescription();
 					DFAgentDescription[] result = DFService.search(myAgent, template);
@@ -93,7 +94,7 @@ public class SimulationAgent extends GuiAgent {
 				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("posicao"),
 						MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
-				System.out.println("Perguntou pelas posicoes");
+				//System.out.println("Perguntou pelas posicoes");
 				step = 1;
 				break;
 
@@ -251,8 +252,6 @@ public class SimulationAgent extends GuiAgent {
 		}
 
 		addBehaviour(new checkAgentsBehaviour(this));
-
-		System.out.println("simulationAgent criado");
 
 	}
 
