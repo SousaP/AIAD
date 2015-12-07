@@ -63,6 +63,7 @@ public class Worker extends Agent {
 	HashMap<String, Product> current_Products = new HashMap<String, Product>();
 	HashMap<String, Product> saved_Products = new HashMap<String, Product>();
 
+	List<Job> jobs_disponiveis;
 	public int batteryLeft;
 	
 	String[] splitArguments(Object[] args) {
@@ -242,7 +243,6 @@ public class Worker extends Agent {
 	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		List<Job> jobs_disponiveis;
 
 		public ReceiveMessageBehaviour() {
 			super();
@@ -275,8 +275,7 @@ public class Worker extends Agent {
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
 
-				// System.out.println(getLocalName() + ": recebi " +
-				// msg.getContent());
+			//	System.out.println(getLocalName() + ": recebi " +  msg.getContent());
 				// Perguntar pela posiçao Jobs?
 				// ACLMessage reply = msg.createReply();
 
@@ -292,17 +291,16 @@ public class Worker extends Agent {
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
 					for (int i = 1; i < split.length; i++) {
-
+						
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
 								Double.parseDouble(split[++i]),
 								new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
 								map.get(split[++i])));
-
 						;
 					}
 
-					jobs_disponiveis = orderJobs(jobs_disponiveis);
+					//jobs_disponiveis = orderJobs(jobs_disponiveis);
 					Working = true;
 
 					// ______________________________________
@@ -310,10 +308,10 @@ public class Worker extends Agent {
 					// MessageTemplate mt;
 
 					ACLMessage cfp = new ACLMessage(ACLMessage.PROPOSE);
-
 					cfp.addReceiver(msg.getSender());
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
+						 System.out.println("WUT" );
 						Working = false;
 						return;
 					}
@@ -322,8 +320,7 @@ public class Worker extends Agent {
 					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 																			// value
 
-					// System.out.println("Enviei um propose" +
-					// cfp.getContent());
+					//  System.out.println("Enviei um propose" +  cfp.getContent());
 					send(cfp);
 					// myAgent.send(cfp);
 					// mt =
@@ -333,7 +330,7 @@ public class Worker extends Agent {
 				}
 
 			} else if (msg.getPerformative() == ACLMessage.FAILURE) {
-				System.out.println(getLocalName() + "Recebi um FAILURE" + msg.getContent());
+				System.out.println(getLocalName() + "Recebi um FAILURE " + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;
@@ -345,7 +342,7 @@ public class Worker extends Agent {
 				Working = false;
 
 			} else if (msg.getPerformative() == ACLMessage.AGREE) {
-				System.out.println(getLocalName() + "Recebi um AGREE" + msg.getContent());
+				System.out.println(getLocalName() + "Recebi um AGREE " + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;

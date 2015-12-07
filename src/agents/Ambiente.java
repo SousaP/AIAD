@@ -276,7 +276,19 @@ public class Ambiente extends Worker {
 
 					AID value = winning.get(Jobs_Created.get(i));
 					if(value != null)
-					System.out.println("GANHOU " + value.toString());
+					{
+						ACLMessage msg = new ACLMessage(ACLMessage.AGREE);
+						msg.addReceiver(value);
+						// Responde Failure com job na mensagem
+						msg.setContent(Jobs_Created.get(i).toString());
+						msg.setConversationId("job_GO");
+						msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						send(msg);
+
+						// myAgent.
+						
+					}
 					winning.remove(Jobs_Created.get(i));
 					Jobs_Created.set(i, createRandomJob());
 					bids.put(Jobs_Created.get(i), new ArrayList<AID>());
