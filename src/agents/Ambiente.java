@@ -15,12 +15,14 @@ import product.Product;
 import tools.Tool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class Ambiente extends Worker {
 	private static final long serialVersionUID = 1L;
 	ambientBehaviour b;
+	HashMap<Job, List<Double>> bids;
 
 	protected void setup() {
 
@@ -81,6 +83,30 @@ public class Ambiente extends Worker {
 				//System.out.println("split[0]: " + split[0]);
 				//System.out.println("split[1]: " + split[1]);
 				//System.out.println("Sender: " + msg.getSender());
+				
+				if (split[0].contains("jobs") && split[1].contains("?"))
+					for (int i = 0; i < Jobs_Created.size(); i++)
+					if(!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone()))
+					{
+						content = content + Jobs_Created.get(i).toString();
+					//	System.out.println("Jobs identificados: " + Jobs_Created.get(i).toString());
+					}
+ 				System.out.println("Jobs identificados: "+content);
+				reply.setContent(content);
+				// envia mensagem
+				send(reply);
+			}
+			
+			else if(msg.getPerformative() == ACLMessage.PROPOSE) {
+
+				ACLMessage reply = msg.createReply();
+
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+				
+
+				String content = "jobs;";
 				
 				if (split[0].contains("jobs") && split[1].contains("?"))
 					for (int i = 0; i < Jobs_Created.size(); i++)

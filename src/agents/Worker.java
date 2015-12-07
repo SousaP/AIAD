@@ -297,7 +297,7 @@ public class Worker extends Agent {
 					}
 
 					orderJobs(jobs_disponiveis);
-
+					Working = true;
 				}
 
 			}
