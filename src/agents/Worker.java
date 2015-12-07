@@ -108,7 +108,7 @@ public class Worker extends Agent {
 			return;
 		positionBehav = new ReceiveMessageBehaviour();
 		addBehaviour(positionBehav);
-		moveBehav = new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L")));
+		moveBehav = new MoveRequest(this, map.get("A"), pathTo(map.get(position), map.get("A")));
 		addBehaviour(moveBehav);
 
 	}
@@ -315,6 +315,7 @@ public class Worker extends Agent {
 		List<DefaultWeightedEdge> caminho;
 		int counter;
 		DefaultWeightedEdge next;
+		Iterator<DefaultWeightedEdge> iter1;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
 			super(w, (10 - VELOCITY) * 100);
@@ -322,6 +323,18 @@ public class Worker extends Agent {
 			this.Destiny = Destiny;
 			this.caminho = caminho;
 			counter = 0;
+
+			iter1 = caminho.iterator();
+			/*int c = 0;
+			Iterator<DefaultWeightedEdge> iter = this.caminho.iterator();
+			System.out.println("COMEÇAR O TICK");
+			while(iter.hasNext()){
+				
+				DefaultWeightedEdge temp = iter.next();
+				System.out.println(cityMap.getEdgeSource(temp).getName() + "    " + cityMap.getEdgeTarget(temp).getName());
+				c += cityMap.getEdgeWeight(temp);
+			}
+			System.out.println(position);*/
 		}
 
 		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho) {
@@ -332,29 +345,31 @@ public class Worker extends Agent {
 
 		@Override
 		protected void onTick() {
+
 			switch (counter) {
 			case 0:
 				if (next != null) {
 					//System.out.println("Antes Paragem");
-					position = cityMap.getEdgeTarget(next).getName();
+					if(position.equals(cityMap.getEdgeTarget(next).getName()))
+						position = cityMap.getEdgeSource(next).getName();
+					else
+						position = cityMap.getEdgeTarget(next).getName();
 					if (Destiny.getName() == position) {
 						System.out.println("Paragem");
 						stop();
 						break;
 					}
 				}
-				Iterator<DefaultWeightedEdge> iter1 = caminho.iterator();
 				next = iter1.next();
 				//System.out.println(cityMap.getEdgeTarget(next).getName());
 				//System.out.println(cityMap.getEdgeWeight(next));
 
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
 				//System.out.println(counter);
-				iter1.remove();
 				break;
 			default:
 				//System.out.println("Not Zero");
-				counter = counter - (10 - VELOCITY) * 100;
+				counter = counter - ((10 - VELOCITY) * 100);
 				break;
 
 			}

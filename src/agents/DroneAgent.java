@@ -61,7 +61,7 @@ public class DroneAgent extends Worker {
 		j = map.get(position).getJ();
 		positionDroneBehav = new ReceiveMessageBehaviourDrone();
 		addBehaviour(positionDroneBehav);
-		moveBehav= new MoveRequestDrone(this, map.get("L"));
+		moveBehav= new MoveRequestDrone(this, map.get("I"));
 		addBehaviour(moveBehav);
 	}
 
@@ -209,16 +209,17 @@ public class DroneAgent extends Worker {
 		int counter;
 		Local start;
 		int distance;
-		float m;
 		int midpoint;
+		DroneAgent w;
 
-		public MoveRequestDrone(Worker w, Local Destiny) {
+		public MoveRequestDrone(DroneAgent w, Local Destiny) {
 			super(w, (10 - VELOCITY) * 100);
 
 			start = map.get(w.position);
 			this.Destiny = Destiny;
 			counter = 0;
 			midpoint = 0;
+			this.w = w;
 		}
 
 		@Override
@@ -247,12 +248,23 @@ public class DroneAgent extends Worker {
 					System.out.println(counter);
 				if (counter == 0) {
 					position = Destiny.getName();
+					i = Destiny.getI();
+					j = Destiny.getJ();
 				//	System.out.println("STOPED THE COUNTER");
 				}
 				break;
 
 			}
 
+		}
+		
+		public int onEnd(){
+			System.out.println("TERMINATED MOVE");
+			removeBehaviour(moveBehav);
+			moveBehav= new MoveRequestDrone(w, map.get("L"));
+			addBehaviour(moveBehav);
+			return 1;
+			
 		}
 
 	}
