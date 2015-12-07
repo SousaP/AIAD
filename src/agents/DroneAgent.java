@@ -36,7 +36,7 @@ public class DroneAgent extends Worker {
 	private int loadLeft;
 	private float i;
 	private float j;
-	
+
 	ReceiveMessageBehaviourDrone positionDroneBehav;
 	MoveRequestDrone moveBehav;
 
@@ -61,7 +61,7 @@ public class DroneAgent extends Worker {
 		j = map.get(position).getJ();
 		positionDroneBehav = new ReceiveMessageBehaviourDrone();
 		addBehaviour(positionDroneBehav);
-		moveBehav= new MoveRequestDrone(this, map.get("I"));
+		moveBehav = new MoveRequestDrone(this, map.get("I"));
 		addBehaviour(moveBehav);
 	}
 
@@ -92,7 +92,7 @@ public class DroneAgent extends Worker {
 		}
 
 	}
-	
+
 	List<Job> orderJobs(List<Job> jobs_available) {
 		// Precisa de um produto -> Pode precisar de uma ferramenta
 		// (reward * 3 - time)/fine
@@ -136,24 +136,33 @@ public class DroneAgent extends Worker {
 		public ReceiveMessageBehaviourDrone() {
 			super();
 		}
+
 		List<Job> jobs_disponiveis;
+
 		public void action() {
-			ACLMessage msg = blockingReceive();
-			//Perguntar pela posiçao
-			if(msg.getPerformative() == ACLMessage.CFP) {
+			ACLMessage msg = blockingReceive(500);
+
+			if (msg == null)
+				return;
+
+			// Perguntar pela posiçao
+			if (msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
-				//String sintoma = msg.getContent();
+				// String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
 
 				if (msg.getConversationId() == "posicao") {
 
 					reply.setPerformative(ACLMessage.INFORM);
-					if(position == "tripmode"){
-					System.out.println("Posicao: " + (int) i + ";" + (int) j);
-					reply.setContent("Drone" + ";" + (int) i + ";" + (int) j);
-					}else{
-						System.out.println("Posicao " + getLocalName() + " " + position);
-						reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
+					if (position == "tripmode") {
+						// System.out.println("Posicao: " + (int) i + ";" +
+						// (int) j);
+						reply.setContent("Drone" + ";" + (int) i + ";" + (int) j);
+					} else {
+						// System.out.println("Posicao " + getLocalName() + " "
+						// + position);
+						reply.setContent(
+								getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
 
 					}
 
@@ -161,10 +170,10 @@ public class DroneAgent extends Worker {
 
 				}
 
-			} 
-			
+			}
+
 			else if (msg.getPerformative() == ACLMessage.INFORM) {
-				//Perguntar pela posiçao Jobs?
+				// Perguntar pela posiçao Jobs?
 				ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
@@ -175,7 +184,8 @@ public class DroneAgent extends Worker {
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
-				//	System.out.println(getLocalName() + ": recebi " + msg.getContent());
+				// System.out.println(getLocalName() + ": recebi " +
+				// msg.getContent());
 
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
@@ -183,20 +193,21 @@ public class DroneAgent extends Worker {
 
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
-								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
+								Double.parseDouble(split[++i]),
+								new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
 								map.get(split[++i])
 
 						));
 
 					}
-					
-				/*	System.out.println("Trabalhos disponiveis: ");
-					for(int i = 0; i < jobs_disponiveis.size(); i++)
-						System.out.println(jobs_disponiveis.get(i).toString());
-*/
+
+					/*
+					 * System.out.println("Trabalhos disponiveis: "); for(int i
+					 * = 0; i < jobs_disponiveis.size(); i++)
+					 * System.out.println(jobs_disponiveis.get(i).toString());
+					 */
 				}
-			}
-			else {
+			} else {
 				block();
 			}
 		}
@@ -236,7 +247,7 @@ public class DroneAgent extends Worker {
 				counter = distance * ((10 - VELOCITY) * 100);
 				midpoint = (int) distance / 2;
 				position = "tripmode";
-			//	System.out.println(counter);
+				// System.out.println(counter);
 				break;
 			default:
 				counter = counter - ((10 - VELOCITY) * 100);
@@ -245,27 +256,27 @@ public class DroneAgent extends Worker {
 					j = (start.getJ() + Destiny.getJ()) / 2;
 					i = (start.getI() + Destiny.getI()) / 2;
 				}
-					System.out.println(counter);
+				// System.out.println(counter);
 				if (counter == 0) {
 					position = Destiny.getName();
 					i = Destiny.getI();
 					j = Destiny.getJ();
-				//	System.out.println("STOPED THE COUNTER");
+					// System.out.println("STOPED THE COUNTER");
 				}
 				break;
 
 			}
 
 		}
-		
-		public int onEnd(){
-			/*System.out.println("TERMINATED MOVE");
-			removeBehaviour(moveBehav);
-			moveBehav= new MoveRequestDrone(w, map.get("L"));
-			addBehaviour(moveBehav);
-			*/
+
+		public int onEnd() {
+			/*
+			 * System.out.println("TERMINATED MOVE");
+			 * removeBehaviour(moveBehav); moveBehav= new MoveRequestDrone(w,
+			 * map.get("L")); addBehaviour(moveBehav);
+			 */
 			return 1;
-			
+
 		}
 
 	}

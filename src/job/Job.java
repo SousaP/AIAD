@@ -61,6 +61,9 @@ public class Job {
 	public double getReward(){
 		return reward;
 	}
+	public void setReward(double r){
+		reward = r;
+	}
 	
 	
 	public Boolean isDone(){

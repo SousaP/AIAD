@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import locals.*;
 import product.Product;
@@ -63,7 +61,6 @@ public class Worker extends Agent {
 	MoveRequest moveBehav;
 	HashMap<String, Product> current_Products = new HashMap<String, Product>();
 	HashMap<String, Product> saved_Products = new HashMap<String, Product>();
-	
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -125,7 +122,6 @@ public class Worker extends Agent {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(inputFile);
 			doc.getDocumentElement().normalize();
-
 
 			NodeList nodes = doc.getElementsByTagName("points");
 			for (int temp = 0; temp < nodes.getLength(); temp++) {
@@ -251,10 +247,13 @@ public class Worker extends Agent {
 
 		public void action() {
 
-			ACLMessage msg = blockingReceive();
+			ACLMessage msg = blockingReceive(500);
+
+			if (msg == null)
+				return;
+
 			// Perguntar pela posiçao
 
-			//System.out.println(getLocalName() + ": recebi " + msg.getContent());
 			if (msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
 				// String sintoma = msg.getContent();
@@ -263,7 +262,8 @@ public class Worker extends Agent {
 				if (msg.getConversationId() == "posicao") {
 
 					reply.setPerformative(ACLMessage.INFORM);
-					//System.out.println("Posicao " + getLocalName() + " " + position);
+					// System.out.println("Posicao " + getLocalName() + " " +
+					// position);
 					reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
 
 					send(reply);
@@ -271,8 +271,11 @@ public class Worker extends Agent {
 				}
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
+
+				// System.out.println(getLocalName() + ": recebi " +
+				// msg.getContent());
 				// Perguntar pela posiçao Jobs?
-				//ACLMessage reply = msg.createReply();
+				// ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
@@ -281,7 +284,7 @@ public class Worker extends Agent {
 				String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
-			//	System.out.println("Sender: " + msg.getSender());
+				// System.out.println("Sender: " + msg.getSender());
 
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
@@ -289,75 +292,99 @@ public class Worker extends Agent {
 
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
-								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
-								map.get(split[++i])
+								Double.parseDouble(split[++i]),
+								new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
+								map.get(split[++i])));
 
-						));
-
+						;
 					}
 
 					jobs_disponiveis = orderJobs(jobs_disponiveis);
 					Working = true;
-					
-					
-					//______________________________________
-					
-					//MessageTemplate mt;
-					
-					
+
+					// ______________________________________
+
+					// MessageTemplate mt;
+
 					ACLMessage cfp = new ACLMessage(ACLMessage.PROPOSE);
-					
+
 					cfp.addReceiver(msg.getSender());
-					//jobs_disponiveis.get(0) -> job preferivel
+					// jobs_disponiveis.get(0) -> job preferivel
+					if (jobs_disponiveis.size() < 1) {
+						Working = false;
+						return;
+					}
 					cfp.setContent(jobs_disponiveis.get(0).toString());
 					cfp.setConversationId("job_proposal");
-					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																			// value
 
-					//System.out.println("Enviei um propose" + cfp.getContent());
+					// System.out.println("Enviei um propose" +
+					// cfp.getContent());
 					send(cfp);
-					
-					//myAgent.send(cfp);
-					//mt = MessageTemplate.and(MessageTemplate.MatchConversationId("job_proposal"),
-					//		MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+					// myAgent.send(cfp);
+					// mt =
+					// MessageTemplate.and(MessageTemplate.MatchConversationId("job_proposal"),
+					// MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
-					
 				}
 
-			}
-			else if (msg.getPerformative() == ACLMessage.FAILURE) {
-				System.out.println("Recebi um Failure" + msg.getContent());
+			} else if (msg.getPerformative() == ACLMessage.FAILURE) {
+				System.out.println(getLocalName() + "Recebi um FAILURE" + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;
 
-				
 				Job job_rejected = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-								Double.parseDouble(split[2]), Integer.parseInt(split[3]),
-								Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])),
-								map.get(split[8])
-						);
-					//Fazer novo pedido
-					Working= false;
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
+						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+				// Fazer novo pedido
+				Working = false;
 
-			}
-			else if (msg.getPerformative() == ACLMessage.AGREE) {
-				System.out.println("Recebi um Agree" + msg.getContent());
+			} else if (msg.getPerformative() == ACLMessage.AGREE) {
+				System.out.println(getLocalName() + "Recebi um AGREE" + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;
 
-			
-				
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-								Double.parseDouble(split[2]), Integer.parseInt(split[3]),
-								Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])),
-								map.get(split[8])
-						);
-				
-				
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
+						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+
+				// TODO poe a trabalhar ja
 				myJob = job_accepted;
 				Working = true;
-				}
+			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+				// ESPERA PELO FIM DO LEILAO
+				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL" + msg.getContent());
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
+						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+
+				myJob = job_accepted;
+				Working = true;
+			} else if (msg.getPerformative() == ACLMessage.CONFIRM) {
+				System.out.println(getLocalName() + "Recebi um CONFIRM" + msg.getContent());
+				// COMEÇA A TRABALHAR
+				Working = true;
+			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL" + msg.getContent());
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
+						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+
+				myJob = job_accepted;
+
+				Working = true;
+			}
 
 			else {
 				block();
@@ -382,16 +409,16 @@ public class Worker extends Agent {
 			counter = 0;
 
 			iter1 = caminho.iterator();
-			/*int c = 0;
-			Iterator<DefaultWeightedEdge> iter = this.caminho.iterator();
-			System.out.println("COMEÇAR O TICK");
-			while(iter.hasNext()){
-				
-				DefaultWeightedEdge temp = iter.next();
-				System.out.println(cityMap.getEdgeSource(temp).getName() + "    " + cityMap.getEdgeTarget(temp).getName());
-				c += cityMap.getEdgeWeight(temp);
-			}
-			System.out.println(position);*/
+			/*
+			 * int c = 0; Iterator<DefaultWeightedEdge> iter =
+			 * this.caminho.iterator(); System.out.println("COMEÇAR O TICK");
+			 * while(iter.hasNext()){
+			 * 
+			 * DefaultWeightedEdge temp = iter.next();
+			 * System.out.println(cityMap.getEdgeSource(temp).getName() + "    "
+			 * + cityMap.getEdgeTarget(temp).getName()); c +=
+			 * cityMap.getEdgeWeight(temp); } System.out.println(position);
+			 */
 		}
 
 		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho) {
@@ -406,8 +433,8 @@ public class Worker extends Agent {
 			switch (counter) {
 			case 0:
 				if (next != null) {
-					//System.out.println("Antes Paragem");
-					if(position.equals(cityMap.getEdgeTarget(next).getName()))
+					// System.out.println("Antes Paragem");
+					if (position.equals(cityMap.getEdgeTarget(next).getName()))
 						position = cityMap.getEdgeSource(next).getName();
 					else
 						position = cityMap.getEdgeTarget(next).getName();
@@ -418,14 +445,14 @@ public class Worker extends Agent {
 					}
 				}
 				next = iter1.next();
-				//System.out.println(cityMap.getEdgeTarget(next).getName());
-				//System.out.println(cityMap.getEdgeWeight(next));
+				// System.out.println(cityMap.getEdgeTarget(next).getName());
+				// System.out.println(cityMap.getEdgeWeight(next));
 
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
-				//System.out.println(counter);
+				// System.out.println(counter);
 				break;
 			default:
-				//System.out.println("Not Zero");
+				// System.out.println("Not Zero");
 				counter = counter - ((10 - VELOCITY) * 100);
 				break;
 
@@ -458,7 +485,8 @@ public class Worker extends Agent {
 
 		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
 		for (int i = 0; i < sortedValues.size(); i++) {
-			//System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
+			// System.out.println(sortedValues.get(i).getKey() + " " +
+			// sortedValues.get(i).getValue());
 			resultado.add(sortedValues.get(i).getKey());
 		}
 
