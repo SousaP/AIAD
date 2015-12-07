@@ -42,7 +42,7 @@ import tools.Tool;
 
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
-	public static final int BATTERY_CAPACITY = 0;
+	private static final int BATTERY_CAPACITY = 0;
 	public List<Local> chargers;
 	List<Local> dumps;
 	List<Local> hands;
@@ -54,7 +54,7 @@ public class Worker extends Agent {
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	public HashMap<String, Local> map = new HashMap<String, Local>();
-	public List<Job> Jobs_Created;
+	List<Job> Jobs_Created;
 	Job myJob;
 	public double credit;
 	public String position;
@@ -544,24 +544,27 @@ public class Worker extends Agent {
 	}
 	
 	public void checkForBattery(){
-		double temp = 0;
+		double temp = Double.MAX_VALUE;
 		Local nearest = null;
-		double temp2 = 0;
+		Local L = null;
+		double temp2 = Double.MAX_VALUE;
+		for(int i = 0; i<Jobs_Created.size(); i++){
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
+			if(temp2 < dijkstra.getPathLength()){
+				temp2 = dijkstra.getPathLength();
+				L = Jobs_Created.get(i).local;
+			}
+		}
 		for(int i = 0; i<chargers.size(); i++){
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(chargers.get(i).getName()));
+					cityMap, L, map.get(chargers.get(i).getName()));
 			if(temp < dijkstra.getPathLength()){
 				temp = dijkstra.getPathLength();
 				nearest = chargers.get(i);
 			}
 		}
-		for(int i = 0; i<Jobs_Created.size(); i++){
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
-			if(temp2 < dijkstra.getPathLength())
-				temp2 = dijkstra.getPathLength();
-		}
-		if(batteryLeft < (temp + temp2)){
+		if(batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)){
 			moveBehav = new MoveRequest(this, nearest, pathTo(map.get(position), nearest));
 			addBehaviour(moveBehav);
 			this.batteryLeft = BATTERY_CAPACITY;

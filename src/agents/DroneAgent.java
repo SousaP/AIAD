@@ -294,22 +294,27 @@ public class DroneAgent extends Worker {
 	public void checkForBattery(){
 		double temp = 0;
 		Local nearest = null;
+		Local L = null;
 		double temp2 = 0;
+		double distance = Double.MAX_VALUE;
+		double distance2 = Double.MAX_VALUE;
+		for(int i = 0; i<Jobs_Created.size(); i++){
+			distance2 = Math.sqrt(
+					Math.pow(map.get(Jobs_Created.get(i).local).getI() - map.get(position).getI(), 2) + Math.pow((map.get(Jobs_Created.get(i).local).getJ() - map.get(position).getJ()), 2));
+			if(temp2 < distance2){
+				temp2 = distance2;
+				L = Jobs_Created.get(i).local;
+			}
+		}
 		for(int i = 0; i<chargers.size(); i++){
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(chargers.get(i).getName()));
-			if(temp < dijkstra.getPathLength()){
-				temp = dijkstra.getPathLength();
+			distance = Math.sqrt(
+					Math.pow(L.getI() - map.get(chargers.get(i)).getI(), 2) + Math.pow(L.getJ() - map.get(chargers.get(i)).getJ(), 2));
+			if(temp < distance){
+				temp = distance;
 				nearest = chargers.get(i);
 			}
 		}
-		for(int i = 0; i<Jobs_Created.size(); i++){
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
-			if(temp2 < dijkstra.getPathLength())
-				temp2 = dijkstra.getPathLength();
-		}
-		if(batteryLeft < (temp + temp2)){
+		if(batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)){
 			moveBehav = new MoveRequestDrone(this, nearest);
 			addBehaviour(moveBehav);
 			this.batteryLeft = BATTERY_CAPACITY;

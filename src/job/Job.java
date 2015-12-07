@@ -117,19 +117,17 @@ public class Job {
 		if (the_Job == to_do.ACQUISITION && (W.credit < product.price))
 			return false;
 		double temp1 = 0;
-		Local nearest = null;
 		double temp2 = 0;
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				W.cityMap, W.map.get(W.position), local);
+		temp2 = dijkstra.getPathLength();
 		for (int i = 0; i < W.chargers.size(); i++) {
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					W.cityMap, W.map.get(W.position), W.map.get(W.chargers.get(i).getName()));
-			if (temp1 < dijkstra.getPathLength()) {
-				temp1 = dijkstra.getPathLength();
-				nearest = W.chargers.get(i);
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
+			if (temp1 < dijkstra2.getPathLength()) {
+				temp1 = dijkstra2.getPathLength();
 			}
 		}
-		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-				W.cityMap, W.map.get(W.position), W.map.get(this.local.getName()));
-		temp2 = dijkstra.getPathLength();
 		if (W.batteryLeft < (temp1 + temp2)) {
 			return false;
 		}
