@@ -97,7 +97,7 @@ public class Ambiente extends Worker {
 				send(reply);
 			}
 			
-			else if(msg.getPerformative() == ACLMessage.PROPOSE) {
+			else if(msg.getPerformative() == ACLMessage.INFORM) {
 
 				ACLMessage reply = msg.createReply();
 
@@ -119,6 +119,65 @@ public class Ambiente extends Worker {
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
+			}
+			else if(msg.getPerformative() == ACLMessage.PROPOSE) {
+
+				//System.out.println("Ambiente: Recebi um Propose" + msg.getContent());
+
+
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+			
+				Job job_to_complete = new Job(
+							to_do.valueOf(split[0]), 
+							type.valueOf(split[1]),
+							Double.parseDouble(split[2]), 
+							Integer.parseInt(split[3]),
+							Double.parseDouble(split[4]), 
+							new Product(new Tool(split[5]), 
+							split[6], 
+							Integer.parseInt(split[7])),
+							map.get(split[8]));
+				
+ 				// ver se job faz parte da lista de jobs
+				for (int i = 0; i < Jobs_Created.size(); i++)
+					if(Jobs_Created.get(i).compare(job_to_complete))
+					{
+
+						//System.out.println("AQUIIIII");
+						//verificar se ja acabou ou está a ser realizado -> Responder Failure
+						if(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())
+						{
+							ACLMessage cfp = new ACLMessage(ACLMessage.FAILURE);
+							cfp.addReceiver(msg.getSender());
+							//Responde Failure com job na mensagem
+							cfp.setContent(Jobs_Created.get(i).toString());
+							cfp.setConversationId("job_proposal");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+							
+							//myAgent.send(cfp);
+							send(cfp);
+						}
+						else
+						{
+							ACLMessage cfp = new ACLMessage(ACLMessage.AGREE);
+							cfp.addReceiver(msg.getSender());
+							// Responde Agree com Job na mensagem
+							cfp.setContent(Jobs_Created.get(i).toString());
+							cfp.setConversationId("job_proposal");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+							Jobs_Created.get(i).setbeingDone();
+							//myAgent.send(cfp);
+							send(cfp);
+						}
+					}
+					//else System.out.println("ALIIIIIIIII");
+				
+				//String content = "jobs;";
+				//reply.setContent(content);
+				// envia mensagem
+				//send(reply);
 			}
 
 		}
@@ -148,7 +207,7 @@ public class Ambiente extends Worker {
 			String randomKey = keys.get(random.nextInt(keys.size()));
 			Local local = map.get(randomKey);
 
-			return new Job(to_do.getRandom(), type.getRandom(), getRandomInt(400, 800), getRandomInt(1, 5),
+			return new Job(to_do.getRandom(), type.PRICE, getRandomInt(400, 800), getRandomInt(1, 5),
 					getRandomInt(50, 300), p, local);
 
 		}

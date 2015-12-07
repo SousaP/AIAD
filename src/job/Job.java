@@ -116,4 +116,19 @@ public class Job {
 		
 	}
 	
+	public boolean compare(Job b){
+		//System.out.println(this.toString());
+		//System.out.println(b.toString());
+		
+		
+		return (the_Job.equals(b.the_Job) 
+				&& job_Type.equals(b.job_Type) && time == b.time 
+				&& fine == b.fine && product.getName().equals(b.product.getName())
+				&& product.getQuantidade() == b.product.getQuantidade()
+				&& product.getTool().equals(b.product.getTool())
+				&& local.getName().equals(b.local.getName()));
+	}
+	
+	
+	
 }

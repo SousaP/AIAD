@@ -254,7 +254,7 @@ public class Worker extends Agent {
 			ACLMessage msg = blockingReceive();
 			// Perguntar pela posiçao
 
-			System.out.println(getLocalName() + ": recebi " + msg.getContent());
+			//System.out.println(getLocalName() + ": recebi " + msg.getContent());
 			if (msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
 				// String sintoma = msg.getContent();
@@ -272,7 +272,7 @@ public class Worker extends Agent {
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
 				// Perguntar pela posiçao Jobs?
-				ACLMessage reply = msg.createReply();
+				//ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
@@ -296,11 +296,68 @@ public class Worker extends Agent {
 
 					}
 
-					orderJobs(jobs_disponiveis);
+					jobs_disponiveis = orderJobs(jobs_disponiveis);
 					Working = true;
+					
+					
+					//______________________________________
+					
+					//MessageTemplate mt;
+					
+					
+					ACLMessage cfp = new ACLMessage(ACLMessage.PROPOSE);
+					
+					cfp.addReceiver(msg.getSender());
+					//jobs_disponiveis.get(0) -> job preferivel
+					cfp.setContent(jobs_disponiveis.get(0).toString());
+					cfp.setConversationId("job_proposal");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+
+					//System.out.println("Enviei um propose" + cfp.getContent());
+					send(cfp);
+					
+					//myAgent.send(cfp);
+					//mt = MessageTemplate.and(MessageTemplate.MatchConversationId("job_proposal"),
+					//		MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+
+					
 				}
 
 			}
+			else if (msg.getPerformative() == ACLMessage.FAILURE) {
+				System.out.println("Recebi um Failure" + msg.getContent());
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				
+				Job job_rejected = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
+								Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+								Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])),
+								map.get(split[8])
+						);
+					//Fazer novo pedido
+					Working= false;
+
+			}
+			else if (msg.getPerformative() == ACLMessage.AGREE) {
+				System.out.println("Recebi um Agree" + msg.getContent());
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+			
+				
+				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
+								Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+								Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])),
+								map.get(split[8])
+						);
+				
+				
+				myJob = job_accepted;
+				Working = true;
+				}
 
 			else {
 				block();
@@ -401,7 +458,7 @@ public class Worker extends Agent {
 
 		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
 		for (int i = 0; i < sortedValues.size(); i++) {
-			System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
+			//System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
 			resultado.add(sortedValues.get(i).getKey());
 		}
 
