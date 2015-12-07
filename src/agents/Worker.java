@@ -42,8 +42,8 @@ import tools.Tool;
 
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
-	private static final int BATTERY_CAPACITY = 0;
-	List<Local> chargers;
+	public static final int BATTERY_CAPACITY = 0;
+	public List<Local> chargers;
 	List<Local> dumps;
 	List<Local> hands;
 	List<Local> stores;
@@ -54,10 +54,10 @@ public class Worker extends Agent {
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	public HashMap<String, Local> map = new HashMap<String, Local>();
-	List<Job> Jobs_Created;
+	public List<Job> Jobs_Created;
 	Job myJob;
 	public double credit;
-	String position;
+	public String position;
 	Boolean Working;
 	GetJobBehaviour jobBehav;
 	ReceiveMessageBehaviour positionBehav;
