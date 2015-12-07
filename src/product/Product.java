@@ -20,5 +20,9 @@ public class Product {
 	public String getTool(){
 		return t.getName();
 	}
+	
+	public int getQuantidade(){
+		return Quantidade;
+	}
 
 }

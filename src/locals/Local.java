@@ -1,8 +1,13 @@
 package locals;
 
+import java.util.HashMap;
+
+import product.Product;
+
 public class Local {
 	String name;
 	private int position[];
+	HashMap<String, Product> produtos = new HashMap<String, Product>();
 	public Local(int i, int j,String n) {
 		position = new int[2];
 		position[0] = i;

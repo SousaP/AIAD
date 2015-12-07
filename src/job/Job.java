@@ -91,7 +91,7 @@ public class Job {
 	
 	public String toString() { 
 	    return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" +
-	fine + ";" +  product.getTool() + ";" + product.getName()+ ";" + local.getName() +";";
+	fine + ";" +  product.getTool() + ";" + product.getName()+ ";" +product.getQuantidade() + ";" + local.getName() +";";
 	}
 	
 	public boolean able(Worker W){

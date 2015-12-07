@@ -135,6 +135,7 @@ public class SimulationFrame extends JFrame {
 			g.setColor(Color.WHITE);
 			g.fillOval(myAgent.agentsFinal.get(i).getJ() * 50 + 75, myAgent.agentsFinal.get(i).getI() * 50 + 75, 10,
 					10);
+			g.drawString(myAgent.agentsFinal.get(i).getName(), myAgent.agentsFinal.get(i).getJ() * 50 + 80,myAgent.agentsFinal.get(i).getI() * 50 + 80);
 		}
 	}
 

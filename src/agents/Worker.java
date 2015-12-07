@@ -61,6 +61,9 @@ public class Worker extends Agent {
 	GetJobBehaviour jobBehav;
 	ReceiveMessageBehaviour positionBehav;
 	MoveRequest moveBehav;
+	HashMap<String, Product> current_Products = new HashMap<String, Product>();
+	HashMap<String, Product> saved_Products = new HashMap<String, Product>();
+	
 
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -287,7 +290,7 @@ public class Worker extends Agent {
 
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
-								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], 1),
+								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
 								map.get(split[++i])
 
 						));

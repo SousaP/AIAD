@@ -8,7 +8,6 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import job.Job;
 import job.Job.to_do;
 import job.Job.type;
@@ -56,7 +55,7 @@ public class DroneAgent extends Worker {
 		j = map.get(position).getJ();
 		positionDroneBehav = new ReceiveMessageBehaviourDrone();
 		addBehaviour(positionDroneBehav);
-		moveBehav= new MoveRequestDrone(this, map.get("M"));
+		moveBehav= new MoveRequestDrone(this, map.get("L"));
 		addBehaviour(moveBehav);
 	}
 
@@ -108,7 +107,7 @@ public class DroneAgent extends Worker {
 					reply.setPerformative(ACLMessage.INFORM);
 					if(position == "tripmode"){
 					System.out.println("Posicao: " + (int) i + ";" + (int) j);
-					reply.setContent("Random" + ";" + (int) i + ";" + (int) j);
+					reply.setContent("Drone" + ";" + (int) i + ";" + (int) j);
 					}else{
 						System.out.println("Posicao " + getLocalName() + " " + position);
 						reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
@@ -141,7 +140,7 @@ public class DroneAgent extends Worker {
 
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
-								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], 1),
+								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
 								map.get(split[++i])
 
 						));
