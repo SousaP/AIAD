@@ -40,7 +40,8 @@ import tools.Tool;
 
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
-	List<Local> chargers;
+	private static final int BATTERY_CAPACITY = 0;
+	public List<Local> chargers;
 	List<Local> dumps;
 	List<Local> hands;
 	List<Local> stores;
@@ -53,8 +54,8 @@ public class Worker extends Agent {
 	public HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
 	Job myJob;
-	double credit;
-	String position;
+	public double credit;
+	public String position;
 	Boolean Working;
 	GetJobBehaviour jobBehav;
 	ReceiveMessageBehaviour positionBehav;
@@ -62,6 +63,8 @@ public class Worker extends Agent {
 	HashMap<String, Product> current_Products = new HashMap<String, Product>();
 	HashMap<String, Product> saved_Products = new HashMap<String, Product>();
 
+	public int batteryLeft;
+	
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
 		return strin_tempo.split(";");
@@ -400,6 +403,7 @@ public class Worker extends Agent {
 		int counter;
 		DefaultWeightedEdge next;
 		Iterator<DefaultWeightedEdge> iter1;
+		Worker w;
 
 		public MoveRequest(Worker w, Local Destiny, List<DefaultWeightedEdge> caminho) {
 			super(w, (10 - VELOCITY) * 100);
@@ -407,18 +411,25 @@ public class Worker extends Agent {
 			this.Destiny = Destiny;
 			this.caminho = caminho;
 			counter = 0;
+			this.w = w;
 
 			iter1 = caminho.iterator();
-			/*
-			 * int c = 0; Iterator<DefaultWeightedEdge> iter =
-			 * this.caminho.iterator(); System.out.println("COMEÇAR O TICK");
-			 * while(iter.hasNext()){
-			 * 
-			 * DefaultWeightedEdge temp = iter.next();
-			 * System.out.println(cityMap.getEdgeSource(temp).getName() + "    "
-			 * + cityMap.getEdgeTarget(temp).getName()); c +=
-			 * cityMap.getEdgeWeight(temp); } System.out.println(position);
-			 */
+
+			/*int c = 0;
+			Iterator<DefaultWeightedEdge> iter = this.caminho.iterator();
+			System.out.println("COMEÇAR O TICK");
+			while(iter.hasNext()){
+				
+				DefaultWeightedEdge temp = iter.next();
+				System.out.println(cityMap.getEdgeSource(temp).getName() + "    " + cityMap.getEdgeTarget(temp).getName());
+				c += cityMap.getEdgeWeight(temp);
+			}
+			System.out.println(position);*/
+			
+
+			if(w.position.equals(Destiny.getName())){
+				stop();
+			}
 		}
 
 		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho) {
@@ -429,7 +440,7 @@ public class Worker extends Agent {
 
 		@Override
 		protected void onTick() {
-
+			
 			switch (counter) {
 			case 0:
 				if (next != null) {
@@ -454,6 +465,7 @@ public class Worker extends Agent {
 			default:
 				// System.out.println("Not Zero");
 				counter = counter - ((10 - VELOCITY) * 100);
+				w.batteryLeft = w.batteryLeft--;
 				break;
 
 			}
@@ -548,5 +560,44 @@ public class Worker extends Agent {
 		}
 
 	}
+	
+	public int getBatLeft() {
+		return 0;
+	}
+	
+	public int getMaxBat(){
+		return BATTERY_CAPACITY;
+	}
 
+	public int getLoadLeft() {
+		return 0;
+	}
+	
+	public void checkForBattery(){
+		double temp = Double.MAX_VALUE;
+		Local nearest = null;
+		Local L = null;
+		double temp2 = Double.MAX_VALUE;
+		for(int i = 0; i<Jobs_Created.size(); i++){
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
+			if(temp2 < dijkstra.getPathLength()){
+				temp2 = dijkstra.getPathLength();
+				L = Jobs_Created.get(i).local;
+			}
+		}
+		for(int i = 0; i<chargers.size(); i++){
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					cityMap, L, map.get(chargers.get(i).getName()));
+			if(temp < dijkstra.getPathLength()){
+				temp = dijkstra.getPathLength();
+				nearest = chargers.get(i);
+			}
+		}
+		if(batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)){
+			moveBehav = new MoveRequest(this, nearest, pathTo(map.get(position), nearest));
+			addBehaviour(moveBehav);
+			this.batteryLeft = BATTERY_CAPACITY;
+		}
+	}
 }

@@ -68,6 +68,18 @@ public class CarAgent extends Worker {
 		}
 
 	}
+	
+	public int getBatLeft(){
+		return batteryLeft;
+	}
+	
+	public int getMaxBat(){
+		return BATTERY_CAPACITY;
+	}
+	
+	public int getLoadLeft() {
+		return loadLeft;
+	}
 
 
 }

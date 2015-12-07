@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+
+import agents.Worker.MoveRequest;
 import jade.core.*;
 
 import locals.*;
@@ -231,6 +235,10 @@ public class DroneAgent extends Worker {
 			counter = 0;
 			midpoint = 0;
 			this.w = w;
+			
+			if(w.position.equals(Destiny.getName())){
+				stop();
+			}
 		}
 
 		@Override
@@ -239,6 +247,7 @@ public class DroneAgent extends Worker {
 			case 0:
 				if (Destiny.getName() == position) {
 					System.out.println("Paragem");
+					w.batteryLeft = w.batteryLeft - distance;
 					stop();
 					break;
 				}
@@ -279,5 +288,47 @@ public class DroneAgent extends Worker {
 
 		}
 
+	}
+	
+	public int getBatLeft(){
+		return batteryLeft;
+	}
+	
+	public int getMaxBat(){
+		return BATTERY_CAPACITY;
+	}
+	
+	public int getLoadLeft() {
+		return loadLeft;
+	}
+	
+	public void checkForBattery(){
+		double temp = 0;
+		Local nearest = null;
+		Local L = null;
+		double temp2 = 0;
+		double distance = Double.MAX_VALUE;
+		double distance2 = Double.MAX_VALUE;
+		for(int i = 0; i<Jobs_Created.size(); i++){
+			distance2 = Math.sqrt(
+					Math.pow(map.get(Jobs_Created.get(i).local).getI() - map.get(position).getI(), 2) + Math.pow((map.get(Jobs_Created.get(i).local).getJ() - map.get(position).getJ()), 2));
+			if(temp2 < distance2){
+				temp2 = distance2;
+				L = Jobs_Created.get(i).local;
+			}
+		}
+		for(int i = 0; i<chargers.size(); i++){
+			distance = Math.sqrt(
+					Math.pow(L.getI() - map.get(chargers.get(i)).getI(), 2) + Math.pow(L.getJ() - map.get(chargers.get(i)).getJ(), 2));
+			if(temp < distance){
+				temp = distance;
+				nearest = chargers.get(i);
+			}
+		}
+		if(batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)){
+			moveBehav = new MoveRequestDrone(this, nearest);
+			addBehaviour(moveBehav);
+			this.batteryLeft = BATTERY_CAPACITY;
+		}
 	}
 }
