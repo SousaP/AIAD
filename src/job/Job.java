@@ -1,8 +1,14 @@
 package job;
 
 
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+
+import agents.Worker;
 import locals.Local;
 import product.Product;
+import tools.Tool;
 
 public class Job {
 	public enum to_do {
@@ -65,11 +71,21 @@ public class Job {
 	}
 	
 	//Helps the agent to sort jobs in order to pick the most profitable one
-	public double getProbabilityOfChoose(Local myLocal){
-		if(the_Job == to_do.TRANSPORT)
-		return ((reward*3 - fine)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
+	public double getProbabilityOfChoose(Local myLocal, Worker w){
+		boolean fined = false;
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				w.cityMap, myLocal, local);
+		// double length = dijkstra.getPathLength();
+		if(time * 1000 < (((10 - w.VELOCITY) * 100) * dijkstra.getPathLength()))
+			fined = true;
+		if(the_Job == to_do.TRANSPORT){
+		if(fined)
+			return ((reward*3 - fine)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
 				+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
 		else
+			return ((reward*3)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
+					+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
+		}else
 			return ((reward*3 - fine)/time);
 	}
 	
@@ -78,6 +94,12 @@ public class Job {
 	fine + ";" +  product.getTool() + ";" + product.getName()+ ";" + local.getName() +";";
 	}
 	
-
+	public boolean able(Worker W){
+		Tool temp = new Tool(product.getTool());
+		if(the_Job == to_do.MOUNT && !(W.getTools().contains(temp)))
+			return false;
+		return true;
+		
+	}
 	
 }

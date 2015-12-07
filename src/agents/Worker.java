@@ -24,10 +24,12 @@ import jade.core.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
@@ -46,9 +48,9 @@ public class Worker extends Agent {
 	List<Local> stores;
 	List<Local> houses;
 	List<Tool> tools;
-	protected static int VELOCITY = 0;
+	public int VELOCITY = 0;
 	int xmax, ymax;
-	ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
+	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
 	HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
@@ -106,7 +108,10 @@ public class Worker extends Agent {
 		moveBehav = new MoveRequest(this, map.get("L"), pathTo(map.get(position), map.get("L")));
 		addBehaviour(moveBehav);
 
+	}
 
+	public List<Tool> getTools() {
+		return tools;
 	}
 
 	void readMap() {
@@ -236,8 +241,9 @@ public class Worker extends Agent {
 
 	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
-		
+
 		List<Job> jobs_disponiveis;
+
 		public ReceiveMessageBehaviour() {
 			super();
 		}
@@ -245,8 +251,8 @@ public class Worker extends Agent {
 		public void action() {
 
 			ACLMessage msg = blockingReceive();
-			//Perguntar pela posiçao
-			if(msg.getPerformative() == ACLMessage.CFP) {
+			// Perguntar pela posiçao
+			if (msg.getPerformative() == ACLMessage.CFP) {
 				// CFP Message received. Process it
 				// String sintoma = msg.getContent();
 				ACLMessage reply = msg.createReply();
@@ -261,9 +267,8 @@ public class Worker extends Agent {
 
 				}
 
-			}
-			else if (msg.getPerformative() == ACLMessage.INFORM) {
-				//Perguntar pela posiçao Jobs?
+			} else if (msg.getPerformative() == ACLMessage.INFORM) {
+				// Perguntar pela posiçao Jobs?
 				ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
@@ -273,8 +278,8 @@ public class Worker extends Agent {
 				String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
-				 System.out.println("Sender: " + msg.getSender());
-					System.out.println(getLocalName() + ": recebi " + msg.getContent());
+				System.out.println("Sender: " + msg.getSender());
+				System.out.println(getLocalName() + ": recebi " + msg.getContent());
 
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
@@ -288,16 +293,15 @@ public class Worker extends Agent {
 						));
 
 					}
-					
+
 					System.out.println("Trabalhos disponiveis: ");
-					for(int i = 0; i < jobs_disponiveis.size(); i++)
+					for (int i = 0; i < jobs_disponiveis.size(); i++)
 						System.out.println(jobs_disponiveis.get(i).toString());
 
 				}
 				System.out.println("Jobs identificados: " + content);
 			}
-			
-			
+
 			else {
 				block();
 			}
@@ -370,25 +374,35 @@ public class Worker extends Agent {
 	List<Job> orderJobs(List<Job> jobs_available) {
 		// Precisa de um produto -> Pode precisar de uma ferramenta
 		// (reward * 3 - time)/fine
-		HashMap<Job, Double> map_l = new HashMap<Job, Double>();
-
 		Iterator<Job> it = jobs_available.iterator();
-		while (it.hasNext()) {
-			map_l.put(it.next(), it.next().getProbabilityOfChoose(map.get(position)));
+		Map<Job, Double> unsortMap = new HashMap<Job, Double>();
+		while(it.hasNext()){
+			if(it.next().able(this))
+				unsortMap.put(it.next(), it.next().getProbabilityOfChoose(map.get(position), this));
 		}
-
-		SortedSet<Double> values = new TreeSet<Double>(map_l.values());
-		List<Job> sorted_jobs = null;
-
-		Iterator itera = values.iterator();
-
-		while (itera.hasNext()) {
-			Iterator temp = itera;
-			sorted_jobs.add(getKeyByValue(map_l, values.first()));
-			values.remove(temp);
+		
+		List<Job> resultado = new ArrayList<Job>();
+		
+		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
+		for(int i = 0; i < sortedValues.size(); i++){
+			resultado.add(sortedValues.get(i).getKey());
 		}
+		
+		 return resultado;
+	}
 
-		return sorted_jobs;
+	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(Map<Job, Double> map) {
+
+		List<Entry<Job, Double>> sortedEntries = new ArrayList<Entry<Job, Double>>(map.entrySet());
+
+		Collections.sort(sortedEntries, new Comparator<Entry<Job, Double>>() {
+			@Override
+			public int compare(Entry<Job, Double> e1, Entry<Job, Double> e2) {
+				return e2.getValue().compareTo(e1.getValue());
+			}
+		});
+		
+		return sortedEntries;
 	}
 
 	class GetJobBehaviour extends TickerBehaviour {
@@ -431,6 +445,5 @@ public class Worker extends Agent {
 		}
 
 	}
-
 
 }
