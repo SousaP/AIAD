@@ -297,6 +297,7 @@ public class Worker extends Agent {
 					System.out.println("Trabalhos disponiveis: ");
 					for (int i = 0; i < jobs_disponiveis.size(); i++)
 						System.out.println(jobs_disponiveis.get(i).toString());
+					orderJobs(jobs_disponiveis);
 
 				}
 				System.out.println("Jobs identificados: " + content);
@@ -376,22 +377,25 @@ public class Worker extends Agent {
 		// (reward * 3 - time)/fine
 		Iterator<Job> it = jobs_available.iterator();
 		Map<Job, Double> unsortMap = new HashMap<Job, Double>();
-		while(it.hasNext()){
-			if(it.next().able(this))
-				unsortMap.put(it.next(), it.next().getProbabilityOfChoose(map.get(position), this));
+		while (it.hasNext()) {
+			Job temp = it.next();
+			if (temp.able(this))
+				unsortMap.put(temp, temp.getProbabilityOfChoose(map.get(position), this));
 		}
-		
+
 		List<Job> resultado = new ArrayList<Job>();
-		
+
 		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
-		for(int i = 0; i < sortedValues.size(); i++){
+		for (int i = 0; i < sortedValues.size(); i++) {
+			System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
 			resultado.add(sortedValues.get(i).getKey());
 		}
-		
-		 return resultado;
+
+		return resultado;
 	}
 
-	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(Map<Job, Double> map) {
+	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(
+			Map<Job, Double> map) {
 
 		List<Entry<Job, Double>> sortedEntries = new ArrayList<Entry<Job, Double>>(map.entrySet());
 
@@ -401,7 +405,7 @@ public class Worker extends Agent {
 				return e2.getValue().compareTo(e1.getValue());
 			}
 		});
-		
+
 		return sortedEntries;
 	}
 
