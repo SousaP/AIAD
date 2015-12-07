@@ -35,7 +35,7 @@ public class Job {
 	Product product;
 	Boolean done;
 	Boolean beingDone;
-	Local local;
+	public Local local;
 	
 	public Job(to_do j,type ty, double r, int t, double f, Product p, Local l){
 		the_Job = j;
@@ -112,6 +112,11 @@ public class Job {
 		Tool temp = new Tool(product.getTool());
 		if(the_Job == to_do.MOUNT && !(W.getTools().contains(temp)))
 			return false;
+		if(the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize()))
+			return false;
+		if(the_Job == to_do.ACQUISITION && (W.credit < product.price))
+			return false;
+		
 		return true;
 		
 	}

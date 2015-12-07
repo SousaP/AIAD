@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+
+import agents.Worker.MoveRequest;
 import jade.core.*;
 
 import locals.*;
@@ -220,6 +224,10 @@ public class DroneAgent extends Worker {
 			counter = 0;
 			midpoint = 0;
 			this.w = w;
+			
+			if(w.position.equals(Destiny.getName())){
+				stop();
+			}
 		}
 
 		@Override
@@ -228,6 +236,7 @@ public class DroneAgent extends Worker {
 			case 0:
 				if (Destiny.getName() == position) {
 					System.out.println("Paragem");
+					w.batteryLeft = w.batteryLeft - distance;
 					stop();
 					break;
 				}
@@ -268,5 +277,42 @@ public class DroneAgent extends Worker {
 			
 		}
 
+	}
+	
+	public int getBatLeft(){
+		return batteryLeft;
+	}
+	
+	public int getMaxBat(){
+		return BATTERY_CAPACITY;
+	}
+	
+	public int getLoadLeft() {
+		return loadLeft;
+	}
+	
+	public void checkForBattery(){
+		double temp = 0;
+		Local nearest = null;
+		double temp2 = 0;
+		for(int i = 0; i<chargers.size(); i++){
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					cityMap, map.get(position), map.get(chargers.get(i).getName()));
+			if(temp < dijkstra.getPathLength()){
+				temp = dijkstra.getPathLength();
+				nearest = chargers.get(i);
+			}
+		}
+		for(int i = 0; i<Jobs_Created.size(); i++){
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
+			if(temp2 < dijkstra.getPathLength())
+				temp2 = dijkstra.getPathLength();
+		}
+		if(batteryLeft < (temp + temp2)){
+			moveBehav = new MoveRequestDrone(this, nearest);
+			addBehaviour(moveBehav);
+			this.batteryLeft = BATTERY_CAPACITY;
+		}
 	}
 }
