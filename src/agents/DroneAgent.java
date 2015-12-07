@@ -259,10 +259,11 @@ public class DroneAgent extends Worker {
 		}
 		
 		public int onEnd(){
-			System.out.println("TERMINATED MOVE");
+			/*System.out.println("TERMINATED MOVE");
 			removeBehaviour(moveBehav);
 			moveBehav= new MoveRequestDrone(w, map.get("L"));
 			addBehaviour(moveBehav);
+			*/
 			return 1;
 			
 		}
