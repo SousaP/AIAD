@@ -52,7 +52,7 @@ public class Worker extends Agent {
 	int xmax, ymax;
 	public ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge> cityMap = new ListenableUndirectedWeightedGraph<Local, DefaultWeightedEdge>(
 			DefaultWeightedEdge.class);
-	HashMap<String, Local> map = new HashMap<String, Local>();
+	public HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
 	Job myJob;
 	double credit;

@@ -13,7 +13,13 @@ import job.Job.to_do;
 import job.Job.type;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import jade.core.*;
 
@@ -85,6 +91,43 @@ public class DroneAgent extends Worker {
 			return finished;
 		}
 
+	}
+	
+	List<Job> orderJobs(List<Job> jobs_available) {
+		// Precisa de um produto -> Pode precisar de uma ferramenta
+		// (reward * 3 - time)/fine
+		Iterator<Job> it = jobs_available.iterator();
+		Map<Job, Double> unsortMap = new HashMap<Job, Double>();
+		while (it.hasNext()) {
+			Job temp = it.next();
+			if (temp.able(this))
+				unsortMap.put(temp, temp.getProbabilityOfChoose(map.get(position), this));
+		}
+
+		List<Job> resultado = new ArrayList<Job>();
+
+		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
+		for (int i = 0; i < sortedValues.size(); i++) {
+			System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
+			resultado.add(sortedValues.get(i).getKey());
+		}
+
+		return resultado;
+	}
+
+	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(
+			Map<Job, Double> map) {
+
+		List<Entry<Job, Double>> sortedEntries = new ArrayList<Entry<Job, Double>>(map.entrySet());
+
+		Collections.sort(sortedEntries, new Comparator<Entry<Job, Double>>() {
+			@Override
+			public int compare(Entry<Job, Double> e1, Entry<Job, Double> e2) {
+				return e2.getValue().compareTo(e1.getValue());
+			}
+		});
+
+		return sortedEntries;
 	}
 
 	class ReceiveMessageBehaviourDrone extends CyclicBehaviour {

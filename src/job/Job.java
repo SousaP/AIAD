@@ -5,6 +5,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import agents.DroneAgent;
 import agents.Worker;
 import locals.Local;
 import product.Product;
@@ -80,15 +81,28 @@ public class Job {
 			fined = true;
 		if(the_Job == to_do.TRANSPORT){
 		if(fined)
-			return ((reward*3 - fine)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
-				+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
+			return ((reward*3 - fine)/dijkstra.getPathLength());
 		else
-			return ((reward*3)/(Math.sqrt(Math.pow(myLocal.getI() - local.getI(), 2)
-					+ Math.pow(myLocal.getJ() - (double)local.getJ(), 2))));
+			return ((reward*3)/dijkstra.getPathLength());
 		}else
 			return ((reward*3 - fine)/time);
 	}
 	
+	public double getProbabilityOfChoose(Local myLocal, DroneAgent d){
+		boolean fined = false;
+		double distance = Math.sqrt(Math.pow((myLocal.getI() - local.getI()), 2)
+				+ Math.pow((myLocal.getJ() - local.getJ()), 2));
+		// double length = dijkstra.getPathLength();
+		if(time * 1000 < (((10 - d.VELOCITY) * 100) * distance))
+			fined = true;
+		if(the_Job == to_do.TRANSPORT){
+		if(fined)
+			return ((reward*3 - fine)/distance);
+		else
+			return ((reward*3)/distance);
+		}else
+			return ((reward*3 - fine)/time);
+	}
 	public String toString() { 
 	    return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" +
 	fine + ";" +  product.getTool() + ";" + product.getName()+ ";" +product.getQuantidade() + ";" + local.getName() +";";
