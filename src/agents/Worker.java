@@ -506,16 +506,18 @@ public class Worker extends Agent {
 		@Override
 		public int onEnd() {
 
-			if (myJob.the_Job == to_do.TRANSPORT) {
-				credit += myJob.getReward();
-				if (time_lasted > myJob.time)
-					credit -= myJob.getFine();
-				Working = false;
+			if (myJob != null) {
+				if (myJob.the_Job == to_do.TRANSPORT) {
+					credit += myJob.getReward();
+					if (time_lasted > myJob.time)
+						credit -= myJob.getFine();
+					Working = false;
+					myJob = null;
 
-				System.out.println("Battery " + batteryLeft);
+					System.out.println("Battery " + batteryLeft);
 
+				}
 			}
-
 			for (int i = 0; i < chargers.size(); i++)
 				if (position.equals(chargers.get(i).getName())) {
 					myAgent.addBehaviour(new ChargeBehaviour(myAgent));
