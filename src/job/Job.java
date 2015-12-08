@@ -37,7 +37,7 @@ public class Job {
 	public Local local;
 	public Local local2;
 
-	public Job(to_do j, type ty, double r, int t, double f, Product p, Local l,Local l2) {
+	public Job(to_do j, type ty, double r, int t, double f, Product p, Local l, Local l2) {
 		the_Job = j;
 		job_Type = ty;
 		reward = r;
@@ -63,7 +63,7 @@ public class Job {
 		return reward;
 	}
 
-	public void setReward(double r){
+	public void setReward(double r) {
 		reward = r;
 	}
 
@@ -74,8 +74,8 @@ public class Job {
 	public Boolean beingDone() {
 		return beingDone;
 	}
-	
-	public double getFine(){
+
+	public double getFine() {
 		return fine;
 	}
 
@@ -114,49 +114,59 @@ public class Job {
 
 	public String toString() {
 		return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" + fine + ";"
-				+ product.getTool() + ";" + product.getName() + ";"+ product.getPrice() + ";" + product.getQuantidade() + ";" + local.getName() + ";" + local2.getName()
-				+ ";";
+				+ product.getTool() + ";" + product.getName() + ";" + product.getPrice() + ";" + product.getQuantidade()
+				+ ";" + local.getName() + ";" + local2.getName() + ";";
 	}
 
 	public boolean able(Worker W) {
 		Tool temp = new Tool(product.getTool());
-		if (the_Job == to_do.MOUNT && !(W.getToolsString().contains(temp.getName())))
-		{
-		//	System.out.println(product.price);
-		//	System.out.println("falha aqui1");
+		if (the_Job == to_do.MOUNT && !(W.getToolsString().contains(temp.getName()))) {
+			// System.out.println(product.price);
+			// System.out.println("falha aqui1");
 			return false;
 		}
-		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize()))
-		{
-		//	System.out.println("falha aqui2");
+		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize())) {
+			// System.out.println("falha aqui2");
 			return false;
 		}
-		if (the_Job == to_do.ACQUISITION && (W.credit < product.price))
-		{
-			//System.out.println("falha aqui3");
+		if (the_Job == to_do.ACQUISITION && (W.credit < product.price)) {
+			// System.out.println("falha aqui3");
 
-			//System.out.println(W.credit );
-			//System.out.println(product.price);
+			// System.out.println(W.credit );
+			// System.out.println(product.price);
 			return false;
 		}
 		double temp1 = 0;
 		double temp2 = 0;
-		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-				W.cityMap, W.map.get(W.position), W.map.get(local.getName()));
-		temp2 = dijkstra.getPathLength();
-		for (int i = 0; i < W.chargers.size(); i++) {
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
-			if (temp1 < dijkstra2.getPathLength()) {
-				temp1 = dijkstra2.getPathLength();
+		if (W instanceof DroneAgent) {
+			temp2 = Math
+			.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local2.getName()).getI()), 2) + Math.pow((W.map.get(W.position).getJ() - W.map.get(local2.getName()).getJ()), 2));
+			for (int i = 0; i < W.chargers.size(); i++) {
+				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+						W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
+				if (temp1 < dijkstra2.getPathLength()) {
+					temp1 = dijkstra2.getPathLength();
+				}
+
+			}
+		} else {
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					W.cityMap, W.map.get(W.position), W.map.get(local2.getName()));
+			temp2 = dijkstra.getPathLength();
+			for (int i = 0; i < W.chargers.size(); i++) {
+				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+						W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
+				if (temp1 < dijkstra2.getPathLength()) {
+					temp1 = dijkstra2.getPathLength();
+				}
 			}
 		}
 		if (W.batteryLeft < (temp1 + temp2)) {
-		
-			//System.out.println(	W.batteryLeft );
-			//System.out.println(temp1);
-			//System.out.println(temp2);
-			//System.out.println("falha aqui4");
+
+			// System.out.println( W.batteryLeft );
+			// System.out.println(temp1);
+			// System.out.println(temp2);
+			// System.out.println("falha aqui4");
 			return false;
 		}
 		return true;
