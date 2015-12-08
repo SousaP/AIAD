@@ -31,7 +31,7 @@ public class Job {
 	double reward;
 	public int time;
 	double fine;
-	Product product;
+	public Product product;
 	Boolean done;
 	Boolean beingDone;
 	public Local local;
@@ -120,7 +120,8 @@ public class Job {
 
 	public boolean able(Worker W) {
 		Tool temp = new Tool(product.getTool());
-		if (the_Job == to_do.MOUNT && !(W.getToolsString().contains(temp.getName()))) {
+		if (the_Job == to_do.MOUNT && (!(W.getToolsString().contains(temp.getName()) || 
+				(W.getLoadLeft() < product.getSize())))) {
 			// System.out.println(product.price);
 			// System.out.println("falha aqui1");
 			return false;

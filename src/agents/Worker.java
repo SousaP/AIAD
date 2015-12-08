@@ -594,6 +594,33 @@ public class Worker extends Agent {
 		}
 
 	}
+	
+	public class MountBehaviour extends TickerBehaviour {
+		private static final long serialVersionUID = 1L;
+		int tick = 0;
+
+		public MountBehaviour(Agent a) {
+			super(a, (myJob.time/2) * 1000);
+			Working = true;
+		}
+
+		@Override
+		protected void onTick() {
+			if (tick == 1) {
+				System.out.println("Producing " + myJob.product.getName());
+				tick++;
+				} 
+			else if(tick ==2){
+				Working = false;
+				loadLeft += myJob.product.getSize();
+				stop();
+			}
+			else{
+				tick++;
+			}
+		}
+
+	}
 
 	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
 		for (Entry<Job, Double> entry : map.entrySet()) {
