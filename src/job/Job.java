@@ -155,7 +155,7 @@ public class Job {
 			temp2 = dijkstra.getPathLength();
 			for (int i = 0; i < W.chargers.size(); i++) {
 				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-						W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
+						W.cityMap, local2, W.map.get(W.chargers.get(i).getName()));
 				if (temp1 < dijkstra2.getPathLength()) {
 					temp1 = dijkstra2.getPathLength();
 				}
