@@ -170,10 +170,10 @@ public class Job {
 		}
 		if (W.batteryLeft < (temp1 + temp2)) {
 
-			 System.out.println( W.batteryLeft );
-			 System.out.println(temp1);
-			 System.out.println(temp2);
-			 System.out.println("falha aqui4");
+			// System.out.println( W.batteryLeft );
+			// System.out.println(temp1);
+			// System.out.println(temp2);
+			// System.out.println("falha aqui4");
 			return false;
 		}
 		return true;

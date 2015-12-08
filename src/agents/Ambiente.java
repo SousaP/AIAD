@@ -14,16 +14,64 @@ import locals.Local;
 import product.Product;
 import tools.Tool;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Ambiente extends Worker {
 	private static final long serialVersionUID = 1L;
 	ambientBehaviour b;
 	HashMap<Job, List<AID>> bids = new HashMap<Job, List<AID>>();
 	HashMap<Job, AID> winning = new HashMap<Job, AID>();
+	HashMap<Local, List<Product>> produtos = new HashMap<Local, List<Product>>();
+
+	private void readProducts() {
+		try {
+
+			File inputFile = new File("map.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+			NodeList productList = doc.getElementsByTagName("Product");
+			for (int temp = 0; temp < productList.getLength(); temp++) {
+				Node nNode = productList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+
+					List<Product> value = produtos.get(map.get(eElement.getAttribute("Local")));
+					if (value != null) {
+					    value.add(new Product(new Tool(eElement.getAttribute("tool")),eElement.getAttribute("nome"),
+					    		Double.parseDouble(eElement.getAttribute("preço")), Integer.parseInt(eElement.getTextContent())));
+
+						produtos.put(map.get(eElement.getAttribute("Local")),value);
+					}
+					else
+					{
+						value = new ArrayList<Product>();
+					    value.add(new Product(new Tool(eElement.getAttribute("Tool")),eElement.getAttribute("nome"),
+					    		Double.parseDouble(eElement.getAttribute("preço")), Integer.parseInt(eElement.getTextContent())));
+
+						produtos.put(map.get(eElement.getAttribute("Local")),value);	
+					}
+				} 
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	protected void setup() {
 
@@ -39,6 +87,7 @@ public class Ambiente extends Worker {
 			e.printStackTrace();
 		}
 		super.setup();
+		readProducts();
 
 		addBehaviour(new ambientBehaviour(this, 7000));
 		addBehaviour(new SalesBehaviour(this));
@@ -69,8 +118,8 @@ public class Ambiente extends Worker {
 		@Override
 		public void action() {
 			ACLMessage msg = blockingReceive(500);
-			
-			if(msg == null)
+
+			if (msg == null)
 				return;
 
 			if (msg.getPerformative() == ACLMessage.INFORM) {
@@ -94,7 +143,7 @@ public class Ambiente extends Worker {
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-				//System.out.println("Jobs identificados: " + content);
+				// System.out.println("Jobs identificados: " + content);
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
@@ -117,7 +166,7 @@ public class Ambiente extends Worker {
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-				//System.out.println("Jobs identificados: " + content);
+				// System.out.println("Jobs identificados: " + content);
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
@@ -148,8 +197,10 @@ public class Ambiente extends Worker {
 					return;
 
 				Job job_to_complete = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]), map.get(split[9]));
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
+								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
+						map.get(split[9]), map.get(split[9]));
 
 				// ver se job faz parte da lista de jobs
 				for (int i = 0; i < Jobs_Created.size(); i++)
@@ -175,18 +226,18 @@ public class Ambiente extends Worker {
 							if (job_to_complete.getReward() <= Jobs_Created.get(i).getReward()) {
 								cfp = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 								cfp.addReceiver(msg.getSender());
-								
+
 								winning.put(Jobs_Created.get(i), msg.getSender());
 
-								
 								avisos = new ACLMessage(ACLMessage.FAILURE);
-								if(bids.containsKey(Jobs_Created.get(i)))
-								for (int a = 0; a < bids.get(Jobs_Created.get(i)).size(); a++)
-									if (!bids.get(Jobs_Created.get(i)).get(a).getLocalName().equals(msg.getSender().getLocalName()) )
-									{
-										avisos.addReceiver(bids.get(Jobs_Created.get(i)).get(a));
-										//System.out.println("A avisar : " +bids.get(Jobs_Created.get(i)).get(a).getLocalName());
-									}
+								if (bids.containsKey(Jobs_Created.get(i)))
+									for (int a = 0; a < bids.get(Jobs_Created.get(i)).size(); a++)
+										if (!bids.get(Jobs_Created.get(i)).get(a).getLocalName()
+												.equals(msg.getSender().getLocalName())) {
+											avisos.addReceiver(bids.get(Jobs_Created.get(i)).get(a));
+											// System.out.println("A avisar : "
+											// +bids.get(Jobs_Created.get(i)).get(a).getLocalName());
+										}
 
 								Jobs_Created.get(i).setReward(job_to_complete.getReward() - 1);
 
@@ -196,24 +247,19 @@ public class Ambiente extends Worker {
 								avisos.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 
 								send(avisos);
-								
-								
-								if(bids.containsKey(Jobs_Created.get(i))){
-								
-								 List<AID> temp = bids.get(Jobs_Created.get(i));
-								 if(!temp.contains(msg.getSender()))
-								 {
-									 temp.add(msg.getSender());
-									 bids.put(Jobs_Created.get(i),temp);
-								 }
-								}
-								else
-								{
+
+								if (bids.containsKey(Jobs_Created.get(i))) {
+
+									List<AID> temp = bids.get(Jobs_Created.get(i));
+									if (!temp.contains(msg.getSender())) {
+										temp.add(msg.getSender());
+										bids.put(Jobs_Created.get(i), temp);
+									}
+								} else {
 									List<AID> temp = new ArrayList<AID>();
 									temp.add(msg.getSender());
-									bids.put(Jobs_Created.get(i),temp);
+									bids.put(Jobs_Created.get(i), temp);
 								}
-								
 
 							} else {
 								cfp = new ACLMessage(ACLMessage.FAILURE);
@@ -256,6 +302,7 @@ public class Ambiente extends Worker {
 	}
 
 	class ambientBehaviour extends TickerBehaviour {
+		private static final long serialVersionUID = 1L;
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
@@ -264,29 +311,37 @@ public class Ambiente extends Worker {
 
 		}
 
-		private static final long serialVersionUID = 1L;
 
 		Job createRandomJob() {
-			String[] produtos = { "Kappa", "Keppo", "PogChamp", "Leeeroy", "RenoRich", "SecretLadin", "DansGame",
-					"BibleThump" };
-			String[] tools = { "f1", "f2", "f3" };
-			Product p = new Product(new Tool(tools[getRandomInt(0, tools.length - 1)]),
-					produtos[getRandomInt(0, produtos.length - 1)],getRandomInt(0, 50), getRandomInt(0, 100));
 
+			to_do temp = to_do.TRANSPORT;
 			Random random = new Random();
+			List<Local> keysList = new ArrayList<Local>();	
+			List<Product> listProdutos = new ArrayList<Product>();
+			
+			keysList.addAll(produtos.keySet());
+			
+			listProdutos = produtos.get(keysList.get(random.nextInt(keysList.size())));
+			
+			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
+			int Quantidade = getRandomInt(1, p.getQuantidade()/2);
+			
+			//System.out.println(p.toString());
+
+			Product p_job = new Product(new Tool(p.getTool()),p.getName(),Quantidade * p.getPrice(), Quantidade);
+
+			
 			List<String> keys = new ArrayList<String>(map.keySet());
 			String randomKey = keys.get(random.nextInt(keys.size()));
 			String randomKey2 = keys.get(random.nextInt(keys.size()));
 			Local local = map.get(randomKey);
 			Local local2 = map.get(randomKey2);
-			
-			to_do temp = to_do.TRANSPORT;
-			if(temp == to_do.TRANSPORT)
-			return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-					getRandomInt(50, 300), p, map.get("B"),map.get("H"));
+			if (temp == to_do.TRANSPORT)
+				return  new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
+						getRandomInt(50, 300), p_job,local,local2);			
 			else
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-						getRandomInt(50, 300), p, local,local);
+						getRandomInt(50, 300), p_job, local, local);
 
 		}
 
@@ -294,13 +349,11 @@ public class Ambiente extends Worker {
 		protected void onTick() {
 
 			System.out.println("TICK AMBIENTE ");
-				for (int i = 0; i < Jobs_Created.size(); i++)
-				if (!Jobs_Created.get(i).beingDone())
-					{
+			for (int i = 0; i < Jobs_Created.size(); i++)
+				if (!Jobs_Created.get(i).beingDone()) {
 
 					AID value = winning.get(Jobs_Created.get(i));
-					if(value != null)
-					{
+					if (value != null) {
 						ACLMessage msg = new ACLMessage(ACLMessage.AGREE);
 						msg.addReceiver(value);
 						// Responde Failure com job na mensagem
@@ -311,18 +364,15 @@ public class Ambiente extends Worker {
 						send(msg);
 
 						// myAgent.
-						
+
 					}
 					winning.remove(Jobs_Created.get(i));
 					Jobs_Created.set(i, createRandomJob());
 					bids.put(Jobs_Created.get(i), new ArrayList<AID>());
-					
 
-					}
-					
-					
+				}
 
-		} 
+		}
 
 	}
 }

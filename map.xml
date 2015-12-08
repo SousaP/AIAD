@@ -119,8 +119,30 @@
 	</wareHouse>
 	<store>
 		<node>I</node>
+
 	</store>
 	<hand>
 		<node>E</node>
 	</hand>
+	<Product nome="Laranja" tool="f1" preço="3" Local="B">300</Product>
+	<Product nome="Pera" tool="f2" preço="1" Local="B">250</Product>
+	<Product nome="Tangerina" tool="f2" preço="2" Local="B">100</Product>
+	<Product nome="Pessego" tool="f3" preço="4" Local="B">432</Product>
+	<Product nome="Maça" tool="f2" preço="1" Local="B">123</Product>
+	<Product nome="Ananas" tool="f1" preço="5" Local="B">312</Product>
+	<Product nome="Limao" tool="f2" preço="1" Local="B">393</Product>
+	<Product nome="Banana" tool="f3" preço="2" Local="B">234</Product>
+	<Product nome="Morango" tool="f2" preço="4" Local="B">543</Product>
+	<Product nome="Kiwi" tool="f1" preço="2" Local="B">213</Product>
+	<Product nome="Marmelo" tool="f3" preço="1" Local="B">242</Product>
+	<Product nome="Cereja" tool="f1" preço="5" Local="B">543</Product>
+	<Product nome="Laranja" tool="f1" preço="3" Local="I">300</Product>
+	<Product nome="Pera" tool="f2" preço="1" Local="I">250</Product>
+	<Product nome="Tangerina" tool="f2" preço="2" Local="I">100</Product>
+	<Product nome="Pessego" tool="f3" preço="4" Local="I">432</Product>
+	<Product nome="Maça" tool="f2" preço="1" Local="I">123</Product>
+	<Product nome="Ananas" tool="f1" preço="5" Local="I">312</Product>
+	<Product nome="Banana" tool="f3" preço="2" Local="I">234</Product>
+	<Product nome="Morango" tool="f2" preço="4" Local="I">543</Product>
+	<Product nome="Cereja" tool="f1" preço="5" Local="I">543</Product>
 </map>
