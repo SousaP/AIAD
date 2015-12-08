@@ -121,6 +121,23 @@ public class Ambiente extends Worker {
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
+			} else if (msg.getPerformative() == ACLMessage.INFORM) {
+
+				//ACLMessage reply = msg.createReply();
+
+				String split[] = msg.getContent().split(";");
+				if (split.length < 2)
+					return;
+
+				//String content = "jobs;";
+
+				if (split[0].contains("apanhei")){
+					
+				}
+				else if (split[0].contains("depositei")){
+					
+				}
+					
 			} else if (msg.getPerformative() == ACLMessage.PROPOSE) {
 
 				// System.out.println("Ambiente: Recebi um Propose" +

@@ -455,6 +455,7 @@ public class Worker extends Agent {
 			 * + cityMap.getEdgeTarget(temp).getName()); c +=
 			 * cityMap.getEdgeWeight(temp); } System.out.println(position);
 			 */
+			
 
 			if (w.position.equals(Destiny.getName())) {
 				stop();
@@ -485,6 +486,7 @@ public class Worker extends Agent {
 						break;
 					}
 				}
+				
 				next = iter1.next();
 				// System.out.println(cityMap.getEdgeTarget(next).getName());
 				// System.out.println(cityMap.getEdgeWeight(next));
@@ -492,6 +494,47 @@ public class Worker extends Agent {
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
 				time_lasted = counter;
 				// System.out.println(counter);
+				
+				//_______________MENSAGEM PARA AMBIETE QUANDO CHEGA A LOCAL PARA CARREGAR__________
+				
+				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+				//ID do ambiente
+				DFAgentDescription template = new DFAgentDescription();
+				DFAgentDescription[] result = null;
+
+				try {
+					result = DFService.search(myAgent, template);
+				} catch (FIPAException e) {
+					e.printStackTrace();
+				}
+				AID[] recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					if (recursos[i].getLocalName().contains("ambient")) {
+						cfp.addReceiver(recursos[i]);
+						break;
+					}
+				}
+				
+				//-------------
+				if(position.equals(myJob.local.getName())) {
+					cfp.setContent("apanhei;"+myJob.toString());
+					cfp.setConversationId("pick_up");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+					 System.out.println("Enviei um APANHEI" +cfp.getContent());
+					send(cfp);
+					
+				}
+				if(position.equals(myJob.local2.getName())) {
+					cfp.setContent("depositei;"+myJob.toString());
+					cfp.setConversationId("delivery");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+					System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
+					send(cfp);
+				}
+				
+				//_____________________________________________________
+				
 				break;
 			default:
 				// System.out.println("Not Zero");
