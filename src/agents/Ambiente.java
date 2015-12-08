@@ -132,7 +132,7 @@ public class Ambiente extends Worker {
 
 				Job job_to_complete = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]), map.get(split[9]));
 
 				// ver se job faz parte da lista de jobs
 				for (int i = 0; i < Jobs_Created.size(); i++)
@@ -259,10 +259,17 @@ public class Ambiente extends Worker {
 			Random random = new Random();
 			List<String> keys = new ArrayList<String>(map.keySet());
 			String randomKey = keys.get(random.nextInt(keys.size()));
+			String randomKey2 = keys.get(random.nextInt(keys.size()));
 			Local local = map.get(randomKey);
-
-			return new Job(to_do.getRandom(), type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-					getRandomInt(50, 300), p, local);
+			Local local2 = map.get(randomKey2);
+			
+			to_do temp = to_do.TRANSPORT;
+			if(temp == to_do.TRANSPORT)
+			return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
+					getRandomInt(50, 300), p, map.get("B"),map.get("H"));
+			else
+				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
+						getRandomInt(50, 300), p, local,local);
 
 		}
 

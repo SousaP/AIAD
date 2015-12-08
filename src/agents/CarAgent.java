@@ -11,14 +11,14 @@ import tools.Tool;
 public class CarAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	private static boolean ROAD = true; // true estrada, false ar
-	private static int BATTERY_CAPACITY = 500;
 	private static int LOAD_CAPACITY = 550;
 	private static Tool f1;
 	private static Tool f2;
 	
 
 	protected void setup(){
-		this.batteryLeft = BATTERY_CAPACITY;
+		BATTERY_CAPACITY = 500;
+		this.batteryLeft = 20;
 		loadLeft = LOAD_CAPACITY;
 		f1 = new Tool("f1");
 		f2 = new Tool("f2");

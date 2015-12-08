@@ -12,12 +12,12 @@ public class BikeAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	
 	private static boolean ROAD = true; //true estrada, false ar
-	private static int BATTERY_CAPACITY = 350;
 	private static int LOAD_CAPACITY = 300;
 	private static Tool f1;
 	private static Tool f3;
 	
 	protected void setup(){
+		BATTERY_CAPACITY = 350;
 		batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;
 		VELOCITY = 4;

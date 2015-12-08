@@ -29,14 +29,15 @@ public class Job {
 	public to_do the_Job;
 	public type job_Type;
 	double reward;
-	int time;
+	public int time;
 	double fine;
 	Product product;
 	Boolean done;
 	Boolean beingDone;
 	public Local local;
+	public Local local2;
 
-	public Job(to_do j, type ty, double r, int t, double f, Product p, Local l) {
+	public Job(to_do j, type ty, double r, int t, double f, Product p, Local l,Local l2) {
 		the_Job = j;
 		job_Type = ty;
 		reward = r;
@@ -46,6 +47,7 @@ public class Job {
 		done = false;
 		beingDone = false;
 		local = l;
+		local2 = l2;
 
 	}
 
@@ -71,6 +73,10 @@ public class Job {
 
 	public Boolean beingDone() {
 		return beingDone;
+	}
+	
+	public double getFine(){
+		return fine;
 	}
 
 	// Helps the agent to sort jobs in order to pick the most profitable one
@@ -108,7 +114,7 @@ public class Job {
 
 	public String toString() {
 		return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" + fine + ";"
-				+ product.getTool() + ";" + product.getName() + ";"+ product.getPrice() + ";" + product.getQuantidade() + ";" + local.getName()
+				+ product.getTool() + ";" + product.getName() + ";"+ product.getPrice() + ";" + product.getQuantidade() + ";" + local.getName() + ";" + local2.getName()
 				+ ";";
 	}
 

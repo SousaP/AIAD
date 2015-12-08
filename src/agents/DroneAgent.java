@@ -33,7 +33,6 @@ import tools.Tool;
 
 public class DroneAgent extends Worker {
 	private static final long serialVersionUID = 1L;
-	private static int BATTERY_CAPACITY = 250;
 	private static int LOAD_CAPACITY = 100;
 	private static Tool f1;
 	private float i;
@@ -43,6 +42,7 @@ public class DroneAgent extends Worker {
 	MoveRequestDrone moveBehav;
 
 	protected void setup() {
+		BATTERY_CAPACITY = 250;
 		this.batteryLeft = BATTERY_CAPACITY;
 		this.loadLeft = LOAD_CAPACITY;
 		VELOCITY = 5;
@@ -197,7 +197,7 @@ public class DroneAgent extends Worker {
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
 								Double.parseDouble(split[++i]),
 								new Product(new Tool(split[++i]), split[++i],Double.parseDouble(split[++i]), Integer.parseInt(split[++i])),
-								map.get(split[++i])
+								map.get(split[++i]),map.get(split[++i])
 
 						));
 

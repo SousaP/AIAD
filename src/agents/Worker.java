@@ -9,15 +9,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
-
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import job.Job;
 import job.Job.to_do;
 import job.Job.type;
@@ -42,7 +39,7 @@ import tools.Tool;
 
 public class Worker extends Agent {
 	private static final long serialVersionUID = 1L;
-	private static final int BATTERY_CAPACITY = 0;
+	protected static int BATTERY_CAPACITY = 0;
 	public List<Local> chargers;
 	List<Local> dumps;
 	List<Local> hands;
@@ -68,7 +65,7 @@ public class Worker extends Agent {
 	List<Job> jobs_disponiveis;
 	public int batteryLeft;
 	protected int loadLeft;
-	
+
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
 		return strin_tempo.split(";");
@@ -111,17 +108,19 @@ public class Worker extends Agent {
 			return;
 		positionBehav = new ReceiveMessageBehaviour();
 		addBehaviour(positionBehav);
-		moveBehav = new MoveRequest(this, map.get("A"), pathTo(map.get(position), map.get("A")));
-		addBehaviour(moveBehav);
+		// moveBehav = new MoveRequest(this, map.get("A"),
+		// pathTo(map.get(position), map.get("A")));
+		// addBehaviour(moveBehav);
 
 	}
 
 	public List<Tool> getTools() {
 		return tools;
 	}
+
 	public List<String> getToolsString() {
 		List<String> array = new ArrayList<String>();
-		for(int i = 0; i < tools.size(); i++)
+		for (int i = 0; i < tools.size(); i++)
 			array.add(tools.get(i).getName());
 		return array;
 	}
@@ -251,7 +250,6 @@ public class Worker extends Agent {
 	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-
 		public ReceiveMessageBehaviour() {
 			super();
 		}
@@ -283,7 +281,8 @@ public class Worker extends Agent {
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
 
-			//	System.out.println(getLocalName() + ": recebi " +  msg.getContent());
+				// System.out.println(getLocalName() + ": recebi " +
+				// msg.getContent());
 				// Perguntar pela posiçao Jobs?
 				// ACLMessage reply = msg.createReply();
 
@@ -299,12 +298,12 @@ public class Worker extends Agent {
 				if (split[0].contains("jobs")) {
 					jobs_disponiveis = new ArrayList<Job>();
 					for (int i = 1; i < split.length; i++) {
-						
+
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
-								Double.parseDouble(split[++i]),
-								new Product(new Tool(split[++i]), split[++i],Double.parseDouble(split[++i]) ,Integer.parseInt(split[++i])),
-								map.get(split[++i])));
+								Double.parseDouble(split[++i]), new Product(new Tool(split[++i]), split[++i],
+										Double.parseDouble(split[++i]), Integer.parseInt(split[++i])),
+								map.get(split[++i]), map.get(split[++i])));
 						;
 					}
 
@@ -319,7 +318,9 @@ public class Worker extends Agent {
 					cfp.addReceiver(msg.getSender());
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
-						// System.out.println("WUT" );
+
+						if(batteryLeft < BATTERY_CAPACITY / 4 )
+							checkForBattery();
 						Working = false;
 						return;
 					}
@@ -328,7 +329,8 @@ public class Worker extends Agent {
 					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 																			// value
 
-					//  System.out.println("Enviei um propose" +  cfp.getContent());
+					// System.out.println("Enviei um propose" +
+					// cfp.getContent());
 					send(cfp);
 					// myAgent.send(cfp);
 					// mt =
@@ -344,8 +346,10 @@ public class Worker extends Agent {
 					return;
 
 				Job job_rejected = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
+								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
+						map.get(split[9]), map.get(split[10]));
 				// Fazer novo pedido
 				Working = false;
 
@@ -356,22 +360,38 @@ public class Worker extends Agent {
 					return;
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
+								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
+						map.get(split[9]), map.get(split[10]));
 
 				// TODO poe a trabalhar ja
 				myJob = job_accepted;
+
+				if (myJob.the_Job == to_do.TRANSPORT) {
+
+					List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
+					path.addAll(pathTo(map.get(myJob.local.getName()), map.get(myJob.local2.getName())));
+
+
+					moveBehav = new MoveRequest((Worker) myAgent, myJob.local2, path);
+					addBehaviour(moveBehav);
+
+				}
+
 				Working = true;
 			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 				// ESPERA PELO FIM DO LEILAO
-				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL" + msg.getContent());
+				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL " + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]) ,Integer.parseInt(split[8])), map.get(split[9]));
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
+								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
+						map.get(split[9]), map.get(split[10]));
 
 				myJob = job_accepted;
 				Working = true;
@@ -380,14 +400,16 @@ public class Worker extends Agent {
 				// COMEÇA A TRABALHAR
 				Working = true;
 			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
-				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL" + msg.getContent());
+				System.out.println(getLocalName() + "Recebi um ACCEPT_PROPOSAL " + msg.getContent());
 				String split[] = msg.getContent().split(";");
 				if (split.length < 2)
 					return;
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
-						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
+						Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
+								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
+						map.get(split[9]), map.get(split[10]));
 
 				myJob = job_accepted;
 
@@ -406,6 +428,7 @@ public class Worker extends Agent {
 		Local Destiny;
 		List<DefaultWeightedEdge> caminho;
 		int counter;
+		int time_lasted;
 		DefaultWeightedEdge next;
 		Iterator<DefaultWeightedEdge> iter1;
 		Worker w;
@@ -420,19 +443,18 @@ public class Worker extends Agent {
 
 			iter1 = caminho.iterator();
 
-			/*int c = 0;
-			Iterator<DefaultWeightedEdge> iter = this.caminho.iterator();
-			System.out.println("COMEÇAR O TICK");
-			while(iter.hasNext()){
-				
-				DefaultWeightedEdge temp = iter.next();
-				System.out.println(cityMap.getEdgeSource(temp).getName() + "    " + cityMap.getEdgeTarget(temp).getName());
-				c += cityMap.getEdgeWeight(temp);
-			}
-			System.out.println(position);*/
-			
+			/*
+			 * int c = 0; Iterator<DefaultWeightedEdge> iter =
+			 * this.caminho.iterator(); System.out.println("COMEÇAR O TICK");
+			 * while(iter.hasNext()){
+			 * 
+			 * DefaultWeightedEdge temp = iter.next();
+			 * System.out.println(cityMap.getEdgeSource(temp).getName() + "    "
+			 * + cityMap.getEdgeTarget(temp).getName()); c +=
+			 * cityMap.getEdgeWeight(temp); } System.out.println(position);
+			 */
 
-			if(w.position.equals(Destiny.getName())){
+			if (w.position.equals(Destiny.getName())) {
 				stop();
 			}
 		}
@@ -445,7 +467,7 @@ public class Worker extends Agent {
 
 		@Override
 		protected void onTick() {
-			
+
 			switch (counter) {
 			case 0:
 				if (next != null) {
@@ -454,8 +476,9 @@ public class Worker extends Agent {
 						position = cityMap.getEdgeSource(next).getName();
 					else
 						position = cityMap.getEdgeTarget(next).getName();
-					if (Destiny.getName() == position) {
+					if (Destiny.getName() == position && !iter1.hasNext()) {
 						System.out.println("Paragem");
+						
 						stop();
 						break;
 					}
@@ -465,19 +488,67 @@ public class Worker extends Agent {
 				// System.out.println(cityMap.getEdgeWeight(next));
 
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
+				time_lasted = counter;
 				// System.out.println(counter);
 				break;
 			default:
 				// System.out.println("Not Zero");
 				counter = counter - ((10 - VELOCITY) * 100);
-				w.batteryLeft = w.batteryLeft--;
+				batteryLeft--;
 				break;
 
 			}
 
 		}
+
+		@Override
+		public int onEnd() {
+
+			if (myJob.the_Job == to_do.TRANSPORT) {
+				credit += myJob.getReward();
+				if (time_lasted > myJob.time)
+					credit -= myJob.getFine();
+				Working = false;
+
+				System.out.println("Battery " + batteryLeft);
+
+			}
+
+			
+			for(int i = 0; i < chargers.size(); i++)
+				if(position.equals(chargers.get(i).getName()))
+					{
+					myAgent.addBehaviour(new ChargeBehaviour(myAgent));
+					return 0;
+					}
+			
+
+			return 0;
+		}
 	}
 
+	public class ChargeBehaviour extends TickerBehaviour {
+		private static final long serialVersionUID = 1L;
+		int tick = 0;
+		public ChargeBehaviour(Agent a) {
+			super(a, 1000);
+			Working = true;
+		}
+
+		@Override
+		protected void onTick() {
+			if(tick > 2)
+			{
+				System.out.println(getLocalName() + " Charged");
+				stop();
+				Working = false;
+			}
+			else tick++;
+			
+		}
+		
+	}
+	
 	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
 		for (Entry<Job, Double> entry : map.entrySet()) {
 			if (Objects.equals(value, entry.getValue())) {
@@ -565,41 +636,41 @@ public class Worker extends Agent {
 		}
 
 	}
-	
+
 	public int getBatLeft() {
 		return 0;
 	}
-	
-	public int getMaxBat(){
+
+	public int getMaxBat() {
 		return BATTERY_CAPACITY;
 	}
 
 	public int getLoadLeft() {
 		return 0;
 	}
-	
-	public void checkForBattery(){
+
+	public void checkForBattery() {
 		double temp = Double.MAX_VALUE;
 		Local nearest = null;
 		Local L = null;
 		double temp2 = Double.MAX_VALUE;
-		for(int i = 0; i<Jobs_Created.size(); i++){
+		for (int i = 0; i < jobs_disponiveis.size(); i++) {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(Jobs_Created.get(i).local.getName()));
-			if(temp2 < dijkstra.getPathLength()){
+					cityMap, map.get(position), map.get(jobs_disponiveis.get(i).local.getName()));
+			if (temp2 < dijkstra.getPathLength()) {
 				temp2 = dijkstra.getPathLength();
-				L = Jobs_Created.get(i).local;
+				L = jobs_disponiveis.get(i).local;
 			}
 		}
-		for(int i = 0; i<chargers.size(); i++){
+		for (int i = 0; i < chargers.size(); i++) {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
 					cityMap, L, map.get(chargers.get(i).getName()));
-			if(temp < dijkstra.getPathLength()){
+			if (temp < dijkstra.getPathLength()) {
 				temp = dijkstra.getPathLength();
 				nearest = chargers.get(i);
 			}
 		}
-		if(batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)){
+		if (batteryLeft < (temp + temp2) && (jobs_disponiveis.size() != 0)) {
 			moveBehav = new MoveRequest(this, nearest, pathTo(map.get(position), nearest));
 			addBehaviour(moveBehav);
 			this.batteryLeft = BATTERY_CAPACITY;

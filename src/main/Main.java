@@ -27,7 +27,7 @@ public class Main {
 			//drone.start();
 
 			car1.start();
-			car2.start();
+//			car2.start();
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
