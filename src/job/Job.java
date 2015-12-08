@@ -78,6 +78,13 @@ public class Job {
 	public double getFine() {
 		return fine;
 	}
+	
+	public Local getLocal(){
+		return local;
+	}
+	public Local getLocal2(){
+		return local2;
+	}
 
 	// Helps the agent to sort jobs in order to pick the most profitable one
 	public double getProbabilityOfChoose(Local myLocal, Worker w) {

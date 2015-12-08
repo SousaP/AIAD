@@ -18,7 +18,7 @@ public class CarAgent extends Worker {
 
 	protected void setup(){
 		BATTERY_CAPACITY = 500;
-		this.batteryLeft = 20;
+		this.batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;
 		f1 = new Tool("f1");
 		f2 = new Tool("f2");

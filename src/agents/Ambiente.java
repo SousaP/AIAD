@@ -52,20 +52,20 @@ public class Ambiente extends Worker {
 
 					List<Product> value = produtos.get(map.get(eElement.getAttribute("Local")));
 					if (value != null) {
-					    value.add(new Product(new Tool(eElement.getAttribute("tool")),eElement.getAttribute("nome"),
-					    		Double.parseDouble(eElement.getAttribute("preço")), Integer.parseInt(eElement.getTextContent())));
+						value.add(new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
+								Double.parseDouble(eElement.getAttribute("preço")),
+								Integer.parseInt(eElement.getTextContent())));
 
-						produtos.put(map.get(eElement.getAttribute("Local")),value);
-					}
-					else
-					{
+						produtos.put(map.get(eElement.getAttribute("Local")), value);
+					} else {
 						value = new ArrayList<Product>();
-					    value.add(new Product(new Tool(eElement.getAttribute("Tool")),eElement.getAttribute("nome"),
-					    		Double.parseDouble(eElement.getAttribute("preço")), Integer.parseInt(eElement.getTextContent())));
+						value.add(new Product(new Tool(eElement.getAttribute("Tool")), eElement.getAttribute("nome"),
+								Double.parseDouble(eElement.getAttribute("preço")),
+								Integer.parseInt(eElement.getTextContent())));
 
-						produtos.put(map.get(eElement.getAttribute("Local")),value);	
+						produtos.put(map.get(eElement.getAttribute("Local")), value);
 					}
-				} 
+				}
 			}
 
 		} catch (Exception e) {
@@ -123,8 +123,7 @@ public class Ambiente extends Worker {
 				return;
 
 			if (msg.getPerformative() == ACLMessage.INFORM) {
-				// System.out.println(getLocalName() + ": recebi " +
-				// msg.getContent());
+				System.out.println(getLocalName() + ": recebi " + msg.getContent());
 				ACLMessage reply = msg.createReply();
 
 				String split[] = msg.getContent().split(";");
@@ -137,56 +136,53 @@ public class Ambiente extends Worker {
 				// System.out.println("Sender: " + msg.getSender());
 
 				if (split[0].contains("jobs") && split[1].contains("?"))
-					for (int i = 0; i < Jobs_Created.size(); i++)
+				{	for (int i = 0; i < Jobs_Created.size(); i++)
 						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
 							content = content + Jobs_Created.get(i).toString();
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-				// System.out.println("Jobs identificados: " + content);
-				reply.setContent(content);
-				// envia mensagem
-				send(reply);
-			}
-
-			else if (msg.getPerformative() == ACLMessage.INFORM) {
-
-				ACLMessage reply = msg.createReply();
-
-				String split[] = msg.getContent().split(";");
-				if (split.length < 2)
-					return;
-
-				String content = "jobs;";
-
-				if (split[0].contains("jobs") && split[1].contains("?"))
-					for (int i = 0; i < Jobs_Created.size(); i++)
-						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
-							content = content + Jobs_Created.get(i).toString();
-							// System.out.println("Jobs identificados: " +
-							// Jobs_Created.get(i).toString());
+				}
+				else if (split[0].contains("apanhei")) {
+					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
+							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
+							Double.parseDouble(split[5]), new Product(new Tool(split[6]), split[7],
+									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
+							map.get(split[10]), map.get(split[11]));
+					Local l = map.get(job_to_complete.getLocal().getName());
+					List<Product> temp = produtos.get(l);
+					System.out.println("SZIE  " + temp.size());
+					for(int i = 0; i < temp.size(); i++)
+						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
+							System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+							temp.get(i).removeQ(job_to_complete.product.getQuantidade());
+							System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+							break;
 						}
+					return;
+
+				} else if (split[0].contains("depositei")) {
+					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
+							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
+							Double.parseDouble(split[5]), new Product(new Tool(split[6]), split[7],
+									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
+							map.get(split[10]), map.get(split[11]));
+					Local l = map.get(job_to_complete.getLocal2().getName());
+					List<Product> temp = produtos.get(l);
+					System.out.println("SZIE  " + temp.size());
+					for(int i = 0; i < temp.size(); i++)
+						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
+							System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+							temp.get(i).adicionaQ(job_to_complete.product.getQuantidade());
+							System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+							break;
+						}
+					return;
+				}
 				// System.out.println("Jobs identificados: " + content);
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
-			} else if (msg.getPerformative() == ACLMessage.INFORM) {
-
-				//ACLMessage reply = msg.createReply();
-
-				String split[] = msg.getContent().split(";");
-				if (split.length < 2)
-					return;
-
-				//String content = "jobs;";
-
-				if (split[0].contains("apanhei")){
-					
-				}
-				else if (split[0].contains("depositei")){
-					
-				}
-					
 			} else if (msg.getPerformative() == ACLMessage.PROPOSE) {
 
 				// System.out.println("Ambiente: Recebi um Propose" +
@@ -303,6 +299,7 @@ public class Ambiente extends Worker {
 
 	class ambientBehaviour extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
+
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
@@ -311,34 +308,30 @@ public class Ambiente extends Worker {
 
 		}
 
-
 		Job createRandomJob() {
 
 			to_do temp = to_do.TRANSPORT;
 			Random random = new Random();
-			List<Local> keysList = new ArrayList<Local>();	
+			List<Local> keysList = new ArrayList<Local>();
 			List<Product> listProdutos = new ArrayList<Product>();
-			
+
 			keysList.addAll(produtos.keySet());
 			
-			listProdutos = produtos.get(keysList.get(random.nextInt(keysList.size())));
-			
+			Local levantar = keysList.get(random.nextInt(keysList.size()));
+
+			listProdutos = produtos.get(levantar);
+
 			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
-			int Quantidade = getRandomInt(1, p.getQuantidade()/2);
-			
-			//System.out.println(p.toString());
+			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
 
-			Product p_job = new Product(new Tool(p.getTool()),p.getName(),Quantidade * p.getPrice(), Quantidade);
+			// System.out.println(p.toString());
 
-			
-			List<String> keys = new ArrayList<String>(map.keySet());
-			String randomKey = keys.get(random.nextInt(keys.size()));
-			String randomKey2 = keys.get(random.nextInt(keys.size()));
-			Local local = map.get(randomKey);
-			Local local2 = map.get(randomKey2);
+			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
+
+			Local local = keysList.get(random.nextInt(keysList.size()));
 			if (temp == to_do.TRANSPORT)
-				return  new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
-						getRandomInt(50, 300), p_job,local,local2);			
+				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
+						getRandomInt(50, 300), p_job, levantar, local);
 			else
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
 						getRandomInt(50, 300), p_job, local, local);

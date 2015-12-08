@@ -35,4 +35,14 @@ public class Product {
 	public int getSize() {
 		return size;
 	}
+	
+	public void removeQ(int Q)
+	{
+		Quantidade -= Q;
+	}
+	
+	public void adicionaQ(int Q)
+	{
+		Quantidade += Q;
+	}
 }

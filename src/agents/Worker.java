@@ -517,6 +517,7 @@ public class Worker extends Agent {
 				}
 				
 				//-------------
+				if(myJob != null){
 				if(position.equals(myJob.local.getName())) {
 					cfp.setContent("apanhei;"+myJob.toString());
 					cfp.setConversationId("pick_up");
@@ -525,12 +526,6 @@ public class Worker extends Agent {
 					send(cfp);
 					
 				}
-				if(position.equals(myJob.local2.getName())) {
-					cfp.setContent("depositei;"+myJob.toString());
-					cfp.setConversationId("delivery");
-					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-					System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
-					send(cfp);
 				}
 				
 				//_____________________________________________________
@@ -560,6 +555,33 @@ public class Worker extends Agent {
 					System.out.println("Battery " + batteryLeft);
 
 				}
+			
+			
+			else if(position.equals(myJob.local2.getName())) {
+				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+				//ID do ambiente
+				DFAgentDescription template = new DFAgentDescription();
+				DFAgentDescription[] result = null;
+
+				try {
+					result = DFService.search(myAgent, template);
+				} catch (FIPAException e) {
+					e.printStackTrace();
+				}
+				AID[] recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					if (recursos[i].getLocalName().contains("ambient")) {
+						cfp.addReceiver(recursos[i]);
+						break;
+					}
+				}
+				cfp.setContent("depositei;"+myJob.toString());
+				cfp.setConversationId("delivery");
+				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+				System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
+				send(cfp);
+			}
 			}
 			for (int i = 0; i < chargers.size(); i++)
 				if (position.equals(chargers.get(i).getName())) {
