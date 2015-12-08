@@ -140,10 +140,13 @@ public class Job {
 		double temp2 = 0;
 		if (W.getLocalName().contains("Drone")) {
 			temp2 = Math
-			.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local2.getName()).getI()), 2) + Math.pow((W.map.get(W.position).getJ() - W.map.get(local2.getName()).getJ()), 2));
+			.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local.getName()).getI()), 2) + Math.pow((W.map.get(W.position).getJ() - W.map.get(local.getName()).getJ()), 2));
+			temp2 += Math
+					.sqrt(Math.pow((W.map.get(local.getName()).getI() - W.map.get(local2.getName()).getI()), 2) + Math.pow((W.map.get(local.getName()).getJ() - W.map.get(local2.getName()).getJ()), 2));
+					
 			for (int i = 0; i < W.chargers.size(); i++) {
 				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-						W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
+						W.cityMap, W.map.get(local2.getName()), W.map.get(W.chargers.get(i).getName()));
 				if (temp1 < dijkstra2.getPathLength()) {
 					temp1 = dijkstra2.getPathLength();
 				}
@@ -151,13 +154,16 @@ public class Job {
 			}
 		} else {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					W.cityMap, W.map.get(W.position), W.map.get(local2.getName()));
+					W.cityMap, W.map.get(W.position), W.map.get(local.getName()));
 			temp2 = dijkstra.getPathLength();
+			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+					W.cityMap, W.map.get(local.getName()), W.map.get(local2.getName()));
+			temp2 += dijkstra2.getPathLength();
 			for (int i = 0; i < W.chargers.size(); i++) {
-				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-						W.cityMap, local, W.map.get(W.chargers.get(i).getName()));
-				if (temp1 < dijkstra2.getPathLength()) {
-					temp1 = dijkstra2.getPathLength();
+				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra3 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+						W.cityMap, W.map.get(local2.getName()), W.map.get(W.chargers.get(i).getName()));
+				if (temp1 < dijkstra3.getPathLength()) {
+					temp1 = dijkstra3.getPathLength();
 				}
 			}
 		}
