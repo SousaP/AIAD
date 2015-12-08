@@ -154,9 +154,9 @@ public class Ambiente extends Worker {
 					System.out.println("SZIE  " + temp.size());
 					for(int i = 0; i < temp.size(); i++)
 						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
-							System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+						//	System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
 							temp.get(i).removeQ(job_to_complete.product.getQuantidade());
-							System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+						//	System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
 							break;
 						}
 					return;
@@ -172,9 +172,9 @@ public class Ambiente extends Worker {
 					System.out.println("SZIE  " + temp.size());
 					for(int i = 0; i < temp.size(); i++)
 						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
-							System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+						//	System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
 							temp.get(i).adicionaQ(job_to_complete.product.getQuantidade());
-							System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+						//	System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
 							break;
 						}
 					return;
@@ -327,8 +327,12 @@ public class Ambiente extends Worker {
 			// System.out.println(p.toString());
 
 			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
-
-			Local local = keysList.get(random.nextInt(keysList.size()));
+			
+			Local local = null;
+			do{
+			local = keysList.get(random.nextInt(keysList.size()));
+			}while(local.getName().equals(levantar.getName()));
+			
 			if (temp == to_do.TRANSPORT)
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);

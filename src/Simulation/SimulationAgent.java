@@ -206,11 +206,13 @@ public class SimulationAgent extends GuiAgent {
 				Node nNode = storeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
+					
 
 					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					stores.add(map.get(node_temp));
 				}
 			}
+
 			NodeList handList = doc.getElementsByTagName("hand");
 			for (int temp = 0; temp < handList.getLength(); temp++) {
 				Node nNode = handList.item(temp);

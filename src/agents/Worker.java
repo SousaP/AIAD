@@ -455,19 +455,8 @@ public class Worker extends Agent {
 			 * + cityMap.getEdgeTarget(temp).getName()); c +=
 			 * cityMap.getEdgeWeight(temp); } System.out.println(position);
 			 */
-			
 
-			if (w.position.equals(Destiny.getName())) {
-				stop();
-			}
 		}
-
-		public void updateMoveResquest(Local Destiny, List<DefaultWeightedEdge> caminho) {
-			this.Destiny = Destiny;
-			this.caminho = caminho;
-			counter = 0;
-		}
-
 		@Override
 		protected void onTick() {
 
@@ -486,7 +475,7 @@ public class Worker extends Agent {
 						break;
 					}
 				}
-				
+
 				next = iter1.next();
 				// System.out.println(cityMap.getEdgeTarget(next).getName());
 				// System.out.println(cityMap.getEdgeWeight(next));
@@ -494,11 +483,12 @@ public class Worker extends Agent {
 				counter = (int) (cityMap.getEdgeWeight(next) * (10 - VELOCITY) * 100);
 				time_lasted = counter;
 				// System.out.println(counter);
-				
-				//_______________MENSAGEM PARA AMBIETE QUANDO CHEGA A LOCAL PARA CARREGAR__________
-				
+
+				// _______________MENSAGEM PARA AMBIETE QUANDO CHEGA A LOCAL
+				// PARA CARREGAR__________
+
 				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
-				//ID do ambiente
+				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
 				DFAgentDescription[] result = null;
 
@@ -515,21 +505,22 @@ public class Worker extends Agent {
 						break;
 					}
 				}
-				
-				//-------------
-				if(myJob != null){
-				if(position.equals(myJob.local.getName())) {
-					cfp.setContent("apanhei;"+myJob.toString());
-					cfp.setConversationId("pick_up");
-					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-					 System.out.println("Enviei um APANHEI" +cfp.getContent());
-					send(cfp);
-					
+
+				// -------------
+				if (myJob != null) {
+					if (position.equals(myJob.local.getName())) {
+						cfp.setContent("apanhei;" + myJob.toString());
+						cfp.setConversationId("pick_up");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						System.out.println("Enviei um APANHEI" + cfp.getContent());
+						send(cfp);
+
+					}
 				}
-				}
-				
-				//_____________________________________________________
-				
+
+				// _____________________________________________________
+
 				break;
 			default:
 				// System.out.println("Not Zero");
@@ -550,38 +541,38 @@ public class Worker extends Agent {
 					if (time_lasted > myJob.time)
 						credit -= myJob.getFine();
 					Working = false;
-					myJob = null;
+					
 
 					System.out.println("Battery " + batteryLeft);
 
-				}
-			
-			
-			else if(position.equals(myJob.local2.getName())) {
-				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
-				//ID do ambiente
-				DFAgentDescription template = new DFAgentDescription();
-				DFAgentDescription[] result = null;
+				 if (position.equals(myJob.local2.getName())) {
+					ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+					// ID do ambiente
+					DFAgentDescription template = new DFAgentDescription();
+					DFAgentDescription[] result = null;
 
-				try {
-					result = DFService.search(myAgent, template);
-				} catch (FIPAException e) {
-					e.printStackTrace();
-				}
-				AID[] recursos = new AID[result.length];
-				for (int i = 0; i < result.length; ++i) {
-					recursos[i] = result[i].getName();
-					if (recursos[i].getLocalName().contains("ambient")) {
-						cfp.addReceiver(recursos[i]);
-						break;
+					try {
+						result = DFService.search(myAgent, template);
+					} catch (FIPAException e) {
+						e.printStackTrace();
 					}
+					AID[] recursos = new AID[result.length];
+					for (int i = 0; i < result.length; ++i) {
+						recursos[i] = result[i].getName();
+						if (recursos[i].getLocalName().contains("ambient")) {
+							cfp.addReceiver(recursos[i]);
+							break;
+						}
+					}
+					cfp.setContent("depositei;" + myJob.toString());
+					cfp.setConversationId("delivery");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																			// value
+					//System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
+					send(cfp);
 				}
-				cfp.setContent("depositei;"+myJob.toString());
-				cfp.setConversationId("delivery");
-				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-				System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
-				send(cfp);
-			}
+				 }
+				myJob = null;
 			}
 			for (int i = 0; i < chargers.size(); i++)
 				if (position.equals(chargers.get(i).getName())) {
@@ -616,13 +607,13 @@ public class Worker extends Agent {
 		}
 
 	}
-	
+
 	public class MountBehaviour extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 		int tick = 0;
 
 		public MountBehaviour(Agent a) {
-			super(a, (myJob.time/2) * 1000);
+			super(a, (myJob.time / 2) * 1000);
 			Working = true;
 		}
 
@@ -631,13 +622,11 @@ public class Worker extends Agent {
 			if (tick == 1) {
 				System.out.println("Producing " + myJob.product.getName());
 				tick++;
-				} 
-			else if(tick ==2){
+			} else if (tick == 2) {
 				Working = false;
 				loadLeft += myJob.product.getSize();
 				stop();
-			}
-			else{
+			} else {
 				tick++;
 			}
 		}
