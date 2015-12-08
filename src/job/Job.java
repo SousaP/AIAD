@@ -116,21 +116,21 @@ public class Job {
 		Tool temp = new Tool(product.getTool());
 		if (the_Job == to_do.MOUNT && !(W.getToolsString().contains(temp.getName())))
 		{
-			System.out.println(product.price);
-			System.out.println("falha aqui1");
+		//	System.out.println(product.price);
+		//	System.out.println("falha aqui1");
 			return false;
 		}
 		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize()))
 		{
-			System.out.println("falha aqui2");
+		//	System.out.println("falha aqui2");
 			return false;
 		}
 		if (the_Job == to_do.ACQUISITION && (W.credit < product.price))
 		{
-			System.out.println("falha aqui3");
+			//System.out.println("falha aqui3");
 
-			System.out.println(W.credit );
-			System.out.println(product.price);
+			//System.out.println(W.credit );
+			//System.out.println(product.price);
 			return false;
 		}
 		double temp1 = 0;
@@ -147,10 +147,10 @@ public class Job {
 		}
 		if (W.batteryLeft < (temp1 + temp2)) {
 		
-			System.out.println(	W.batteryLeft );
-			System.out.println(temp1);
-			System.out.println(temp2);
-			System.out.println("falha aqui4");
+			//System.out.println(	W.batteryLeft );
+			//System.out.println(temp1);
+			//System.out.println(temp2);
+			//System.out.println("falha aqui4");
 			return false;
 		}
 		return true;

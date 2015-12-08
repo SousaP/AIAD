@@ -24,7 +24,7 @@ public class SimulationFrame extends JFrame {
 
 	public SimulationFrame(SimulationAgent simulationAgent) {
 		super();
-		setSize(600, 600);
+		setSize(650, 600);
 		setTitle("Simulation");
 		myAgent = simulationAgent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,9 +52,9 @@ public class SimulationFrame extends JFrame {
 			 * g2.draw(line);
 			 */
 
-			g.drawRect(10, 10, 750, 750);
+			g.drawRect(0, 0, 750, 750);
 			g.setColor(Color.GREEN);
-			g.fillRect(10, 10, 750, 750);
+			g.fillRect(0, 0, 750, 750);
 			desenhaGrafo(g2, myAgent.map.get("A"));
 			desenhaLocais(g2);
 
@@ -104,30 +104,40 @@ public class SimulationFrame extends JFrame {
 		for (int i = 0; i < myAgent.chargers.size(); i++) {
 			g.drawRect(myAgent.chargers.get(i).getJ() * 50 + 75, myAgent.chargers.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.YELLOW);
+			g.drawString("Charger", myAgent.chargers.get(i).getJ() * 50 + 85,
+					myAgent.chargers.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.chargers.get(i).getJ() * 50 + 75, myAgent.chargers.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.dumps.size(); i++) {
 			g.drawRect(myAgent.dumps.get(i).getJ() * 50 + 75, myAgent.dumps.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.BLUE);
+			g.drawString("Dumps", myAgent.dumps.get(i).getJ() * 50 + 85,
+					myAgent.dumps.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.dumps.get(i).getJ() * 50 + 75, myAgent.dumps.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.stores.size(); i++) {
 			g.drawRect(myAgent.stores.get(i).getJ() * 50 + 75, myAgent.stores.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.RED);
+			g.drawString("Stores", myAgent.stores.get(i).getJ() * 50 + 85,
+					myAgent.stores.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.stores.get(i).getJ() * 50 + 75, myAgent.stores.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.houses.size(); i++) {
 			g.drawRect(myAgent.houses.get(i).getJ() * 50 + 75, myAgent.houses.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.MAGENTA);
+			g.drawString("WareHouse", myAgent.houses.get(i).getJ() * 50 + 85,
+					myAgent.houses.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.houses.get(i).getJ() * 50 + 75, myAgent.houses.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.hands.size(); i++) {
 			g.drawRect(myAgent.hands.get(i).getJ() * 50 + 75, myAgent.hands.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.ORANGE);
+			g.drawString("Hands", myAgent.hands.get(i).getJ() * 50 + 85,
+					myAgent.hands.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.hands.get(i).getJ() * 50 + 75, myAgent.hands.get(i).getI() * 50 + 75, 10, 10);
 		}
 

@@ -283,7 +283,7 @@ public class Worker extends Agent {
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
 
-				System.out.println(getLocalName() + ": recebi " +  msg.getContent());
+			//	System.out.println(getLocalName() + ": recebi " +  msg.getContent());
 				// Perguntar pela posiçao Jobs?
 				// ACLMessage reply = msg.createReply();
 
