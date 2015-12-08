@@ -656,10 +656,10 @@ public class Worker extends Agent {
 		double temp2 = Double.MAX_VALUE;
 		for (int i = 0; i < jobs_disponiveis.size(); i++) {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(jobs_disponiveis.get(i).local.getName()));
+					cityMap, map.get(position), map.get(jobs_disponiveis.get(i).local2.getName()));
 			if (temp2 < dijkstra.getPathLength()) {
 				temp2 = dijkstra.getPathLength();
-				L = jobs_disponiveis.get(i).local;
+				L = map.get(jobs_disponiveis.get(i).local2.getName());
 			}
 		}
 		for (int i = 0; i < chargers.size(); i++) {
@@ -667,7 +667,7 @@ public class Worker extends Agent {
 					cityMap, L, map.get(chargers.get(i).getName()));
 			if (temp < dijkstra.getPathLength()) {
 				temp = dijkstra.getPathLength();
-				nearest = chargers.get(i);
+				nearest = map.get(chargers.get(i).getName());
 			}
 		}
 		if (batteryLeft < (temp + temp2) && (jobs_disponiveis.size() != 0)) {
