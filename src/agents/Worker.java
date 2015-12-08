@@ -319,8 +319,11 @@ public class Worker extends Agent {
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
 
-						if(batteryLeft < BATTERY_CAPACITY / 4 )
+						if (batteryLeft < BATTERY_CAPACITY / 4) {
+							System.out.println("PRECISO DE BATERIA");
 							checkForBattery();
+							return;
+						}
 						Working = false;
 						return;
 					}
@@ -372,7 +375,6 @@ public class Worker extends Agent {
 
 					List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
 					path.addAll(pathTo(map.get(myJob.local.getName()), map.get(myJob.local2.getName())));
-
 
 					moveBehav = new MoveRequest((Worker) myAgent, myJob.local2, path);
 					addBehaviour(moveBehav);
@@ -478,7 +480,7 @@ public class Worker extends Agent {
 						position = cityMap.getEdgeTarget(next).getName();
 					if (Destiny.getName() == position && !iter1.hasNext()) {
 						System.out.println("Paragem");
-						
+
 						stop();
 						break;
 					}
@@ -514,14 +516,12 @@ public class Worker extends Agent {
 
 			}
 
-			
-			for(int i = 0; i < chargers.size(); i++)
-				if(position.equals(chargers.get(i).getName()))
-					{
+			for (int i = 0; i < chargers.size(); i++)
+				if (position.equals(chargers.get(i).getName())) {
 					myAgent.addBehaviour(new ChargeBehaviour(myAgent));
+					Working = true;
 					return 0;
-					}
-			
+				}
 
 			return 0;
 		}
@@ -530,6 +530,7 @@ public class Worker extends Agent {
 	public class ChargeBehaviour extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
 		int tick = 0;
+
 		public ChargeBehaviour(Agent a) {
 			super(a, 1000);
 			Working = true;
@@ -537,18 +538,18 @@ public class Worker extends Agent {
 
 		@Override
 		protected void onTick() {
-			if(tick > 2)
-			{
+			if (tick > 2) {
 				System.out.println(getLocalName() + " Charged");
-				stop();
 				Working = false;
-			}
-			else tick++;
-			
+				batteryLeft = BATTERY_CAPACITY;
+				stop();
+			} else
+				tick++;
+
 		}
-		
+
 	}
-	
+
 	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
 		for (Entry<Job, Double> entry : map.entrySet()) {
 			if (Objects.equals(value, entry.getValue())) {
@@ -650,30 +651,23 @@ public class Worker extends Agent {
 	}
 
 	public void checkForBattery() {
-		double temp = Double.MAX_VALUE;
+
 		Local nearest = null;
-		Local L = null;
-		double temp2 = Double.MAX_VALUE;
-		for (int i = 0; i < jobs_disponiveis.size(); i++) {
-			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, map.get(position), map.get(jobs_disponiveis.get(i).local2.getName()));
-			if (temp2 < dijkstra.getPathLength()) {
-				temp2 = dijkstra.getPathLength();
-				L = map.get(jobs_disponiveis.get(i).local2.getName());
-			}
-		}
+		double temp = Double.MAX_VALUE;
 		for (int i = 0; i < chargers.size(); i++) {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-					cityMap, L, map.get(chargers.get(i).getName()));
-			if (temp < dijkstra.getPathLength()) {
+					cityMap, map.get(position), map.get(chargers.get(i).getName()));
+
+			if (temp > dijkstra.getPathLength()) {
 				temp = dijkstra.getPathLength();
 				nearest = map.get(chargers.get(i).getName());
 			}
 		}
-		if (batteryLeft < (temp + temp2) && (jobs_disponiveis.size() != 0)) {
-			moveBehav = new MoveRequest(this, nearest, pathTo(map.get(position), nearest));
-			addBehaviour(moveBehav);
-			this.batteryLeft = BATTERY_CAPACITY;
-		}
+		// if (batteryLeft < (temp + temp2) && (jobs_disponiveis.size() != 0)) {
+		moveBehav = new MoveRequest(this, nearest, pathTo(map.get(position), nearest));
+		addBehaviour(moveBehav);
+		Working = true;
+		// this.batteryLeft = BATTERY_CAPACITY;
+		// } */
 	}
 }
