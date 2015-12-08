@@ -132,7 +132,7 @@ public class Ambiente extends Worker {
 
 				Job job_to_complete = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
 
 				// ver se job faz parte da lista de jobs
 				for (int i = 0; i < Jobs_Created.size(); i++)
@@ -254,7 +254,7 @@ public class Ambiente extends Worker {
 					"BibleThump" };
 			String[] tools = { "f1", "f2", "f3" };
 			Product p = new Product(new Tool(tools[getRandomInt(0, tools.length - 1)]),
-					produtos[getRandomInt(0, produtos.length - 1)], getRandomInt(0, 100));
+					produtos[getRandomInt(0, produtos.length - 1)],getRandomInt(0, 50), getRandomInt(0, 100));
 
 			Random random = new Random();
 			List<String> keys = new ArrayList<String>(map.keySet());

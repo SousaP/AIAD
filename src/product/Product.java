@@ -9,16 +9,19 @@ public class Product {
 	int size;
 	public double price;
 
-	public Product(Tool t, String n, int Q) {
+	public Product(Tool t, String n,double p, int Q) {
 		this.t = t;
 		name = n;
 		Quantidade = Q;
 		size = 50;
-		price = 20;
+		price = p;
 	}
 	
 	public String getName(){
 		return name;
+	}
+	public double getPrice() {
+		return price;
 	}
 	
 	public String getTool(){

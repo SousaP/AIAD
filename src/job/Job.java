@@ -108,22 +108,35 @@ public class Job {
 
 	public String toString() {
 		return the_Job.toString() + ";" + job_Type.toString() + ";" + reward + ";" + time + ";" + fine + ";"
-				+ product.getTool() + ";" + product.getName() + ";" + product.getQuantidade() + ";" + local.getName()
+				+ product.getTool() + ";" + product.getName() + ";"+ product.getPrice() + ";" + product.getQuantidade() + ";" + local.getName()
 				+ ";";
 	}
 
 	public boolean able(Worker W) {
 		Tool temp = new Tool(product.getTool());
-		if (the_Job == to_do.MOUNT && !(W.getTools().contains(temp)))
+		if (the_Job == to_do.MOUNT && !(W.getToolsString().contains(temp.getName())))
+		{
+			System.out.println(product.price);
+			System.out.println("falha aqui1");
 			return false;
+		}
 		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize()))
+		{
+			System.out.println("falha aqui2");
 			return false;
+		}
 		if (the_Job == to_do.ACQUISITION && (W.credit < product.price))
+		{
+			System.out.println("falha aqui3");
+
+			System.out.println(W.credit );
+			System.out.println(product.price);
 			return false;
+		}
 		double temp1 = 0;
 		double temp2 = 0;
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-				W.cityMap, W.map.get(W.position), local);
+				W.cityMap, W.map.get(W.position), W.map.get(local.getName()));
 		temp2 = dijkstra.getPathLength();
 		for (int i = 0; i < W.chargers.size(); i++) {
 			DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
@@ -133,6 +146,11 @@ public class Job {
 			}
 		}
 		if (W.batteryLeft < (temp1 + temp2)) {
+		
+			System.out.println(	W.batteryLeft );
+			System.out.println(temp1);
+			System.out.println(temp2);
+			System.out.println("falha aqui4");
 			return false;
 		}
 		return true;

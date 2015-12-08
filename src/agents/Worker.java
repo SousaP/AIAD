@@ -9,6 +9,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
+
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
@@ -54,7 +56,7 @@ public class Worker extends Agent {
 	public HashMap<String, Local> map = new HashMap<String, Local>();
 	List<Job> Jobs_Created;
 	Job myJob;
-	public double credit;
+	public double credit = 150;
 	public String position;
 	Boolean Working;
 	GetJobBehaviour jobBehav;
@@ -65,6 +67,7 @@ public class Worker extends Agent {
 
 	List<Job> jobs_disponiveis;
 	public int batteryLeft;
+	protected int loadLeft;
 	
 	String[] splitArguments(Object[] args) {
 		String strin_tempo = (String) args[0];
@@ -73,7 +76,6 @@ public class Worker extends Agent {
 	}
 
 	protected void setup() {
-		credit = 0;
 		Working = false;
 
 		String[] args = {};
@@ -116,6 +118,12 @@ public class Worker extends Agent {
 
 	public List<Tool> getTools() {
 		return tools;
+	}
+	public List<String> getToolsString() {
+		List<String> array = new ArrayList<String>();
+		for(int i = 0; i < tools.size(); i++)
+			array.add(tools.get(i).getName());
+		return array;
 	}
 
 	void readMap() {
@@ -275,7 +283,7 @@ public class Worker extends Agent {
 
 			} else if (msg.getPerformative() == ACLMessage.INFORM) {
 
-			//	System.out.println(getLocalName() + ": recebi " +  msg.getContent());
+				System.out.println(getLocalName() + ": recebi " +  msg.getContent());
 				// Perguntar pela posiçao Jobs?
 				// ACLMessage reply = msg.createReply();
 
@@ -295,12 +303,12 @@ public class Worker extends Agent {
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
 								Double.parseDouble(split[++i]),
-								new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
+								new Product(new Tool(split[++i]), split[++i],Double.parseDouble(split[++i]) ,Integer.parseInt(split[++i])),
 								map.get(split[++i])));
 						;
 					}
 
-					//jobs_disponiveis = orderJobs(jobs_disponiveis);
+					jobs_disponiveis = orderJobs(jobs_disponiveis);
 					Working = true;
 
 					// ______________________________________
@@ -311,7 +319,7 @@ public class Worker extends Agent {
 					cfp.addReceiver(msg.getSender());
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
-						 System.out.println("WUT" );
+						// System.out.println("WUT" );
 						Working = false;
 						return;
 					}
@@ -337,7 +345,7 @@ public class Worker extends Agent {
 
 				Job job_rejected = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
 				// Fazer novo pedido
 				Working = false;
 
@@ -349,7 +357,7 @@ public class Worker extends Agent {
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
 
 				// TODO poe a trabalhar ja
 				myJob = job_accepted;
@@ -363,7 +371,7 @@ public class Worker extends Agent {
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]) ,Integer.parseInt(split[8])), map.get(split[9]));
 
 				myJob = job_accepted;
 				Working = true;
@@ -379,7 +387,7 @@ public class Worker extends Agent {
 
 				Job job_accepted = new Job(to_do.valueOf(split[0]), type.valueOf(split[1]),
 						Double.parseDouble(split[2]), Integer.parseInt(split[3]), Double.parseDouble(split[4]),
-						new Product(new Tool(split[5]), split[6], Integer.parseInt(split[7])), map.get(split[8]));
+						new Product(new Tool(split[5]), split[6],Double.parseDouble(split[7]), Integer.parseInt(split[8])), map.get(split[9]));
 
 				myJob = job_accepted;
 

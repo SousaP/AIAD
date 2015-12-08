@@ -15,13 +15,10 @@ public class CarAgent extends Worker {
 	private static int LOAD_CAPACITY = 550;
 	private static Tool f1;
 	private static Tool f2;
-
-	private int batteryLeft;
-	private int loadLeft;
 	
 
 	protected void setup(){
-		batteryLeft = BATTERY_CAPACITY;
+		this.batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;
 		f1 = new Tool("f1");
 		f2 = new Tool("f2");

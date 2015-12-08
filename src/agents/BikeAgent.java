@@ -17,9 +17,6 @@ public class BikeAgent extends Worker {
 	private static Tool f1;
 	private static Tool f3;
 	
-	private int batteryLeft;
-	private int loadLeft;
-	
 	protected void setup(){
 		batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;

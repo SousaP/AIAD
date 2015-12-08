@@ -36,8 +36,6 @@ public class DroneAgent extends Worker {
 	private static int BATTERY_CAPACITY = 250;
 	private static int LOAD_CAPACITY = 100;
 	private static Tool f1;
-	private int batteryLeft;
-	private int loadLeft;
 	private float i;
 	private float j;
 
@@ -45,8 +43,8 @@ public class DroneAgent extends Worker {
 	MoveRequestDrone moveBehav;
 
 	protected void setup() {
-		batteryLeft = BATTERY_CAPACITY;
-		loadLeft = LOAD_CAPACITY;
+		this.batteryLeft = BATTERY_CAPACITY;
+		this.loadLeft = LOAD_CAPACITY;
 		VELOCITY = 5;
 		f1 = new Tool("f1");
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -198,7 +196,7 @@ public class DroneAgent extends Worker {
 						jobs_disponiveis.add(new Job(to_do.valueOf(split[i]), type.valueOf(split[++i]),
 								Double.parseDouble(split[++i]), Integer.parseInt(split[++i]),
 								Double.parseDouble(split[++i]),
-								new Product(new Tool(split[++i]), split[++i], Integer.parseInt(split[++i])),
+								new Product(new Tool(split[++i]), split[++i],Double.parseDouble(split[++i]), Integer.parseInt(split[++i])),
 								map.get(split[++i])
 
 						));

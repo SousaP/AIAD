@@ -15,12 +15,11 @@ public class TruckAgent extends Worker {
 	private static int LOAD_CAPACITY = 1000;
 	private static Tool f2;
 	private static Tool f3;
-	private int batteryLeft;
-	private int loadLeft;
+
 	
 	protected void setup(){
-		batteryLeft = BATTERY_CAPACITY;
-		loadLeft = LOAD_CAPACITY;
+		this.batteryLeft = BATTERY_CAPACITY;
+		this.loadLeft = LOAD_CAPACITY;
 		VELOCITY = 1;
 		f2 = new Tool("f2");
 		f3 = new Tool("f3");
