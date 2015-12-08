@@ -138,7 +138,7 @@ public class Job {
 		}
 		double temp1 = 0;
 		double temp2 = 0;
-		if (W instanceof DroneAgent) {
+		if (W.getLocalName().contains("Drone")) {
 			temp2 = Math
 			.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local2.getName()).getI()), 2) + Math.pow((W.map.get(W.position).getJ() - W.map.get(local2.getName()).getJ()), 2));
 			for (int i = 0; i < W.chargers.size(); i++) {
