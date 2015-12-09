@@ -34,6 +34,7 @@ public class Job {
 	Boolean beingDone;
 	public Local local;
 	public Local local2;
+	public String criador;
 
 	public Job(to_do j, type ty, double r, int t, double f, Product p, Local l, Local l2) {
 		the_Job = j;

@@ -308,10 +308,8 @@ public class Worker extends Agent {
 						;
 					}
 
-					
 					jobs_disponiveis = orderJobs(jobs_disponiveis);
-					
-					
+
 					Working = true;
 
 					// ______________________________________
@@ -323,7 +321,6 @@ public class Worker extends Agent {
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
 
-						
 						if (batteryLeft < BATTERY_CAPACITY / 4) {
 							System.out.println("PRECISO DE BATERIA");
 							checkForBattery();
@@ -417,12 +414,10 @@ public class Worker extends Agent {
 					addBehaviour(moveBehav);
 
 				} else if (myJob.the_Job == to_do.MOUNT) {
-					String ools[] = msg.getContent().split(",");
-					if (ools.length < 2)
-						return;
-
-						mountB = new MountBehaviour((Worker) myAgent);
 					
+					mountB = new MountBehaviour((Worker) myAgent);
+					System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
+
 				}
 
 				Working = true;
@@ -582,36 +577,33 @@ public class Worker extends Agent {
 							// System.out.println("Enviei um DEPOSITEI" +
 							// cfp.getContent());
 							send(cfp);
-						}else if (myJob.the_Job == to_do.MOUNT) {
-							
-							if(position.equals(mountB.p1.getName()))
-							{
-							Job temp = myJob;
-							String split[] = temp.product.getName().split(",");
-							temp.product.setName(split[1]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-							
-							} else if(position.equals(mountB.p2.getName()))
-							{
-							Job temp = myJob;
-							String split[] = temp.product.getName().split(",");
-							temp.product.setName(split[2]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-							
+						} else if (myJob.the_Job == to_do.MOUNT) {
+
+							if (position.equals(mountB.p1.getName())) {
+								Job temp = myJob;
+								String split[] = temp.product.getName().split(",");
+								temp.product.setName(split[1]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																						// value
+								// System.out.println("Enviei um DEPOSITEI" +
+								// cfp.getContent());
+								send(cfp);
+
+							} else if (position.equals(mountB.p2.getName())) {
+								Job temp = myJob;
+								String split[] = temp.product.getName().split(",");
+								temp.product.setName(split[2]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																						// value
+								// System.out.println("Enviei um DEPOSITEI" +
+								// cfp.getContent());
+								send(cfp);
+
 							}
-						
 
 						}
 
@@ -674,9 +666,20 @@ public class Worker extends Agent {
 					}
 				} else if (myJob.the_Job == to_do.ACQUISITION) {
 
-				} 
-				else if(myJob.the_Job == to_do.MOUNT)
-				{
+				} else if (myJob.the_Job == to_do.MOUNT) {
+					
+					if(position.equals(myJob.local.getName()))
+					{
+						cfp.setContent("depositei;" + myJob.toString());
+						cfp.setConversationId("delivery");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						// System.out.println("Enviei um DEPOSITEI" +
+						// cfp.getContent());
+						send(cfp);
+						
+					}
+					
 					mountB.doingStep = false;
 					return 0;
 				}
@@ -721,6 +724,7 @@ public class Worker extends Agent {
 		Boolean doingStep;
 		public Local p1, p2;
 		ACLMessage cfp;
+		String Empregado;
 
 		public MountBehaviour(Worker a) {
 			// super(a, (myJob.time / 2) * 1000);
@@ -735,7 +739,7 @@ public class Worker extends Agent {
 				return;
 			switch (step) {
 			case 0:
-				 cfp = new ACLMessage(ACLMessage.INFORM);
+				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
 				DFAgentDescription[] result = null;
@@ -771,7 +775,6 @@ public class Worker extends Agent {
 						List<DefaultWeightedEdge> path = pathTo(map.get(position), p1);
 						path.addAll(pathTo(p1, p2));
 						path.addAll(pathTo(p2, hands.get(0)));
-						
 
 						moveBehav = new MoveRequest((Worker) myAgent, hands.get(0), path);
 
@@ -782,24 +785,66 @@ public class Worker extends Agent {
 
 				break;
 			case 1:
-				
+
 				String ools[] = myJob.product.getTool().split(",");
 				if (!getToolsString().contains(ools[0])) {
-					cfp.setContent("criar;MOUNT;PRICE;"+0.20*myJob.getReward()+";7;0;"+ools[0]+";-,-;0;0;"+position+";"+position+";");	
-				}else if(!getToolsString().contains(ools[1])) {
-					cfp.setContent("criar;MOUNT;PRICE;"+0.20*myJob.getReward()+";7;0;"+ools[1]+";-,-;0;0;"+position+";"+position+";");	
+					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
+							+ position + ";" + position + ";" + getLocalName());
+				} else if (!getToolsString().contains(ools[1])) {
+					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[1] + ";-,-;0;0;"
+							+ position + ";" + position + ";" + getLocalName());
 				}
 				break;
+			case 2:
+				ACLMessage jobOffer = blockingReceive(500);
+
+				if (jobOffer == null)
+					break;
+
+				if (jobOffer.getPerformative() == ACLMessage.INFORM) {
+					String split[] = jobOffer.getContent().split(";");
+					if (split[0].equals("Going")) {
+						Empregado = split[1];
+					}
+				}
+				step++;
+				break;
+			case 3:
+				ACLMessage arrivedMsg = blockingReceive(500);
+
+				if (arrivedMsg == null)
+					break;
+
+				if (arrivedMsg.getPerformative() == ACLMessage.INFORM) {
+					String split[] = arrivedMsg.getContent().split(";");
+					if (split[0].equals("Here")) {
+						step++;
+					}
+				}
+				break;
+			case 4:
+				try {
+					Thread.sleep(7000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				step++;
+			case 5: 
+				List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
+				moveBehav = new MoveRequest((Worker) myAgent, map.get(myJob.local.getName()), path);
+				step++;
+				doingStep = true;
+			case 6:
+				try {
+					finalize();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 			default:
 				break;
 			}
 
-			/*
-			 * if (tick == 1) { System.out.println(getLocalName() +
-			 * " Producing " + myJob.product.getName()); tick++; } else if (tick
-			 * == 2) { Working = false; loadLeft += myJob.product.getSize();
-			 * stop(); } else { tick++; } }
-			 */
 		}
 
 	}

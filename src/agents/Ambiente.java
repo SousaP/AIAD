@@ -34,6 +34,7 @@ public class Ambiente extends Worker {
 	HashMap<Job, List<AID>> bids = new HashMap<Job, List<AID>>();
 	HashMap<Job, AID> winning = new HashMap<Job, AID>();
 	HashMap<Local, List<Product>> produtos = new HashMap<Local, List<Product>>();
+	List<Job> Trabalhos_utilizador = new ArrayList<Job>();
 
 	private void readProducts() {
 		try {
@@ -141,6 +142,14 @@ public class Ambiente extends Worker {
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
+					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
+						if (!(Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone())) {
+							content = content + Trabalhos_utilizador.get(i).toString() + ";" + Trabalhos_utilizador.get(i).criador;
+							// System.out.println("Jobs identificados: " +
+							// Jobs_Created.get(i).toString());
+						}
+					
+					
 				} else if (split[0].contains("apanhei")) {
 					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
 							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
@@ -180,8 +189,16 @@ public class Ambiente extends Worker {
 							break;
 						}
 					return;
-				}
-				// System.out.println("Jobs identificados: " + content);
+				} else if(split[0].contains("criar"))
+				{
+					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
+							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
+							Double.parseDouble(split[5]), new Product(new Tool(split[6]), split[7],
+									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
+							map.get(split[10]), map.get(split[11]));
+					job_to_complete.criador = split[12];
+					
+				}					
 				reply.setContent(content);
 				// envia mensagem
 				send(reply);
@@ -313,39 +330,6 @@ public class Ambiente extends Worker {
 
 		}
 
-		/*
-		 * Job createRandomJob() {
-		 * 
-		 * to_do temp = to_do.TRANSPORT; Random random = new Random();
-		 * List<Local> keysList = new ArrayList<Local>(); List<Product>
-		 * listProdutos = new ArrayList<Product>();
-		 * 
-		 * keysList.addAll(produtos.keySet());
-		 * 
-		 * Local levantar = keysList.get(random.nextInt(keysList.size()));
-		 * 
-		 * listProdutos = produtos.get(levantar);
-		 * 
-		 * Product p = listProdutos.get(random.nextInt(listProdutos.size()));
-		 * int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
-		 * 
-		 * // System.out.println(p.toString());
-		 * 
-		 * Product p_job = new Product(new Tool(p.getTool()), p.getName(),
-		 * Quantidade * p.getPrice(), Quantidade);
-		 * 
-		 * Local local = null; do{ local =
-		 * keysList.get(random.nextInt(keysList.size()));
-		 * }while(local.getName().equals(levantar.getName()));
-		 * 
-		 * if (temp == to_do.TRANSPORT) return new Job(to_do.TRANSPORT,
-		 * type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
-		 * getRandomInt(50, 300), p_job, levantar, local); else return new
-		 * Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800),
-		 * getRandomInt(1, 5), getRandomInt(50, 300), p_job, local, local);
-		 * 
-		 * }
-		 */
 		Job createRandomJob() {
 
 			to_do temp = to_do.MOUNT;
@@ -428,9 +412,9 @@ public class Ambiente extends Worker {
 						// myAgent.
 
 					}
-					winning.remove(Jobs_Created.get(i));
-					Jobs_Created.set(i, createRandomJob());
-					bids.put(Jobs_Created.get(i), new ArrayList<AID>());
+					//winning.remove(Jobs_Created.get(i));
+					//Jobs_Created.set(i, createRandomJob());
+					//bids.put(Jobs_Created.get(i), new ArrayList<AID>());
 
 				}
 
