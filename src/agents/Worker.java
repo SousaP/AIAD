@@ -107,7 +107,7 @@ public class Worker extends Agent {
 
 		if (getName().contains("Drone"))
 			return;
-		positionBehav = new ReceiveMessageBehaviour();
+		positionBehav = new ReceiveMessageBehaviour(this);
 		addBehaviour(positionBehav);
 		// moveBehav = new MoveRequest(this, map.get("A"),
 		// pathTo(map.get(position), map.get("A")));
@@ -251,8 +251,8 @@ public class Worker extends Agent {
 	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
-		public ReceiveMessageBehaviour() {
-			super();
+		public ReceiveMessageBehaviour(Worker w) {
+			super(w);
 		}
 
 		public void action() {
@@ -416,6 +416,7 @@ public class Worker extends Agent {
 				} else if (myJob.the_Job == to_do.MOUNT) {
 					
 					mountB = new MountBehaviour((Worker) myAgent);
+					myAgent.addBehaviour(mountB);
 					System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
 
 				}
@@ -720,7 +721,7 @@ public class Worker extends Agent {
 
 	public class MountBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
-		int step = 0;
+		int step;
 		Boolean doingStep;
 		public Local p1, p2;
 		ACLMessage cfp;
@@ -731,7 +732,9 @@ public class Worker extends Agent {
 			super(a);
 			Working = true;
 			doingStep = false;
+			step = 0;
 		}
+
 
 		@Override
 		public void action() {
@@ -739,6 +742,7 @@ public class Worker extends Agent {
 				return;
 			switch (step) {
 			case 0:
+				System.out.println("STEP 0");
 				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
@@ -758,7 +762,7 @@ public class Worker extends Agent {
 					}
 				}
 
-				cfp.setContent("Produtos," + myJob.product.getName());
+				cfp.setContent("Produtos;" + myJob.product.getName());
 				cfp.setConversationId("pick_up");
 				cfp.setReplyWith("cfp" + System.currentTimeMillis());
 				System.out.println("Enviei Procura Produtos" + cfp.getContent());
@@ -786,6 +790,7 @@ public class Worker extends Agent {
 				break;
 			case 1:
 
+				System.out.println("STEP 1");
 				String ools[] = myJob.product.getTool().split(",");
 				if (!getToolsString().contains(ools[0])) {
 					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
@@ -794,8 +799,11 @@ public class Worker extends Agent {
 					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[1] + ";-,-;0;0;"
 							+ position + ";" + position + ";" + getLocalName());
 				}
+				step++;
 				break;
 			case 2:
+
+				System.out.println("STEP 2");
 				ACLMessage jobOffer = blockingReceive(500);
 
 				if (jobOffer == null)
@@ -810,6 +818,8 @@ public class Worker extends Agent {
 				step++;
 				break;
 			case 3:
+
+				System.out.println("STEP 3");
 				ACLMessage arrivedMsg = blockingReceive(500);
 
 				if (arrivedMsg == null)
@@ -823,6 +833,8 @@ public class Worker extends Agent {
 				}
 				break;
 			case 4:
+
+				System.out.println("STEP 4");
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
@@ -831,11 +843,14 @@ public class Worker extends Agent {
 				
 				step++;
 			case 5: 
+
+				System.out.println("STEP 5");
 				List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
 				moveBehav = new MoveRequest((Worker) myAgent, map.get(myJob.local.getName()), path);
 				step++;
 				doingStep = true;
 			case 6:
+				
 				try {
 					finalize();
 				} catch (Throwable e) {

@@ -130,12 +130,12 @@ public class Ambiente extends Worker {
 				if (split.length < 2)
 					return;
 
-				String content = "jobs;";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
 
 				if (split[0].contains("jobs") && split[1].contains("?")) {
+					String content = "jobs;";
 					for (int i = 0; i < Jobs_Created.size(); i++)
 						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
 							content = content + Jobs_Created.get(i).toString();
@@ -144,12 +144,16 @@ public class Ambiente extends Worker {
 						}
 					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
 						if (!(Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone())) {
-							content = content + Trabalhos_utilizador.get(i).toString() + ";" + Trabalhos_utilizador.get(i).criador;
+							content = content + Trabalhos_utilizador.get(i).toString() + ";"
+									+ Trabalhos_utilizador.get(i).criador;
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-					
-					
+
+					reply.setContent(content);
+					// envia mensagem
+					send(reply);
+
 				} else if (split[0].contains("apanhei")) {
 					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
 							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
@@ -178,7 +182,7 @@ public class Ambiente extends Worker {
 							map.get(split[10]), map.get(split[11]));
 					Local l = map.get(job_to_complete.getLocal2().getName());
 					List<Product> temp = produtos.get(l);
-					System.out.println("SZIE  " + temp.size());
+					// System.out.println("SZIE " + temp.size());
 					for (int i = 0; i < temp.size(); i++)
 						if (temp.get(i).getName().contains(job_to_complete.product.getName())) {
 							// System.out.println("Quantidade inicial" +
@@ -189,19 +193,38 @@ public class Ambiente extends Worker {
 							break;
 						}
 					return;
-				} else if(split[0].contains("criar"))
-				{
+				} else if (split[0].contains("criar")) {
 					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
 							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
 							Double.parseDouble(split[5]), new Product(new Tool(split[6]), split[7],
 									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
 							map.get(split[10]), map.get(split[11]));
 					job_to_complete.criador = split[12];
+
+				} else if (split[0].contains("Produtos")) {
+					String[] produtos_recebidos = split[1].split(",");
+
+					List<Local> keysList = new ArrayList<Local>();
+					List<Product> listProdutos = new ArrayList<Product>();
+
+					keysList.addAll(produtos.keySet());
+					String content = "Local";
+
+					for (int i = 0; i < keysList.size(); i++)
+						for (int a = 0; a < produtos.get(keysList.get(i)).size(); a++) {
+							if (produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[1])
+									|| produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[2]))
+								content += ";" + keysList.get(i).getName();
+				
+							
+						}
 					
-				}					
-				reply.setContent(content);
-				// envia mensagem
-				send(reply);
+					System.out.println("Enviei : " + content);
+					reply.setContent(content);
+					send(reply);
+
+				}
+
 			} else if (msg.getPerformative() == ACLMessage.PROPOSE) {
 
 				// System.out.println("Ambiente: Recebi um Propose" +
@@ -298,18 +321,11 @@ public class Ambiente extends Worker {
 							cfp.setContent(Jobs_Created.get(i).toString());
 							cfp.setConversationId("job_proposal");
 							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							Jobs_Created.get(i).setbeingDone();
+
 							// myAgent.send(cfp);
 							send(cfp);
 						}
 					}
-				// else System.out.println("ALIIIIIIIII");
-
-				// String content = "jobs;";
-				// reply.setContent(content);
-				// envia mensagem
-				// send(reply);
 			}
 
 		}
@@ -385,8 +401,9 @@ public class Ambiente extends Worker {
 						getRandomInt(50, 300), p_job, levantar, local);
 			else
 				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-						getRandomInt(50, 300), new Product(new Tool(p.getTool() + "," + p_mount.getTool()),
-								"Batido," + p.getName() + ","+p_mount.getName(),p.getPrice()+p_mount.getPrice(),1),
+						getRandomInt(50, 300),
+						new Product(new Tool("f1,f1"), "Batido," + p.getName() + "," + p_mount.getName(),
+								p.getPrice() + p_mount.getPrice(), 1),
 						levantar, levantar);
 
 		}
@@ -405,16 +422,19 @@ public class Ambiente extends Worker {
 						// Responde Failure com job na mensagem
 						msg.setContent(Jobs_Created.get(i).toString());
 						msg.setConversationId("job_GO");
-						msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																				// value
+						msg.setReplyWith("cfp" + System.currentTimeMillis());
+
+						Jobs_Created.get(i).setbeingDone();
+						// Unique
+						// value
 						send(msg);
 
 						// myAgent.
 
 					}
-					//winning.remove(Jobs_Created.get(i));
-					//Jobs_Created.set(i, createRandomJob());
-					//bids.put(Jobs_Created.get(i), new ArrayList<AID>());
+					// winning.remove(Jobs_Created.get(i));
+					// Jobs_Created.set(i, createRandomJob());
+					// bids.put(Jobs_Created.get(i), new ArrayList<AID>());
 
 				}
 
