@@ -152,7 +152,7 @@ public class Ambiente extends Worker {
 							map.get(split[10]), map.get(split[11]));
 					Local l = map.get(job_to_complete.getLocal().getName());
 					List<Product> temp = produtos.get(l);
-					System.out.println("SZIE  " + temp.size());
+					//System.out.println("SZIE  " + temp.size());
 					for(int i = 0; i < temp.size(); i++)
 						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
 						//	System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
@@ -304,7 +304,7 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				Job tempJob = createRandomJob();
 				System.out.println(tempJob.toString());
@@ -357,15 +357,17 @@ public class Ambiente extends Worker {
 
 			
 			keysList.addAll(produtos.keySet());
+			List<Local> copy = new ArrayList<Local>(keysList);
 			
 			// Retira locais que não são stores
 			if(temp == to_do.ACQUISITION) {
 				for(Local key:  keysList) {
-					if(!stores.contains(key.getName())) {
-						keysList.remove(key);
+					if(!stores.contains(key)) {
+						copy.remove(key);
 					}
 				}
 			}
+			keysList = copy;
 			
 			Local levantar = keysList.get(random.nextInt(keysList.size()));
 
@@ -379,13 +381,20 @@ public class Ambiente extends Worker {
 			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
 			
 			Local local = null;
+			
+			if(temp == to_do.TRANSPORT){
 			do{
 			local = keysList.get(random.nextInt(keysList.size()));
 			}while(local.getName().equals(levantar.getName()));
+			}else if(temp == to_do.ACQUISITION)
+			{
+				local = houses.get(random.nextInt(houses.size()));
+			}
+			
 			
 			if (temp == to_do.ACQUISITION)
 				return new Job(to_do.ACQUISITION, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
-						getRandomInt(50, 300), p_job, levantar, levantar);
+						getRandomInt(50, 300), p_job, levantar, local);
 			else
 			if (temp == to_do.TRANSPORT)
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),

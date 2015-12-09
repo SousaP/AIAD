@@ -353,18 +353,15 @@ public class Worker extends Agent {
 						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
-				
-				
-				if(job_rejected.job_Type.BIDS == type.BIDS && jobs_disponiveis.size() > 1)
-				{
+
+				if (job_rejected.job_Type.BIDS == type.BIDS && jobs_disponiveis.size() > 1) {
 					double newReward = job_rejected.MakeBetterOffer((Worker) myAgent, jobs_disponiveis.get(1));
-					if(newReward == -1)
-					{
+					if (newReward == -1) {
 						Working = false;
 						return;
 					}
 					job_rejected.setReward(newReward);
-					
+
 					ACLMessage cfp = new ACLMessage(ACLMessage.PROPOSE);
 					cfp.addReceiver(msg.getSender());
 					// jobs_disponiveis.get(0) -> job preferivel
@@ -376,9 +373,9 @@ public class Worker extends Agent {
 					// System.out.println("Enviei um propose" +
 					// cfp.getContent());
 					send(cfp);
-					
+
 					return;
-					
+
 				}
 				// Fazer novo pedido
 				Working = false;
@@ -399,6 +396,14 @@ public class Worker extends Agent {
 				myJob = job_accepted;
 
 				if (myJob.the_Job == to_do.TRANSPORT) {
+
+					List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
+					path.addAll(pathTo(map.get(myJob.local.getName()), map.get(myJob.local2.getName())));
+
+					moveBehav = new MoveRequest((Worker) myAgent, myJob.local2, path);
+					addBehaviour(moveBehav);
+
+				} else if (myJob.the_Job == to_do.ACQUISITION) {
 
 					List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
 					path.addAll(pathTo(map.get(myJob.local.getName()), map.get(myJob.local2.getName())));
@@ -484,6 +489,7 @@ public class Worker extends Agent {
 			 */
 
 		}
+
 		@Override
 		protected void onTick() {
 
@@ -503,7 +509,14 @@ public class Worker extends Agent {
 					}
 				}
 
-				next = iter1.next();
+				try {
+
+					next = iter1.next();
+				} catch (Exception e) {
+					stop();
+					break;
+				}
+
 				// System.out.println(cityMap.getEdgeTarget(next).getName());
 				// System.out.println(cityMap.getEdgeWeight(next));
 
@@ -536,12 +549,28 @@ public class Worker extends Agent {
 				// -------------
 				if (myJob != null) {
 					if (position.equals(myJob.local.getName())) {
-						cfp.setContent("apanhei;" + myJob.toString());
-						cfp.setConversationId("pick_up");
-						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																				// value
-						System.out.println("Enviei um APANHEI" + cfp.getContent());
-						send(cfp);
+						if (myJob.the_Job == to_do.TRANSPORT) {
+
+							cfp.setContent("apanhei;" + myJob.toString());
+							cfp.setConversationId("pick_up");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							System.out.println("Enviei um APANHEI" + cfp.getContent());
+							send(cfp);
+						}
+
+						else if (myJob.the_Job == to_do.ACQUISITION) {
+
+							credit -= myJob.product.getPrice();
+
+							cfp.setContent("comprei;" + myJob.toString());
+							cfp.setConversationId("comprei");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+						}
 
 					}
 				}
@@ -563,93 +592,55 @@ public class Worker extends Agent {
 		public int onEnd() {
 
 			if (myJob != null) {
-				if (myJob.the_Job == to_do.TRANSPORT) {
+				if (myJob.the_Job == to_do.TRANSPORT || myJob.the_Job == to_do.ACQUISITION) {
 					credit += myJob.getReward();
 					if (time_lasted > myJob.time)
 						credit -= myJob.getFine();
 					Working = false;
-					
 
 					System.out.println("Battery " + batteryLeft);
 
-				 if (position.equals(myJob.local2.getName())) {
-					ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
-					// ID do ambiente
-					DFAgentDescription template = new DFAgentDescription();
-					DFAgentDescription[] result = null;
+					if (position.equals(myJob.local2.getName())) {
+						ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+						// ID do ambiente
+						DFAgentDescription template = new DFAgentDescription();
+						DFAgentDescription[] result = null;
 
-					try {
-						result = DFService.search(myAgent, template);
-					} catch (FIPAException e) {
-						e.printStackTrace();
-					}
-					AID[] recursos = new AID[result.length];
-					for (int i = 0; i < result.length; ++i) {
-						recursos[i] = result[i].getName();
-						if (recursos[i].getLocalName().contains("ambient")) {
-							cfp.addReceiver(recursos[i]);
-							break;
+						try {
+							result = DFService.search(myAgent, template);
+						} catch (FIPAException e) {
+							e.printStackTrace();
 						}
-					}
-					cfp.setContent("depositei;" + myJob.toString());
-					cfp.setConversationId("delivery");
-					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																			// value
-					//System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
-					send(cfp);
-				 	}
-				}
-				else if (myJob.the_Job == to_do.ACQUISITION) {
-					credit += myJob.getReward();
-					if (time_lasted > myJob.time)
-						credit -= myJob.getFine();
-					Working = false;
-					System.out.println("Battery " + batteryLeft);
-
-				 if (position.equals(myJob.local2.getName())) {
-					ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
-					// ID do ambiente
-					DFAgentDescription template = new DFAgentDescription();
-					DFAgentDescription[] result = null;
-
-					try {
-						result = DFService.search(myAgent, template);
-					} catch (FIPAException e) {
-						e.printStackTrace();
-					}
-					AID[] recursos = new AID[result.length];
-					for (int i = 0; i < result.length; ++i) {
-						recursos[i] = result[i].getName();
-						if (recursos[i].getLocalName().contains("ambient")) {
-							cfp.addReceiver(recursos[i]);
-							break;
+						AID[] recursos = new AID[result.length];
+						for (int i = 0; i < result.length; ++i) {
+							recursos[i] = result[i].getName();
+							if (recursos[i].getLocalName().contains("ambient")) {
+								cfp.addReceiver(recursos[i]);
+								break;
+							}
 						}
+						cfp.setContent("depositei;" + myJob.toString());
+						cfp.setConversationId("delivery");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						// System.out.println("Enviei um DEPOSITEI" +
+						// cfp.getContent());
+						send(cfp);
 					}
-					
-					credit -= myJob.product.getPrice();
-					
-					cfp.setContent("comprei;" + myJob.toString());
-					cfp.setConversationId("comprei");
-					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																			// value
-					//System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
-					send(cfp);
+				} else if (myJob.the_Job == to_do.ACQUISITION) {
+
 				}
-				
-			}
 				myJob = null;
-			for (int i = 0; i < chargers.size(); i++)
-				if (position.equals(chargers.get(i).getName())) {
-					myAgent.addBehaviour(new ChargeBehaviour(myAgent));
-					Working = true;
-					return 0;
-				}
+				for (int i = 0; i < chargers.size(); i++)
+					if (position.equals(chargers.get(i).getName())) {
+						myAgent.addBehaviour(new ChargeBehaviour(myAgent));
+						Working = true;
+						return 0;
+					}
 			}
 			return 0;
 		}
 	}
-	
-	
 
 	public class ChargeBehaviour extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
@@ -686,7 +677,7 @@ public class Worker extends Agent {
 		@Override
 		protected void onTick() {
 			if (tick == 1) {
-				System.out.println("Producing " + myJob.product.getName());
+				System.out.println(getLocalName() + " Producing " + myJob.product.getName());
 				tick++;
 			} else if (tick == 2) {
 				Working = false;
@@ -697,8 +688,8 @@ public class Worker extends Agent {
 			}
 		}
 
-		}
-	
+	}
+
 	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
 		for (Entry<Job, Double> entry : map.entrySet()) {
 			if (Objects.equals(value, entry.getValue())) {
@@ -820,4 +811,3 @@ public class Worker extends Agent {
 		// } */
 	}
 }
-
