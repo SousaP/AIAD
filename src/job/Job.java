@@ -168,9 +168,10 @@ public class Job {
 	public boolean able(Worker W) {
 		Tool temp = new Tool(product.getTool());
 		if (the_Job == to_do.MOUNT
-				&& (!(W.getToolsString().contains(temp.getName()) || (W.getLoadLeft() < product.getSize())))) {
-			// System.out.println(product.price);
-			// System.out.println("falha aqui1");
+				&& (!(temp.getName().contains(W.getToolsString()) || (W.getLoadLeft() < product.getSize())))) {
+		//	 System.out.println(W.getToolsString());
+	//		 System.out.println(temp.getName());
+	//		System.out.println("falha aqui1");
 			return false;
 		}
 		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize())) {

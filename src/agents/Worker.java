@@ -119,11 +119,11 @@ public class Worker extends Agent {
 		return tools;
 	}
 
-	public List<String> getToolsString() {
-		List<String> array = new ArrayList<String>();
+	public String getToolsString() {
+		String retorno = "";
 		for (int i = 0; i < tools.size(); i++)
-			array.add(tools.get(i).getName());
-		return array;
+			retorno += (tools.get(i).getName());
+		return retorno;
 	}
 
 	void readMap() {
@@ -308,8 +308,10 @@ public class Worker extends Agent {
 						;
 					}
 
-					System.out.println("ORDENADOS" +jobs_disponiveis.size());
+					
 					jobs_disponiveis = orderJobs(jobs_disponiveis);
+					
+					
 					Working = true;
 
 					// ______________________________________
