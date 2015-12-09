@@ -353,6 +353,33 @@ public class Worker extends Agent {
 						Double.parseDouble(split[4]), new Product(new Tool(split[5]), split[6],
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
+				
+				
+				if(job_rejected.job_Type.BIDS == type.BIDS && jobs_disponiveis.size() > 1)
+				{
+					double newReward = job_rejected.MakeBetterOffer((Worker) myAgent, jobs_disponiveis.get(1));
+					if(newReward == -1)
+					{
+						Working = false;
+						return;
+					}
+					job_rejected.setReward(newReward);
+					
+					ACLMessage cfp = new ACLMessage(ACLMessage.PROPOSE);
+					cfp.addReceiver(msg.getSender());
+					// jobs_disponiveis.get(0) -> job preferivel
+					cfp.setContent(job_rejected.toString());
+					cfp.setConversationId("job_proposal");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																			// value
+
+					// System.out.println("Enviei um propose" +
+					// cfp.getContent());
+					send(cfp);
+					
+					return;
+					
+				}
 				// Fazer novo pedido
 				Working = false;
 
@@ -650,7 +677,7 @@ public class Worker extends Agent {
 		while (it.hasNext()) {
 			Job temp = it.next();
 			if (temp.able(this))
-				unsortMap.put(temp, temp.getProbabilityOfChoose(map.get(position), this));
+				unsortMap.put(temp, temp.getProbabilityOfChoose(this));
 		}
 
 		List<Job> resultado = new ArrayList<Job>();

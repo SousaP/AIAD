@@ -1,12 +1,10 @@
 package job;
 
-import org.jgrapht.GraphPath;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import agents.DroneAgent;
 import agents.Worker;
-import agents.Worker.MoveRequest;
 import locals.Local;
 import product.Product;
 import tools.Tool;
@@ -78,29 +76,71 @@ public class Job {
 	public double getFine() {
 		return fine;
 	}
-	
-	public Local getLocal(){
+
+	public Local getLocal() {
 		return local;
 	}
-	public Local getLocal2(){
+
+	public Local getLocal2() {
 		return local2;
 	}
 
 	// Helps the agent to sort jobs in order to pick the most profitable one
-	public double getProbabilityOfChoose(Local myLocal, Worker w) {
+	public double getProbabilityOfChoose(Worker W) {
 		boolean fined = false;
 		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
-				w.cityMap, myLocal, local);
+				W.cityMap, W.map.get(W.position), W.map.get(local.getName()));
+		double temp2 = dijkstra.getPathLength();
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				W.cityMap, W.map.get(local.getName()), W.map.get(local2.getName()));
+		temp2 += dijkstra2.getPathLength();
 		// double length = dijkstra.getPathLength();
-		if (time * 1000 < (((10 - w.VELOCITY) * 100) * dijkstra.getPathLength()))
+		if (time * 1000 < (((10 - W.VELOCITY) * 100) * temp2))
 			fined = true;
 		if (the_Job == to_do.TRANSPORT) {
 			if (fined)
-				return ((reward * 3 - fine) / dijkstra.getPathLength());
+				return ((reward * 3 - fine) /temp2);
 			else
-				return ((reward * 3) / dijkstra.getPathLength());
+				return ((reward * 3) / temp2);
 		} else
 			return ((reward * 3 - fine) / time);
+	}
+
+	public double MakeBetterOffer(Worker W, Job b) {
+		double probB = b.getProbabilityOfChoose(W);
+		boolean fined = false;
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				W.cityMap, W.map.get(W.position), W.map.get(local.getName()));
+		double temp2 = dijkstra.getPathLength();
+		DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
+				W.cityMap, W.map.get(local.getName()), W.map.get(local2.getName()));
+		temp2 += dijkstra2.getPathLength();
+		// double length = dijkstra.getPathLength();
+		if (time * 1000 < (((10 - W.VELOCITY) * 100) * temp2))
+			fined = true;
+
+		double myProb = 0;
+		double rewardTemp = reward * 0.95;
+		//System.out.println("rewardTemp " + rewardTemp);
+		//System.out.println("dijkstra.getPathLength() " + temp2);
+		
+		if (the_Job == to_do.TRANSPORT) {
+			if (fined) {
+				myProb = ((rewardTemp* 3 - fine) /temp2);
+			} else {
+				myProb = ((rewardTemp* 3) / temp2);
+			}
+		} else
+			myProb = ((rewardTemp * 3 - fine) / time);
+
+		
+		if(myProb > probB){
+			//System.out.println("myProb " + myProb);
+			//System.out.println("probB " + probB);
+		return (double)Math.round(rewardTemp* 100)/100;
+		}
+		else
+			return -1;
 	}
 
 	public double getProbabilityOfChoose(Local myLocal, DroneAgent d) {
@@ -127,8 +167,8 @@ public class Job {
 
 	public boolean able(Worker W) {
 		Tool temp = new Tool(product.getTool());
-		if (the_Job == to_do.MOUNT && (!(W.getToolsString().contains(temp.getName()) || 
-				(W.getLoadLeft() < product.getSize())))) {
+		if (the_Job == to_do.MOUNT
+				&& (!(W.getToolsString().contains(temp.getName()) || (W.getLoadLeft() < product.getSize())))) {
 			// System.out.println(product.price);
 			// System.out.println("falha aqui1");
 			return false;
@@ -147,11 +187,11 @@ public class Job {
 		double temp1 = 0;
 		double temp2 = 0;
 		if (W.getLocalName().contains("Drone")) {
-			temp2 = Math
-			.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local.getName()).getI()), 2) + Math.pow((W.map.get(W.position).getJ() - W.map.get(local.getName()).getJ()), 2));
-			temp2 += Math
-					.sqrt(Math.pow((W.map.get(local.getName()).getI() - W.map.get(local2.getName()).getI()), 2) + Math.pow((W.map.get(local.getName()).getJ() - W.map.get(local2.getName()).getJ()), 2));
-					
+			temp2 = Math.sqrt(Math.pow((W.map.get(W.position).getI() - W.map.get(local.getName()).getI()), 2)
+					+ Math.pow((W.map.get(W.position).getJ() - W.map.get(local.getName()).getJ()), 2));
+			temp2 += Math.sqrt(Math.pow((W.map.get(local.getName()).getI() - W.map.get(local2.getName()).getI()), 2)
+					+ Math.pow((W.map.get(local.getName()).getJ() - W.map.get(local2.getName()).getJ()), 2));
+
 			for (int i = 0; i < W.chargers.size(); i++) {
 				DijkstraShortestPath<Local, DefaultWeightedEdge> dijkstra2 = new DijkstraShortestPath<Local, DefaultWeightedEdge>(
 						W.cityMap, W.map.get(local2.getName()), W.map.get(W.chargers.get(i).getName()));
