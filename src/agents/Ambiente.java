@@ -17,6 +17,7 @@ import tools.Tool;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -307,7 +308,7 @@ public class Ambiente extends Worker {
 				Jobs_Created.add(createRandomJob());
 
 		}
-
+		/*
 		Job createRandomJob() {
 
 			to_do temp = to_do.TRANSPORT;
@@ -333,6 +334,55 @@ public class Ambiente extends Worker {
 			local = keysList.get(random.nextInt(keysList.size()));
 			}while(local.getName().equals(levantar.getName()));
 			
+			if (temp == to_do.TRANSPORT)
+				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
+						getRandomInt(50, 300), p_job, levantar, local);
+			else
+				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
+						getRandomInt(50, 300), p_job, local, local);
+
+		}
+		*/
+		Job createRandomJob() {
+
+			to_do temp = to_do.ACQUISITION;
+			Random random = new Random();
+			
+			List<Local> keysList = new ArrayList<Local>();
+			List<Product> listProdutos = new ArrayList<Product>();
+
+			
+			keysList.addAll(produtos.keySet());
+			
+			// Retira locais que não são stores
+			if(temp == to_do.ACQUISITION) {
+				for(Local key:  keysList) {
+					if(!stores.contains(key.getName())) {
+						keysList.remove(key);
+					}
+				}
+			}
+			
+			Local levantar = keysList.get(random.nextInt(keysList.size()));
+
+			listProdutos = produtos.get(levantar);
+
+			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
+			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
+
+			// System.out.println(p.toString());
+
+			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
+			
+			Local local = null;
+			do{
+			local = keysList.get(random.nextInt(keysList.size()));
+			}while(local.getName().equals(levantar.getName()));
+			
+			if (temp == to_do.ACQUISITION)
+				return new Job(to_do.ACQUISITION, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
+						getRandomInt(50, 300), p_job, levantar, levantar);
+			else
 			if (temp == to_do.TRANSPORT)
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);

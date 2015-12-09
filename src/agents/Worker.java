@@ -570,20 +570,59 @@ public class Worker extends Agent {
 																			// value
 					//System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
 					send(cfp);
+				 	}
 				}
-				 }
-				myJob = null;
+				else if (myJob.the_Job == to_do.ACQUISITION) {
+					credit += myJob.getReward();
+					if (time_lasted > myJob.time)
+						credit -= myJob.getFine();
+					Working = false;
+					System.out.println("Battery " + batteryLeft);
+
+				 if (position.equals(myJob.local2.getName())) {
+					ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+					// ID do ambiente
+					DFAgentDescription template = new DFAgentDescription();
+					DFAgentDescription[] result = null;
+
+					try {
+						result = DFService.search(myAgent, template);
+					} catch (FIPAException e) {
+						e.printStackTrace();
+					}
+					AID[] recursos = new AID[result.length];
+					for (int i = 0; i < result.length; ++i) {
+						recursos[i] = result[i].getName();
+						if (recursos[i].getLocalName().contains("ambient")) {
+							cfp.addReceiver(recursos[i]);
+							break;
+						}
+					}
+					
+					credit -= myJob.product.getPrice();
+					
+					cfp.setContent("comprei;" + myJob.toString());
+					cfp.setConversationId("comprei");
+					cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																			// value
+					//System.out.println("Enviei um DEPOSITEI" + cfp.getContent());
+					send(cfp);
+				}
+				
 			}
+				myJob = null;
 			for (int i = 0; i < chargers.size(); i++)
 				if (position.equals(chargers.get(i).getName())) {
 					myAgent.addBehaviour(new ChargeBehaviour(myAgent));
 					Working = true;
 					return 0;
 				}
-
+			}
 			return 0;
 		}
 	}
+	
+	
 
 	public class ChargeBehaviour extends TickerBehaviour {
 		private static final long serialVersionUID = 1L;
@@ -631,8 +670,8 @@ public class Worker extends Agent {
 			}
 		}
 
-	}
-
+		}
+	
 	public static Job getKeyByValue(HashMap<Job, Double> map, double value) {
 		for (Entry<Job, Double> entry : map.entrySet()) {
 			if (Objects.equals(value, entry.getValue())) {
@@ -754,3 +793,4 @@ public class Worker extends Agent {
 		// } */
 	}
 }
+
