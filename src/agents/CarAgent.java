@@ -10,18 +10,12 @@ import tools.Tool;
 
 public class CarAgent extends Worker {
 	private static final long serialVersionUID = 1L;
-	private static boolean ROAD = true; // true estrada, false ar
 	private static int LOAD_CAPACITY = 550;
-	private static Tool f1;
-	private static Tool f2;
-	
 
 	protected void setup(){
 		BATTERY_CAPACITY = 500;
 		this.batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;
-		f1 = new Tool("f1");
-		f2 = new Tool("f2");
 		VELOCITY = 3;
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());

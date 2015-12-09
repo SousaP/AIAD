@@ -20,8 +20,8 @@ public class Main {
 			// "agents.DroneAgent", new Object[] { "A;f1" });
 
 			AgentController car1 = cc.createNewAgent("Car 1", "agents.CarAgent", new Object[] { "B;f1" });
-			/*	AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f1" });
-			AgentController car3 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f1" });
+				AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f1" });
+				/*		AgentController car3 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f1" });
 			AgentController car4 = cc.createNewAgent("Car 4", "agents.CarAgent", new Object[] { "M;f1" });
 			AgentController car5 = cc.createNewAgent("Car 5", "agents.CarAgent", new Object[] { "A;f1" });
 			AgentController car6 = cc.createNewAgent("Car 6", "agents.CarAgent", new Object[] { "I;f1" });
@@ -33,8 +33,8 @@ public class Main {
 			// drone.start();
 
 			car1.start();
-			/*car2.start();
-			car3.start();
+			car2.start();
+			/*	car3.start();
 			car4.start();
 			car5.start();
 			car6.start();

@@ -34,7 +34,6 @@ import tools.Tool;
 public class DroneAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	private static int LOAD_CAPACITY = 100;
-	private static Tool f1;
 	private float i;
 	private float j;
 
@@ -46,7 +45,6 @@ public class DroneAgent extends Worker {
 		this.batteryLeft = BATTERY_CAPACITY;
 		this.loadLeft = LOAD_CAPACITY;
 		VELOCITY = 5;
-		f1 = new Tool("f1");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();

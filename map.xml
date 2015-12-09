@@ -144,7 +144,7 @@
 	<Product nome="Laranja" tool="f1" preço="3" Local="I">300</Product>
 	<Product nome="Pera" tool="f2" preço="1" Local="I">250</Product>
 	<Product nome="Tangerina" tool="f2" preço="2" Local="I">100</Product>
-	<Product nome="Pessego" tool="f3" preço="4" Local="I">432</Product>
+	<Product nome="Pessego" tool="f1" preço="4" Local="I">432</Product>
 	<Product nome="Maça" tool="f2" preço="1" Local="I">123</Product>
 	<Product nome="Ananas" tool="f1" preço="5" Local="I">312</Product>
 	<Product nome="Banana" tool="f3" preço="2" Local="I">234</Product>

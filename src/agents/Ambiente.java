@@ -17,13 +17,11 @@ import tools.Tool;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -60,7 +58,7 @@ public class Ambiente extends Worker {
 						produtos.put(map.get(eElement.getAttribute("Local")), value);
 					} else {
 						value = new ArrayList<Product>();
-						value.add(new Product(new Tool(eElement.getAttribute("Tool")), eElement.getAttribute("nome"),
+						value.add(new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
 								Double.parseDouble(eElement.getAttribute("preço")),
 								Integer.parseInt(eElement.getTextContent())));
 
@@ -136,15 +134,14 @@ public class Ambiente extends Worker {
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
 
-				if (split[0].contains("jobs") && split[1].contains("?"))
-				{	for (int i = 0; i < Jobs_Created.size(); i++)
+				if (split[0].contains("jobs") && split[1].contains("?")) {
+					for (int i = 0; i < Jobs_Created.size(); i++)
 						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
 							content = content + Jobs_Created.get(i).toString();
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-				}
-				else if (split[0].contains("apanhei")) {
+				} else if (split[0].contains("apanhei")) {
 					Job job_to_complete = new Job(to_do.valueOf(split[1]), type.valueOf(split[2]),
 							Double.parseDouble(split[3]), Integer.parseInt(split[4]),
 							Double.parseDouble(split[5]), new Product(new Tool(split[6]), split[7],
@@ -152,12 +149,14 @@ public class Ambiente extends Worker {
 							map.get(split[10]), map.get(split[11]));
 					Local l = map.get(job_to_complete.getLocal().getName());
 					List<Product> temp = produtos.get(l);
-					//System.out.println("SZIE  " + temp.size());
-					for(int i = 0; i < temp.size(); i++)
-						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
-						//	System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+					// System.out.println("SZIE " + temp.size());
+					for (int i = 0; i < temp.size(); i++)
+						if (temp.get(i).getName().contains(job_to_complete.product.getName())) {
+							// System.out.println("Quantidade inicial" +
+							// temp.get(i).getQuantidade());
 							temp.get(i).removeQ(job_to_complete.product.getQuantidade());
-						//	System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+							// System.out.println("Quantidade Final" +
+							// temp.get(i).getQuantidade());
 							break;
 						}
 					return;
@@ -171,11 +170,13 @@ public class Ambiente extends Worker {
 					Local l = map.get(job_to_complete.getLocal2().getName());
 					List<Product> temp = produtos.get(l);
 					System.out.println("SZIE  " + temp.size());
-					for(int i = 0; i < temp.size(); i++)
-						if(temp.get(i).getName().contains(job_to_complete.product.getName())){
-						//	System.out.println("Quantidade inicial" + temp.get(i).getQuantidade());
+					for (int i = 0; i < temp.size(); i++)
+						if (temp.get(i).getName().contains(job_to_complete.product.getName())) {
+							// System.out.println("Quantidade inicial" +
+							// temp.get(i).getQuantidade());
 							temp.get(i).adicionaQ(job_to_complete.product.getQuantidade());
-						//	System.out.println("Quantidade Final" + temp.get(i).getQuantidade());
+							// System.out.println("Quantidade Final" +
+							// temp.get(i).getQuantidade());
 							break;
 						}
 					return;
@@ -304,104 +305,105 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			for (int i = 0; i < 5; i++)
-			{
+			for (int i = 0; i < 5; i++) {
 				Job tempJob = createRandomJob();
 				System.out.println(tempJob.toString());
 				Jobs_Created.add(tempJob);
 			}
 
 		}
+
 		/*
+		 * Job createRandomJob() {
+		 * 
+		 * to_do temp = to_do.TRANSPORT; Random random = new Random();
+		 * List<Local> keysList = new ArrayList<Local>(); List<Product>
+		 * listProdutos = new ArrayList<Product>();
+		 * 
+		 * keysList.addAll(produtos.keySet());
+		 * 
+		 * Local levantar = keysList.get(random.nextInt(keysList.size()));
+		 * 
+		 * listProdutos = produtos.get(levantar);
+		 * 
+		 * Product p = listProdutos.get(random.nextInt(listProdutos.size()));
+		 * int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
+		 * 
+		 * // System.out.println(p.toString());
+		 * 
+		 * Product p_job = new Product(new Tool(p.getTool()), p.getName(),
+		 * Quantidade * p.getPrice(), Quantidade);
+		 * 
+		 * Local local = null; do{ local =
+		 * keysList.get(random.nextInt(keysList.size()));
+		 * }while(local.getName().equals(levantar.getName()));
+		 * 
+		 * if (temp == to_do.TRANSPORT) return new Job(to_do.TRANSPORT,
+		 * type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
+		 * getRandomInt(50, 300), p_job, levantar, local); else return new
+		 * Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800),
+		 * getRandomInt(1, 5), getRandomInt(50, 300), p_job, local, local);
+		 * 
+		 * }
+		 */
 		Job createRandomJob() {
 
-			to_do temp = to_do.TRANSPORT;
+			to_do temp = to_do.MOUNT;
 			Random random = new Random();
+
 			List<Local> keysList = new ArrayList<Local>();
 			List<Product> listProdutos = new ArrayList<Product>();
 
-			keysList.addAll(produtos.keySet());
-			
-			Local levantar = keysList.get(random.nextInt(keysList.size()));
-
-			listProdutos = produtos.get(levantar);
-
-			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
-			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
-
-			// System.out.println(p.toString());
-
-			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
-			
-			Local local = null;
-			do{
-			local = keysList.get(random.nextInt(keysList.size()));
-			}while(local.getName().equals(levantar.getName()));
-			
-			if (temp == to_do.TRANSPORT)
-				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
-						getRandomInt(50, 300), p_job, levantar, local);
-			else
-				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-						getRandomInt(50, 300), p_job, local, local);
-
-		}
-		*/
-		Job createRandomJob() {
-
-			to_do temp = to_do.ACQUISITION;
-			Random random = new Random();
-			
-			List<Local> keysList = new ArrayList<Local>();
-			List<Product> listProdutos = new ArrayList<Product>();
-
-			
 			keysList.addAll(produtos.keySet());
 			List<Local> copy = new ArrayList<Local>(keysList);
-			
+
 			// Retira locais que não são stores
-			if(temp == to_do.ACQUISITION) {
-				for(Local key:  keysList) {
-					if(!stores.contains(key)) {
+			if (temp == to_do.ACQUISITION) {
+				for (Local key : keysList) {
+					if (!stores.contains(key)) {
 						copy.remove(key);
 					}
 				}
 			}
 			keysList = copy;
-			
+
 			Local levantar = keysList.get(random.nextInt(keysList.size()));
 
 			listProdutos = produtos.get(levantar);
 
 			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
+			Product p_mount = null;
 			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
 
 			// System.out.println(p.toString());
 
 			Product p_job = new Product(new Tool(p.getTool()), p.getName(), Quantidade * p.getPrice(), Quantidade);
-			
+
 			Local local = null;
-			
-			if(temp == to_do.TRANSPORT){
-			do{
-			local = keysList.get(random.nextInt(keysList.size()));
-			}while(local.getName().equals(levantar.getName()));
-			}else if(temp == to_do.ACQUISITION)
-			{
+
+			if (temp == to_do.TRANSPORT) {
+				do {
+					local = keysList.get(random.nextInt(keysList.size()));
+				} while (local.getName().equals(levantar.getName()));
+			} else if (temp == to_do.ACQUISITION) {
 				local = houses.get(random.nextInt(houses.size()));
+			} else if (temp == to_do.MOUNT) {
+				do {
+					p_mount = listProdutos.get(random.nextInt(listProdutos.size()));
+				} while (p_mount.getName().equals(p.getName()));
 			}
-			
-			
+
 			if (temp == to_do.ACQUISITION)
 				return new Job(to_do.ACQUISITION, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);
-			else
-			if (temp == to_do.TRANSPORT)
+			else if (temp == to_do.TRANSPORT)
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);
 			else
-				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
-						getRandomInt(50, 300), p_job, local, local);
+				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
+						getRandomInt(50, 300), new Product(new Tool(p.getTool() + "," + p_mount.getTool()),
+								"Batido," + p.getName() + ","+p_mount.getName(),p.getPrice()+p_mount.getPrice(),1),
+						levantar, levantar);
 
 		}
 

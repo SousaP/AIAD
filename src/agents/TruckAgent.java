@@ -10,10 +10,7 @@ import jade.core.*;
 import tools.Tool;
 public class TruckAgent extends Worker {
 	private static final long serialVersionUID = 1L;
-	private static boolean ROAD = true; //true estrada, false ar
 	private static int LOAD_CAPACITY = 1000;
-	private static Tool f2;
-	private static Tool f3;
 
 	
 	protected void setup(){
@@ -21,8 +18,6 @@ public class TruckAgent extends Worker {
 		this.batteryLeft = BATTERY_CAPACITY;
 		this.loadLeft = LOAD_CAPACITY;
 		VELOCITY = 1;
-		f2 = new Tool("f2");
-		f3 = new Tool("f3");
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
