@@ -274,7 +274,7 @@ public class Ambiente extends Worker {
 							ACLMessage cfp = new ACLMessage(ACLMessage.AGREE);
 							cfp.addReceiver(msg.getSender());
 							// Responde Agree com Job na mensagem
-							cfp.setContent(Trabalhos_utilizador.get(i).toString());
+							cfp.setContent(Trabalhos_utilizador.get(i).toString() + Trabalhos_utilizador.get(i).criador);
 							Trabalhos_utilizador.get(i).setbeingDone();
 							cfp.setConversationId("job_proposal");
 							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
