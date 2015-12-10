@@ -35,6 +35,7 @@ public class Ambiente extends Worker {
 	HashMap<Job, AID> winning = new HashMap<Job, AID>();
 	HashMap<Local, List<Product>> produtos = new HashMap<Local, List<Product>>();
 	List<Job> Trabalhos_utilizador = new ArrayList<Job>();
+	HashMap<String, Product> produtosLista = new HashMap<String, Product>();
 
 	private void readProducts() {
 		try {
@@ -55,6 +56,9 @@ public class Ambiente extends Worker {
 						value.add(new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
 								Double.parseDouble(eElement.getAttribute("preço")),
 								Integer.parseInt(eElement.getTextContent())));
+						produtosLista.put(eElement.getAttribute("nome"), new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
+								Double.parseDouble(eElement.getAttribute("preço")),
+								Integer.parseInt(eElement.getTextContent())));
 
 						produtos.put(map.get(eElement.getAttribute("Local")), value);
 					} else {
@@ -62,9 +66,92 @@ public class Ambiente extends Worker {
 						value.add(new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
 								Double.parseDouble(eElement.getAttribute("preço")),
 								Integer.parseInt(eElement.getTextContent())));
+						
+						produtosLista.put(eElement.getAttribute("nome"), new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("nome"),
+								Double.parseDouble(eElement.getAttribute("preço")),
+								Integer.parseInt(eElement.getTextContent())));
 
 						produtos.put(map.get(eElement.getAttribute("Local")), value);
 					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void readJobs() {
+		try {
+
+			File inputFile = new File("map.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+			NodeList JobsList = doc.getElementsByTagName("Job");
+			Job jobTemp = null;
+			for (int temp = 0; temp < JobsList.getLength(); temp++) {
+				Node nNode = JobsList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					String todo = eElement.getAttribute("thejob");
+					String tipo = eElement.getAttribute("type");
+					Product p_job = new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("product"), 
+							Double.parseDouble(eElement.getAttribute("price")) * 
+							Integer.parseInt(eElement.getAttribute("quantidade")), 
+							Integer.parseInt(eElement.getAttribute("quantidade")));
+					if(todo.equals("MOUNT")){
+						if(tipo.equals("BID")){
+							System.out.println("MOUNT BID JOB READING");
+							jobTemp = new Job(to_do.MOUNT, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									p_job, map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+						else{
+							jobTemp = new Job(to_do.MOUNT, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									p_job, map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+					}
+					else if(todo.equals("TRANSPORT")){
+						if(tipo.equals("BID")){
+							jobTemp = new Job(to_do.TRANSPORT, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									produtosLista.get(eElement.getAttribute("product")), map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+						else{
+							jobTemp = new Job(to_do.TRANSPORT, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									produtosLista.get(eElement.getAttribute("product")), map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+					}
+					else if(todo.equals("ACQUISITION")){
+						if(tipo.equals("BID")){
+							jobTemp = new Job(to_do.ACQUISITION, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									produtosLista.get(eElement.getAttribute("product")), map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+						else{
+							jobTemp = new Job(to_do.ACQUISITION, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
+									Integer.parseInt(eElement.getAttribute("time"))
+									, Double.parseDouble(eElement.getAttribute("fine")),
+									produtosLista.get(eElement.getAttribute("product")), map.get(eElement.getAttribute("local")), 
+									map.get(eElement.getAttribute("local2")));
+						}
+					}
+					Jobs_Created.add(jobTemp);
+					System.out.println(jobTemp.toString());
 				}
 			}
 
@@ -91,6 +178,8 @@ public class Ambiente extends Worker {
 
 		addBehaviour(new ambientBehaviour(this, 7000));
 		addBehaviour(new SalesBehaviour(this));
+		readJobs();
+		
 
 	}
 
@@ -394,11 +483,11 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			for (int i = 0; i < 5; i++) {
+			/*for (int i = 0; i < 5; i++) {
 				Job tempJob = createRandomJob();
 				System.out.println(tempJob.toString());
 				Jobs_Created.add(tempJob);
-			}
+			}*/
 
 		}
 
