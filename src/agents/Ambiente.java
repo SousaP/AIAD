@@ -14,6 +14,7 @@ import locals.Local;
 import product.Product;
 import tools.Tool;
 
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -385,7 +386,7 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 5; i++) {
 				Job tempJob = createRandomJob();
 				System.out.println(tempJob.toString());
 				Jobs_Created.add(tempJob);
@@ -417,8 +418,19 @@ public class Ambiente extends Worker {
 			Local levantar = keysList.get(random.nextInt(keysList.size()));
 
 			listProdutos = produtos.get(levantar);
+			
+			List<Product> listProdutosMount = new ArrayList<Product>();
+			
+			if(temp == to_do.MOUNT){
+				for(int i = 0; i < keysList.size(); i++){
+					listProdutosMount.addAll(produtos.get(keysList.get(i)));
+				}
+
+				System.out.println("List Produtos Mount: " + listProdutosMount.size());
+			}
 
 			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
+			System.out.println("List Produtos: " + listProdutos.size());
 			Product p_mount = null;
 			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
 
@@ -436,7 +448,7 @@ public class Ambiente extends Worker {
 				local = houses.get(random.nextInt(houses.size()));
 			} else if (temp == to_do.MOUNT) {
 				do {
-					p_mount = listProdutos.get(random.nextInt(listProdutos.size()));
+					p_mount = listProdutosMount.get(random.nextInt(listProdutosMount.size()));
 				} while (p_mount.getName().equals(p.getName()));
 			}
 
