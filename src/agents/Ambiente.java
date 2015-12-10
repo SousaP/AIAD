@@ -142,9 +142,10 @@ public class Ambiente extends Worker {
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
+					
 					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
 						if (!(Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone())) {
-							content = content + Trabalhos_utilizador.get(i).toString() + ";"
+							content = content + Trabalhos_utilizador.get(i).toString()
 									+ Trabalhos_utilizador.get(i).criador;
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
@@ -200,6 +201,8 @@ public class Ambiente extends Worker {
 									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
 							map.get(split[10]), map.get(split[11]));
 					job_to_complete.criador = split[12];
+					
+					Trabalhos_utilizador.add(job_to_complete);
 
 				} else if (split[0].contains("Produtos")) {
 					String[] produtos_recebidos = split[1].split(",");
@@ -208,18 +211,27 @@ public class Ambiente extends Worker {
 					List<Product> listProdutos = new ArrayList<Product>();
 
 					keysList.addAll(produtos.keySet());
-					String content = "Local";
+					String content = "Local;";
+					
+
+					String localA = "";
+					String localB = "";
 
 					for (int i = 0; i < keysList.size(); i++)
 						for (int a = 0; a < produtos.get(keysList.get(i)).size(); a++) {
-							if (produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[1])
-									|| produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[2]))
-								content += ";" + keysList.get(i).getName();
+							if ((produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[1])))
+									localA = keysList.get(i).getName();
+							if(produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[2]))
+								localB = keysList.get(i).getName();
+							
+							if(localA.length() > 0 && localB.length() > 0)
+								break;
 				
 							
 						}
+					content += localA + ";" + localB;
 					
-					System.out.println("Enviei : " + content);
+					System.out.println("Enviei : Local" + content);
 					reply.setContent(content);
 					send(reply);
 
@@ -241,6 +253,40 @@ public class Ambiente extends Worker {
 						map.get(split[9]), map.get(split[9]));
 
 				// ver se job faz parte da lista de jobs
+				
+				for(int i = 0; i <Trabalhos_utilizador.size(); i++ )
+				{
+					if (Trabalhos_utilizador.get(i).compare(job_to_complete))
+					{
+						if (Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone()) {
+							ACLMessage cfp = new ACLMessage(ACLMessage.FAILURE);
+							cfp.addReceiver(msg.getSender());
+							// Responde Failure com job na mensagem
+							cfp.setContent(Trabalhos_utilizador.get(i).toString());
+							cfp.setConversationId("job_proposal");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+
+							// myAgent.send(cfp);
+							send(cfp);
+						}
+						else {
+							ACLMessage cfp = new ACLMessage(ACLMessage.AGREE);
+							cfp.addReceiver(msg.getSender());
+							// Responde Agree com Job na mensagem
+							cfp.setContent(Trabalhos_utilizador.get(i).toString());
+							Trabalhos_utilizador.get(i).setbeingDone();
+							cfp.setConversationId("job_proposal");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+
+							// myAgent.send(cfp);
+							send(cfp);
+						}
+						
+					}
+				}
+				
+				
 				for (int i = 0; i < Jobs_Created.size(); i++)
 					if (Jobs_Created.get(i).compare(job_to_complete)) {
 
@@ -319,6 +365,7 @@ public class Ambiente extends Worker {
 							cfp.addReceiver(msg.getSender());
 							// Responde Agree com Job na mensagem
 							cfp.setContent(Jobs_Created.get(i).toString());
+							Jobs_Created.get(i).setbeingDone();
 							cfp.setConversationId("job_proposal");
 							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 
@@ -402,7 +449,7 @@ public class Ambiente extends Worker {
 			else
 				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
 						getRandomInt(50, 300),
-						new Product(new Tool("f1,f1"), "Batido," + p.getName() + "," + p_mount.getName(),
+						new Product(new Tool("f1,f2"), "Batido," + p.getName() + "," + p_mount.getName(),
 								p.getPrice() + p_mount.getPrice(), 1),
 						levantar, levantar);
 

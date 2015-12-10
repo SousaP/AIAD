@@ -20,7 +20,7 @@ public class Main {
 			// "agents.DroneAgent", new Object[] { "A;f1" });
 
 			AgentController car1 = cc.createNewAgent("Car 1", "agents.CarAgent", new Object[] { "B;f1" });
-				AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f1" });
+				AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f2" });
 				/*		AgentController car3 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f1" });
 			AgentController car4 = cc.createNewAgent("Car 4", "agents.CarAgent", new Object[] { "M;f1" });
 			AgentController car5 = cc.createNewAgent("Car 5", "agents.CarAgent", new Object[] { "A;f1" });
