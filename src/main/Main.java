@@ -33,8 +33,8 @@ public class Main {
 			// drone.start();
 
 			car1.start();
-			car2.start();
-			/*	car3.start();
+			/*		car2.start();
+				car3.start();
 			car4.start();
 			car5.start();
 			car6.start();

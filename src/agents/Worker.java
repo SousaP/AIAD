@@ -439,7 +439,7 @@ public class Worker extends Agent {
 					myAgent.addBehaviour(mountB);
 					
 					
-					System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
+				//	System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
 
 				}
 
@@ -603,6 +603,8 @@ public class Worker extends Agent {
 						}
 
 					}
+					
+					if(mountB != null){
 					if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
 
 						if (position.equals(mountB.p1.getName())) {
@@ -637,7 +639,7 @@ public class Worker extends Agent {
 						}
 
 					}
-
+					}
 				}
 
 				// _____________________________________________________
@@ -698,7 +700,16 @@ public class Worker extends Agent {
 					}
 				} else if (myJob.the_Job == to_do.ACQUISITION) {
 
-				} else if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
+				} else if(myJob.the_Job == to_do.MOUNT && mountB.step == 2){
+					System.out.println("Dumping like a boy");
+
+					myAgent.removeBehaviour(mountB);
+					Working = false;
+					return 0;
+					
+				}
+				
+				else if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
 
 					if (position.equals(myJob.local.getName())) {
 						cfp.setContent("depositei;" + myJob.toString());
@@ -780,6 +791,7 @@ public class Worker extends Agent {
 		AID Patrao;
 		String Empregado;
 		Boolean helper = false;
+		int tick_espera = 0;
 
 		public MountBehaviour(Worker a) {
 			// super(a, (myJob.time / 2) * 1000);
@@ -892,7 +904,24 @@ public class Worker extends Agent {
 				break;
 			case 2:
 
-				//System.out.println("STEP 2");
+				//System.out.println(tick_espera);
+				tick_espera ++;
+				
+				if(tick_espera > 200)
+				{
+					try {
+						
+						doingStep = true;
+						
+						List<DefaultWeightedEdge> path = pathTo(map.get(position), dumps.get(0));
+						moveBehav = new MoveRequest((Worker) myAgent, dumps.get(0), path);
+						myAgent.addBehaviour(moveBehav);
+						
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				
+				}
 
 				break;
 			case 3:

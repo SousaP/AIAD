@@ -14,7 +14,6 @@ import locals.Local;
 import product.Product;
 import tools.Tool;
 
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,6 +136,15 @@ public class Ambiente extends Worker {
 
 				if (split[0].contains("jobs") && split[1].contains("?")) {
 					String content = "jobs;";
+					
+					
+					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
+						if (Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone() && 
+								Trabalhos_utilizador.get(i).criador.equals(msg.getSender().getLocalName())) {
+							Trabalhos_utilizador.remove(i);
+						}
+					
+					
 					for (int i = 0; i < Jobs_Created.size(); i++)
 						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
 							content = content + Jobs_Created.get(i).toString();
@@ -459,9 +467,9 @@ public class Ambiente extends Worker {
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);
 			else
-				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(400, 800), getRandomInt(1, 5),
+				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(1000, 1500), getRandomInt(1, 5),
 						getRandomInt(50, 300),
-						new Product(new Tool("f1,f2"), "Batido," + p.getName() + "," + p_mount.getName(),
+						new Product(new Tool(p.getTool()+","+p_mount.getTool()), "Batido," + p.getName() + "," + p_mount.getName(),
 								p.getPrice() + p_mount.getPrice(), 1),
 						levantar, levantar);
 
