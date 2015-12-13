@@ -652,7 +652,7 @@ public class DroneAgent extends Worker {
 				return;
 			switch (step) {
 			case 0:
-				System.out.println("STEP 0");
+				//System.out.println("STEP 0");
 				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
@@ -704,7 +704,7 @@ public class DroneAgent extends Worker {
 				break;
 			case 1:
 
-				System.out.println("STEP 1");
+				//System.out.println("STEP 1");
 				String ools[] = myJob.product.getTool().split(",");
 				if (!getToolsString().contains(ools[0])) {
 					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
@@ -720,7 +720,7 @@ public class DroneAgent extends Worker {
 				step++;
 				break;
 			case 2:
-				System.out.println("STEP 2");
+				//System.out.println("STEP 2");
 				// System.out.println(tick_espera);
 				tick_espera++;
 
@@ -741,11 +741,11 @@ public class DroneAgent extends Worker {
 				break;
 			case 3:
 
-				System.out.println("STEP 3");
+				//System.out.println("STEP 3");
 				break;
 			case 4:
 
-				System.out.println("STEP 4");
+				//System.out.println("STEP 4");
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
@@ -755,7 +755,7 @@ public class DroneAgent extends Worker {
 				step++;
 				break;
 			case 5:
-				System.out.println("STEP 5");
+				//System.out.println("STEP 5");
 				moveBehav = new MoveRequestDrone((DroneAgent) myAgent, map.get(myJob.local.getName()),
 						map.get(myJob.local.getName()));
 				myAgent.addBehaviour(moveBehav);
@@ -763,7 +763,7 @@ public class DroneAgent extends Worker {
 				doingStep = true;
 				break;
 			case 6:
-				System.out.println("STEP 6");
+				//System.out.println("STEP 6");
 				try {
 					credit += myJob.getReward() * 0.75;
 

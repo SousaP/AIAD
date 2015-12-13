@@ -242,7 +242,7 @@ public class Ambiente extends Worker {
 					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
 						if (!(Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone())) {
 							content = content + Trabalhos_utilizador.get(i).toString()
-									+ Trabalhos_utilizador.get(i).criador;
+									+ Trabalhos_utilizador.get(i).criador + ";";
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
@@ -516,11 +516,11 @@ public class Ambiente extends Worker {
 					listProdutosMount.addAll(produtos.get(keysList.get(i)));
 				}
 
-				System.out.println("List Produtos Mount: " + listProdutosMount.size());
+				//System.out.println("List Produtos Mount: " + listProdutosMount.size());
 			}
 
 			Product p = listProdutos.get(random.nextInt(listProdutos.size()));
-			System.out.println("List Produtos: " + listProdutos.size());
+			//System.out.println("List Produtos: " + listProdutos.size());
 			Product p_mount = null;
 			int Quantidade = getRandomInt(1, p.getQuantidade() / 2);
 
