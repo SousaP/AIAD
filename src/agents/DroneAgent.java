@@ -1,5 +1,6 @@
 package agents;
 
+import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import agents.Worker.ChargeBehaviour;
 import locals.*;
 import product.Product;
 import tools.Tool;
@@ -349,6 +351,7 @@ public class DroneAgent extends Worker {
 		Local Destiny;
 		Local Destiny2;
 		int counter;
+		int time_lasted;
 		Local start;
 		int distance;
 		int midpoint;
@@ -382,9 +385,18 @@ public class DroneAgent extends Worker {
 				distance = (int) (Math.sqrt(
 						Math.pow(start.getI() - Destiny.getI(), 2) + Math.pow((start.getJ() - Destiny.getJ()), 2)));
 				counter = distance * ((10 - VELOCITY) * 100);
+				time_lasted = counter;
 				midpoint = (int) distance / 2;
 				position = "tripmode";
 				// System.out.println(counter);
+
+
+				// System.out.println(counter);
+
+				
+				
+				
+				
 				break;
 			default:
 				counter = counter - ((10 - VELOCITY) * 100);
@@ -400,6 +412,97 @@ public class DroneAgent extends Worker {
 					j = Destiny.getJ();
 					// System.out.println("STOPED THE COUNTER");
 				}
+				
+				
+
+				// _______________MENSAGEM PARA AMBIETE QUANDO CHEGA A LOCAL
+				// PARA CARREGAR__________
+
+				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+				// ID do ambiente
+				DFAgentDescription template = new DFAgentDescription();
+				DFAgentDescription[] result = null;
+
+				try {
+					result = DFService.search(myAgent, template);
+				} catch (FIPAException e) {
+					e.printStackTrace();
+				}
+				AID[] recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					if (recursos[i].getLocalName().contains("ambient")) {
+						cfp.addReceiver(recursos[i]);
+						break;
+					}
+				}
+
+				// -------------
+				if (myJob != null) {
+					if (position.equals(myJob.local.getName())) {
+						if (myJob.the_Job == to_do.TRANSPORT) {
+
+							cfp.setContent("apanhei;" + myJob.toString());
+							cfp.setConversationId("pick_up");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							System.out.println("Enviei um APANHEI" + cfp.getContent());
+							send(cfp);
+						}
+
+						else if (myJob.the_Job == to_do.ACQUISITION) {
+
+							credit -= myJob.product.getPrice();
+
+							cfp.setContent("comprei;" + myJob.toString());
+							cfp.setConversationId("comprei");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+						}
+
+					}
+					
+					if(mountB != null){
+					if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
+
+						if (position.equals(mountB.p1.getName())) {
+							Job temp = myJob;
+							String oldP = temp.product.getName();
+							String split[] = oldP.split(",");
+							temp.product.setName(split[1]);
+							cfp.setContent("apanhei;" + myJob.toString());
+							temp.product.setName(oldP);
+							cfp.setConversationId("apanhei");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							//System.out.println("APANHEI P1");
+							// cfp.getContent());
+							send(cfp);
+
+						}
+						if (position.equals(mountB.p2.getName())) {
+							Job temp = myJob;
+							String oldP = temp.product.getName();
+							String split[] = oldP.split(",");
+							temp.product.setName(split[1]);
+							cfp.setContent("apanhei;" + myJob.toString());
+							temp.product.setName(oldP);
+							cfp.setConversationId("apanhei");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+							//System.out.println("APANHEI P2"); // value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+
+						}
+
+					}
+					}
+				}
+
 				break;
 
 			}
@@ -413,16 +516,108 @@ public class DroneAgent extends Worker {
 				addBehaviour(moveBehav);
 				return 0;
 			}
-			/*
-			 * System.out.println("TERMINATED MOVE");
-			 * removeBehaviour(moveBehav); moveBehav= new MoveRequestDrone(w,
-			 * map.get("L")); addBehaviour(moveBehav);
-			 */
-			return 1;
+				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+				// ID do ambiente
+				DFAgentDescription template = new DFAgentDescription();
+				DFAgentDescription[] result = null;
+
+				try {
+					result = DFService.search(myAgent, template);
+				} catch (FIPAException e) {
+					e.printStackTrace();
+				}
+
+				AID tempAmbient = null;
+				AID[] recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					if (recursos[i].getLocalName().contains("ambient")) {
+						tempAmbient = recursos[i];
+						cfp.addReceiver(recursos[i]);
+						break;
+					}
+				}
+				if (myJob != null) {
+					if (myJob.the_Job == to_do.TRANSPORT || myJob.the_Job == to_do.ACQUISITION) {
+						credit += myJob.getReward();
+						if (time_lasted > myJob.time)
+							credit -= myJob.getFine();
+						Working = false;
+
+						System.out.println("Battery " + batteryLeft);
+
+						if (position.equals(myJob.local2.getName())) {
+
+							cfp.setContent("depositei;" + myJob.toString());
+							cfp.setConversationId("delivery");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+						}
+					} else if (myJob.the_Job == to_do.ACQUISITION) {
+
+					} else if(myJob.the_Job == to_do.MOUNT && mountB.step == 2){
+						System.out.println("Dumping like a boy");
+
+						myAgent.removeBehaviour(mountB);
+						Working = false;
+						return 0;
+						
+					}
+					
+					else if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
+
+						if (position.equals(myJob.local.getName())) {
+							cfp.setContent("depositei;" + myJob.toString());
+							cfp.setConversationId("delivery");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																					// value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+
+							mountB.doingStep = false;
+							return 0;
+
+						}
+						
+						
+
+						mountB.doingStep = false;
+						return 0;
+					} else if (myJob.the_Job == to_do.MOUNT) {
+						mountB.doingStep = false;
+
+						if (position.equals(myJob.local.getName())) {
+							cfp.setContent("Here;" + myJob.toString());
+							cfp.setConversationId("here");
+							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+							cfp.removeReceiver(tempAmbient);
+							cfp.addReceiver(mountB.Patrao);
+							// value
+							// System.out.println("Enviei um DEPOSITEI" +
+							// cfp.getContent());
+							send(cfp);
+							return 0;
+
+						}
+
+					}
+					myJob = null;
+					for (int i = 0; i < chargers.size(); i++)
+						if (position.equals(chargers.get(i).getName())) {
+							myAgent.addBehaviour(new ChargeBehaviour(myAgent));
+							Working = true;
+							return 0;
+						}
+				}
+				return 0;
+			}
 
 		}
 
-	}
 
 	@Override
 	public void checkForBattery() {
