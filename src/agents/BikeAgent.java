@@ -1,13 +1,10 @@
 package agents;
 
-import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.core.*;
 
-import tools.Tool;
 public class BikeAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	

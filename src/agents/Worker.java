@@ -241,10 +241,12 @@ public class Worker extends Agent {
 		// Iterator<DefaultWeightedEdge> iter = edges.iterator();
 
 		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
-		Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
+		/*Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
+		
 		while (iter1.hasNext()) {
 			DefaultWeightedEdge edge = iter1.next();
-		}
+		} 
+		*/
 		return temp1;
 	}
 
@@ -290,7 +292,7 @@ public class Worker extends Agent {
 				if (split.length < 2)
 					return;
 
-				String content = "";
+				//String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
@@ -373,7 +375,7 @@ public class Worker extends Agent {
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
 
-				if (job_rejected.job_Type.BIDS == type.BIDS && jobs_disponiveis.size() > 1) {
+				if (job_rejected.job_Type == type.BIDS && jobs_disponiveis.size() > 1) {
 					double newReward = job_rejected.MakeBetterOffer((Worker) myAgent, jobs_disponiveis.get(1));
 					if (newReward == -1) {
 						Working = false;
@@ -1048,6 +1050,7 @@ public class Worker extends Agent {
 		return resultado;
 	}
 
+	@SuppressWarnings("hiding")
 	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(
 			Map<Job, Double> map) {
 

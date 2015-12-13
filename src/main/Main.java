@@ -16,11 +16,11 @@ public class Main {
 		try {
 			AgentController ambiente = cc.createNewAgent("ambient", "agents.Ambiente", null);
 			AgentController simulation = cc.createNewAgent("simulation", "Simulation.SimulationAgent", null);
-			 AgentController drone = cc.createNewAgent("Drone 1","agents.DroneAgent", new Object[] { "A;f1" });
+			// AgentController drone = cc.createNewAgent("Drone 1","agents.DroneAgent", new Object[] { "A;f1" });
 
 			AgentController car1 = cc.createNewAgent("Car 1", "agents.CarAgent", new Object[] { "B;f1" });
-				AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f2" });
-				/*		AgentController car3 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f1" });
+			/*	AgentController car2 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "C;f2" });
+						AgentController car3 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f1" });
 			AgentController car4 = cc.createNewAgent("Car 4", "agents.CarAgent", new Object[] { "M;f1" });
 			AgentController car5 = cc.createNewAgent("Car 5", "agents.CarAgent", new Object[] { "A;f1" });
 			AgentController car6 = cc.createNewAgent("Car 6", "agents.CarAgent", new Object[] { "I;f1" });
@@ -29,11 +29,10 @@ public class Main {
 */
 			ambiente.start();
 			simulation.start();
-			// drone.start();
-			drone.start();
-			/*	
+			//drone.start();
+				
 			car1.start();
-				car2.start();
+			/*	car2.start();
 				car3.start();
 			car4.start();
 			car5.start();

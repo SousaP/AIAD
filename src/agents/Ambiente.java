@@ -309,7 +309,7 @@ public class Ambiente extends Worker {
 					String[] produtos_recebidos = split[1].split(",");
 
 					List<Local> keysList = new ArrayList<Local>();
-					List<Product> listProdutos = new ArrayList<Product>();
+				//	List<Product> listProdutos = new ArrayList<Product>();
 
 					keysList.addAll(produtos.keySet());
 					String content = "Local;";

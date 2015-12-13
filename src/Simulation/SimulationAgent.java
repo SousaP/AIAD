@@ -105,10 +105,10 @@ public class SimulationAgent extends GuiAgent {
 					if (reply.getPerformative() == ACLMessage.INFORM) {
 						// This is an offer
 						String resposta = reply.getContent().toString();
-						String[] conjuntoSintomas = resposta.split(";");
+						String[] tempSplit = resposta.split(";");
 
-						agentsReceiving.add(new Local(Integer.parseInt(conjuntoSintomas[1]),
-								Integer.parseInt(conjuntoSintomas[2]), conjuntoSintomas[0]));
+						agentsReceiving.add(new Local(Integer.parseInt(tempSplit[1]),
+								Integer.parseInt(tempSplit[2]), tempSplit[0]));
 
 						// This is the best offer at present
 

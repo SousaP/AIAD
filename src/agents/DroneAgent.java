@@ -11,7 +11,6 @@ import jade.lang.acl.ACLMessage;
 import job.Job;
 import job.Job.to_do;
 import job.Job.type;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,11 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.jgrapht.graph.DefaultWeightedEdge;
-
-import agents.Worker.ChargeBehaviour;
-import agents.Worker.MoveRequest;
 import locals.*;
 import product.Product;
 import tools.Tool;
@@ -95,6 +89,7 @@ public class DroneAgent extends Worker {
 		return resultado;
 	}
 
+	@SuppressWarnings("hiding")
 	static <Job, Double extends Comparable<? super Double>> List<Entry<Job, Double>> entriesSortedByValues(
 			Map<Job, Double> map) {
 
@@ -160,7 +155,7 @@ public class DroneAgent extends Worker {
 				if (split.length < 2)
 					return;
 
-				String content = "";
+				//String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
@@ -242,7 +237,7 @@ public class DroneAgent extends Worker {
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
 
-				if (job_rejected.job_Type.BIDS == type.BIDS && jobs_disponiveis.size() > 1) {
+				if (job_rejected.job_Type == type.BIDS && jobs_disponiveis.size() > 1) {
 					double newReward = job_rejected.MakeBetterOffer((Worker) myAgent, jobs_disponiveis.get(1));
 					if (newReward == -1) {
 						Working = false;
@@ -690,10 +685,15 @@ public class DroneAgent extends Worker {
 					if (split[0].equals("Local")) {
 						p1 = map.get(split[1]);
 						p2 = map.get(split[2]);
-						// TODO ver qual mais perto
-						System.out.println("a mover para: ");
+						double distance1 = Math.sqrt(Math.pow(map.get(position).getJ()- p1.getJ(), 2)
+								+ Math.pow(map.get(position).getI()- p1.getI(), 2));
+						double distance2 = Math.sqrt(Math.pow(map.get(position).getJ()- p2.getJ(), 2)
+								+ Math.pow(map.get(position).getI()- p2.getI(), 2));
 
+						if(distance1 < distance2)
 						moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p1, p2);
+						else
+							moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p2, p1);
 						myAgent.addBehaviour(moveBehav);
 
 					}

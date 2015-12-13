@@ -1,13 +1,10 @@
 package agents;
 
 
-import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.core.*;
-import tools.Tool;
 public class TruckAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	private static int LOAD_CAPACITY = 1000;
