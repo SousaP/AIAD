@@ -76,13 +76,15 @@ public class DroneAgent extends Worker {
 			Job temp = it.next();
 			if (temp.able(this))
 				unsortMap.put(temp, temp.getProbabilityOfChoose(this));
+		//	System.out.println(temp.toString());
+		//	System.out.println(temp.getProbabilityOfChoose(this));
 		}
 
 		List<Job> resultado = new ArrayList<Job>();
 
 		List<Entry<Job, Double>> sortedValues = entriesSortedByValues(unsortMap);
 		for (int i = 0; i < sortedValues.size(); i++) {
-			System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
+			//System.out.println(sortedValues.get(i).getKey() + "    " + sortedValues.get(i).getValue());
 			resultado.add(sortedValues.get(i).getKey());
 		}
 
@@ -108,6 +110,7 @@ public class DroneAgent extends Worker {
 	class ReceiveMessageBehaviourDrone extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 		int nrPosicoes = 0;
+
 		public ReceiveMessageBehaviourDrone(DroneAgent w) {
 			super(w);
 		}
@@ -138,9 +141,10 @@ public class DroneAgent extends Worker {
 						// + position);
 						reply.setContent(
 								getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
-						if(nrPosicoes == 10)
-						{System.out.println(getLocalName() + " Saldo: " + credit);
-						nrPosicoes = 0;}
+						if (nrPosicoes == 10) {
+							System.out.println(getLocalName() + " Saldo: " + credit);
+							nrPosicoes = 0;
+						}
 
 					}
 
@@ -181,8 +185,7 @@ public class DroneAgent extends Worker {
 
 					jobs_disponiveis = orderJobs(jobs_disponiveis);
 
-					// System.out.println("Jobs disponiveis :" +
-					// jobs_disponiveis.size());
+					System.out.println("Jobs disponiveis :" + jobs_disponiveis.size());
 
 					Working = true;
 
@@ -194,7 +197,7 @@ public class DroneAgent extends Worker {
 					cfp.addReceiver(msg.getSender());
 					// jobs_disponiveis.get(0) -> job preferivel
 					if (jobs_disponiveis.size() < 1) {
-
+					//	System.out.println("AQUI");
 						if (batteryLeft < BATTERY_CAPACITY / 4) {
 							System.out.println("PRECISO DE BATERIA");
 							checkForBattery();
@@ -473,13 +476,14 @@ public class DroneAgent extends Worker {
 								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 
 								send(cfp);
+								 System.out.println("APANHEI P1");
 
 							}
 							if (position.equals(MountDrone.p2.getName())) {
 								Job temp = myJob;
 								String oldP = temp.product.getName();
 								String split[] = oldP.split(",");
-								temp.product.setName(split[1]);
+								temp.product.setName(split[2]);
 								cfp.setContent("apanhei;" + myJob.toString());
 								temp.product.setName(oldP);
 								cfp.setConversationId("apanhei");
@@ -487,6 +491,7 @@ public class DroneAgent extends Worker {
 
 								send(cfp);
 
+								 System.out.println("APANHEI P2");
 								Destiny = MountDrone.p2;
 								Destiny2 = hands.get(0);
 
@@ -655,7 +660,7 @@ public class DroneAgent extends Worker {
 				return;
 			switch (step) {
 			case 0:
-				//System.out.println("STEP 0");
+				// System.out.println("STEP 0");
 				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
@@ -707,7 +712,7 @@ public class DroneAgent extends Worker {
 				break;
 			case 1:
 
-				//System.out.println("STEP 1");
+				// System.out.println("STEP 1");
 				String ools[] = myJob.product.getTool().split(",");
 				if (!getToolsString().contains(ools[0])) {
 					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
@@ -723,7 +728,7 @@ public class DroneAgent extends Worker {
 				step++;
 				break;
 			case 2:
-				//System.out.println("STEP 2");
+				// System.out.println("STEP 2");
 				// System.out.println(tick_espera);
 				tick_espera++;
 
@@ -744,11 +749,11 @@ public class DroneAgent extends Worker {
 				break;
 			case 3:
 
-				//System.out.println("STEP 3");
+				// System.out.println("STEP 3");
 				break;
 			case 4:
 
-				//System.out.println("STEP 4");
+				// System.out.println("STEP 4");
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
@@ -758,7 +763,7 @@ public class DroneAgent extends Worker {
 				step++;
 				break;
 			case 5:
-				//System.out.println("STEP 5");
+				// System.out.println("STEP 5");
 				moveBehav = new MoveRequestDrone((DroneAgent) myAgent, map.get(myJob.local.getName()),
 						map.get(myJob.local.getName()));
 				myAgent.addBehaviour(moveBehav);
@@ -766,7 +771,7 @@ public class DroneAgent extends Worker {
 				doingStep = true;
 				break;
 			case 6:
-				//System.out.println("STEP 6");
+				// System.out.println("STEP 6");
 				try {
 					credit += myJob.getReward() * 0.75;
 
@@ -837,31 +842,22 @@ public class DroneAgent extends Worker {
 	public void checkForBattery() {
 		double temp = 0;
 		Local nearest = null;
-		Local L = null;
-		double temp2 = 0;
+
 		double distance = Double.MAX_VALUE;
-		double distance2 = Double.MAX_VALUE;
-		for (int i = 0; i < Jobs_Created.size(); i++) {
-			distance2 = Math.sqrt(Math.pow(map.get(Jobs_Created.get(i).local).getI() - map.get(position).getI(), 2)
-					+ Math.pow((map.get(Jobs_Created.get(i).local).getJ() - map.get(position).getJ()), 2));
-			if (temp2 < distance2) {
-				temp2 = distance2;
-				L = Jobs_Created.get(i).local;
-			}
-		}
+
 		for (int i = 0; i < chargers.size(); i++) {
-			distance = Math.sqrt(Math.pow(L.getI() - map.get(chargers.get(i)).getI(), 2)
-					+ Math.pow(L.getJ() - map.get(chargers.get(i)).getJ(), 2));
+			distance = Math.sqrt(Math.pow(map.get(position).getI() - chargers.get(i).getI(), 2)
+					+ Math.pow(map.get(position).getJ() - chargers.get(i).getJ(), 2));
 			if (temp < distance) {
 				temp = distance;
 				nearest = chargers.get(i);
 			}
 		}
-		if (batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)) {
-			moveBehav = new MoveRequestDrone(this, nearest, nearest);
-			addBehaviour(moveBehav);
-			this.batteryLeft = BATTERY_CAPACITY;
-		}
+
+		moveBehav = new MoveRequestDrone(this, nearest, nearest);
+		addBehaviour(moveBehav);
+		this.batteryLeft = BATTERY_CAPACITY;
+
 	}
 
 }

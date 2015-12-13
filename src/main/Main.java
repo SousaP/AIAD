@@ -16,24 +16,24 @@ public class Main {
 		try {
 			AgentController ambiente = cc.createNewAgent("ambient", "agents.Ambiente", null);
 			AgentController simulation = cc.createNewAgent("simulation", "Simulation.SimulationAgent", null);
-			AgentController drone = cc.createNewAgent("Drone 1", "agents.DroneAgent", new Object[] { "A;f1" });
+			AgentController drone = cc.createNewAgent("Drone 1", "agents.DroneAgent", new Object[] { "H;f1" });
 
-			AgentController agent1 = cc.createNewAgent("Bike 1", "agents.BikeAgent", new Object[] { "B;f1" });
+			//AgentController agent1 = cc.createNewAgent("Bike 1", "agents.BikeAgent", new Object[] { "B;f1" });
 			AgentController agent2 = cc.createNewAgent("Car 1", "agents.CarAgent", new Object[] { "C;f2" });
-			AgentController agent3 = cc.createNewAgent("Truck 1", "agents.TruckAgent", new Object[] { "A;f1" });
-			AgentController agent4 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "M;f2" });
-			AgentController agent5 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f3" });
+			//AgentController agent3 = cc.createNewAgent("Truck 1", "agents.TruckAgent", new Object[] { "A;f1" });
+			//AgentController agent4 = cc.createNewAgent("Car 2", "agents.CarAgent", new Object[] { "M;f2" });
+			//AgentController agent5 = cc.createNewAgent("Car 3", "agents.CarAgent", new Object[] { "A;f3" });
 			
 			
 			ambiente.start();
 			simulation.start();
 			drone.start();
 
-			agent1.start();
+			//agent1.start();
 			agent2.start();
-			agent3.start();
-			agent4.start();
-			agent5.start();
+			//agent3.start();
+			//agent4.start();
+			//agent5.start();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			return;

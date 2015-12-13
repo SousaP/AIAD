@@ -103,7 +103,7 @@ public class Ambiente extends Worker {
 										* Integer.parseInt(eElement.getAttribute("quantidade")),
 								Integer.parseInt(eElement.getAttribute("quantidade")));
 						if (tipo.equals("BID")) {
-							System.out.println("MOUNT BID JOB READING");
+							//System.out.println("MOUNT BID JOB READING");
 							jobTemp = new Job(to_do.MOUNT, type.BIDS,
 									Double.parseDouble(eElement.getAttribute("reward")),
 									Integer.parseInt(eElement.getAttribute("time")),
@@ -152,7 +152,7 @@ public class Ambiente extends Worker {
 						}
 					}
 					Jobs_Created.add(jobTemp);
-					System.out.println(jobTemp.toString());
+					//System.out.println(jobTemp.toString());
 				}
 			}
 
@@ -475,10 +475,9 @@ public class Ambiente extends Worker {
 
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
-
+			// System.out.println(tempJob.toString());
 			
-			 for (int i = 0; i < 5; i++) { Job tempJob = createRandomJob();
-			 System.out.println(tempJob.toString());
+			 for (int i = 0; i < 5; i++) { Job tempJob = createRandomJob();	
 			 Jobs_Created.add(tempJob); }
 			 
 
@@ -549,7 +548,7 @@ public class Ambiente extends Worker {
 				return new Job(to_do.TRANSPORT, type.BIDS, getRandomInt(400, 800), getRandomInt(2, 8),
 						getRandomInt(50, 300), p_job, levantar, local);
 			else
-				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(1000, 1500), getRandomInt(1, 5),
+				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(800, 1500), getRandomInt(1, 5),
 						getRandomInt(50, 300),
 						new Product(new Tool(p.getTool() + "," + p_mount.getTool()),
 								"Batido," + p.getName() + "," + p_mount.getName(), p.getPrice() + p_mount.getPrice(),

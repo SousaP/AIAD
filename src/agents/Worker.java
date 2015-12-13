@@ -620,7 +620,7 @@ public class Worker extends Agent {
 								cfp.setConversationId("apanhei");
 								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 																						// value
-								// System.out.println("APANHEI P1");
+							 System.out.println("APANHEI P1");
 								// cfp.getContent());
 								send(cfp);
 
@@ -629,12 +629,12 @@ public class Worker extends Agent {
 								Job temp = myJob;
 								String oldP = temp.product.getName();
 								String split[] = oldP.split(",");
-								temp.product.setName(split[1]);
+								temp.product.setName(split[2]);
 								cfp.setContent("apanhei;" + myJob.toString());
 								temp.product.setName(oldP);
 								cfp.setConversationId("apanhei");
 								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-								// System.out.println("APANHEI P2"); // value
+								 System.out.println("APANHEI P2"); // value
 								// System.out.println("Enviei um DEPOSITEI" +
 								// cfp.getContent());
 								send(cfp);
