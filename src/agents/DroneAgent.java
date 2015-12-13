@@ -21,7 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+
 import agents.Worker.ChargeBehaviour;
+import agents.Worker.MoveRequest;
 import locals.*;
 import product.Product;
 import tools.Tool;
@@ -34,6 +37,7 @@ public class DroneAgent extends Worker {
 
 	ReceiveMessageBehaviourDrone positionDroneBehav;
 	MoveRequestDrone moveBehav;
+	MountBehaviourDrone MountDrone;
 
 	protected void setup() {
 		BATTERY_CAPACITY = 250;
@@ -217,12 +221,12 @@ public class DroneAgent extends Worker {
 				}
 
 				if (split[0].equals("Going")) {
-					mountB.Empregado = split[1];
-					mountB.step++;
+					MountDrone.Empregado = split[1];
+					MountDrone.step++;
 
 				} else if (split[0].equals("Here")) {
 
-					mountB.step++;
+					MountDrone.step++;
 
 				}
 
@@ -280,14 +284,13 @@ public class DroneAgent extends Worker {
 
 				if (myJob.the_Job == to_do.TRANSPORT) {
 
-				
 					moveBehav = new MoveRequestDrone((DroneAgent) myAgent, myJob.local, myJob.local2);
 					addBehaviour(moveBehav);
 
 				} else if (myJob.the_Job == to_do.ACQUISITION) {
 
 					moveBehav = new MoveRequestDrone((DroneAgent) myAgent, myJob.local, myJob.local2);
-					
+
 					addBehaviour(moveBehav);
 
 				} else if (myJob.the_Job == to_do.MOUNT) {
@@ -295,8 +298,8 @@ public class DroneAgent extends Worker {
 					if (job_accepted.product.getName().contains("-"))
 						myJob.criador = split[11];
 
-					//mountB = // new MountBehaviour((Worker) myAgent);
-					//myAgent.addBehaviour(mountB);
+					MountDrone = new MountBehaviourDrone((Worker) myAgent);
+					myAgent.addBehaviour(MountDrone);
 
 					// System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
 
@@ -390,13 +393,8 @@ public class DroneAgent extends Worker {
 				position = "tripmode";
 				// System.out.println(counter);
 
-
 				// System.out.println(counter);
 
-				
-				
-				
-				
 				break;
 			default:
 				counter = counter - ((10 - VELOCITY) * 100);
@@ -412,8 +410,6 @@ public class DroneAgent extends Worker {
 					j = Destiny.getJ();
 					// System.out.println("STOPED THE COUNTER");
 				}
-				
-				
 
 				// _______________MENSAGEM PARA AMBIETE QUANDO CHEGA A LOCAL
 				// PARA CARREGAR__________
@@ -464,42 +460,41 @@ public class DroneAgent extends Worker {
 						}
 
 					}
-					
-					if(mountB != null){
-					if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
 
-						if (position.equals(mountB.p1.getName())) {
-							Job temp = myJob;
-							String oldP = temp.product.getName();
-							String split[] = oldP.split(",");
-							temp.product.setName(split[1]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							temp.product.setName(oldP);
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							//System.out.println("APANHEI P1");
-							// cfp.getContent());
-							send(cfp);
+					if (MountDrone != null) {
+						if (myJob.the_Job == to_do.MOUNT && !MountDrone.helper && MountDrone.step == 1) {
+
+							if (position.equals(MountDrone.p1.getName()) ) {
+								Job temp = myJob;
+								String oldP = temp.product.getName();
+								String split[] = oldP.split(",");
+								temp.product.setName(split[1]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								temp.product.setName(oldP);
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+								
+								send(cfp);
+
+							}
+							if (position.equals(MountDrone.p2.getName())) {
+								Job temp = myJob;
+								String oldP = temp.product.getName();
+								String split[] = oldP.split(",");
+								temp.product.setName(split[1]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								temp.product.setName(oldP);
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+							
+								send(cfp);
+								
+								Destiny = MountDrone.p2;
+								Destiny2 = hands.get(0);
+
+							}
 
 						}
-						if (position.equals(mountB.p2.getName())) {
-							Job temp = myJob;
-							String oldP = temp.product.getName();
-							String split[] = oldP.split(",");
-							temp.product.setName(split[1]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							temp.product.setName(oldP);
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-							//System.out.println("APANHEI P2"); // value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-
-						}
-
-					}
 					}
 				}
 
@@ -516,7 +511,154 @@ public class DroneAgent extends Worker {
 				addBehaviour(moveBehav);
 				return 0;
 			}
-				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+			ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+			// ID do ambiente
+			DFAgentDescription template = new DFAgentDescription();
+			DFAgentDescription[] result = null;
+
+			try {
+				result = DFService.search(myAgent, template);
+			} catch (FIPAException e) {
+				e.printStackTrace();
+			}
+
+			AID tempAmbient = null;
+			AID[] recursos = new AID[result.length];
+			for (int i = 0; i < result.length; ++i) {
+				recursos[i] = result[i].getName();
+				if (recursos[i].getLocalName().contains("ambient")) {
+					tempAmbient = recursos[i];
+					cfp.addReceiver(recursos[i]);
+					break;
+				}
+			}
+			if (myJob != null) {
+				if (myJob.the_Job == to_do.TRANSPORT || myJob.the_Job == to_do.ACQUISITION) {
+					credit += myJob.getReward();
+					if (time_lasted > myJob.time)
+						credit -= myJob.getFine();
+					Working = false;
+
+					System.out.println("Battery " + batteryLeft);
+
+					if (position.equals(myJob.local2.getName())) {
+
+						cfp.setContent("depositei;" + myJob.toString());
+						cfp.setConversationId("delivery");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						// System.out.println("Enviei um DEPOSITEI" +
+						// cfp.getContent());
+						send(cfp);
+					}
+				} else if (myJob.the_Job == to_do.ACQUISITION) {
+
+				} else if (myJob.the_Job == to_do.MOUNT && MountDrone.step == 2) {
+					System.out.println("Dumping like a boy");
+
+					myAgent.removeBehaviour(MountDrone);
+					Working = false;
+					return 0;
+
+				}
+
+				else if (myJob.the_Job == to_do.MOUNT && !MountDrone.helper) {
+
+					if (position.equals(myJob.local.getName()) ) {
+						cfp.setContent("depositei;" + myJob.toString());
+						cfp.setConversationId("delivery");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																				// value
+						// System.out.println("Enviei um DEPOSITEI" +
+						// cfp.getContent());
+						send(cfp);
+
+						MountDrone.doingStep = false;
+						return 0;
+
+					}
+
+					MountDrone.doingStep = false;
+					return 0;
+				} else if (myJob.the_Job == to_do.MOUNT) {
+					MountDrone.doingStep = false;
+
+					if (position.equals(myJob.local.getName())) {
+						cfp.setContent("Here;" + myJob.toString());
+						cfp.setConversationId("here");
+						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+						cfp.removeReceiver(tempAmbient);
+						cfp.addReceiver(MountDrone.Patrao);
+						// value
+						// System.out.println("Enviei um DEPOSITEI" +
+						// cfp.getContent());
+						send(cfp);
+						return 0;
+
+					}
+
+				}
+				myJob = null;
+				for (int i = 0; i < chargers.size(); i++)
+					if (position.equals(chargers.get(i).getName())) {
+						myAgent.addBehaviour(new ChargeBehaviour(myAgent));
+						Working = true;
+						return 0;
+					}
+			}
+			return 0;
+		}
+
+	}
+
+	public class MountBehaviourDrone extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+		int step;
+		Boolean doingStep;
+		public Local p1, p2;
+		ACLMessage cfp;
+		AID Patrao;
+		String Empregado;
+		Boolean helper = false;
+		int tick_espera = 0;
+
+		public MountBehaviourDrone(Worker a) {
+			// super(a, (myJob.time / 2) * 1000);
+			super(a);
+			Working = true;
+			doingStep = false;
+			step = 0;
+			if (myJob.product.getName().contains("-")) {
+				step = 8;
+				helper = true;
+				DFAgentDescription template = new DFAgentDescription();
+				DFAgentDescription[] result = null;
+
+				try {
+					result = DFService.search(myAgent, template);
+				} catch (FIPAException e) {
+					e.printStackTrace();
+				}
+				AID[] recursos = new AID[result.length];
+				for (int i = 0; i < result.length; ++i) {
+					recursos[i] = result[i].getName();
+					if (recursos[i].getLocalName().contains(myJob.criador)) {
+						Patrao = recursos[i];
+						break;
+					}
+				}
+
+			}
+		}
+
+		@Override
+		public void action() {
+			if (doingStep)
+				return;
+			switch (step) {
+			case 0:
+				System.out.println("STEP 0");
+				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 				DFAgentDescription template = new DFAgentDescription();
 				DFAgentDescription[] result = null;
@@ -526,98 +668,167 @@ public class DroneAgent extends Worker {
 				} catch (FIPAException e) {
 					e.printStackTrace();
 				}
-
-				AID tempAmbient = null;
 				AID[] recursos = new AID[result.length];
 				for (int i = 0; i < result.length; ++i) {
 					recursos[i] = result[i].getName();
 					if (recursos[i].getLocalName().contains("ambient")) {
-						tempAmbient = recursos[i];
 						cfp.addReceiver(recursos[i]);
 						break;
 					}
 				}
-				if (myJob != null) {
-					if (myJob.the_Job == to_do.TRANSPORT || myJob.the_Job == to_do.ACQUISITION) {
-						credit += myJob.getReward();
-						if (time_lasted > myJob.time)
-							credit -= myJob.getFine();
-						Working = false;
 
-						System.out.println("Battery " + batteryLeft);
+				cfp.setContent("Produtos;" + myJob.product.getName());
+				cfp.setConversationId("pick_up");
+				cfp.setReplyWith("cfp" + System.currentTimeMillis());
+				System.out.println("Enviei Procura Produtos" + cfp.getContent());
+				send(cfp);
 
-						if (position.equals(myJob.local2.getName())) {
+				ACLMessage msg = blockingReceive();
 
-							cfp.setContent("depositei;" + myJob.toString());
-							cfp.setConversationId("delivery");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-						}
-					} else if (myJob.the_Job == to_do.ACQUISITION) {
+				if (msg.getPerformative() == ACLMessage.INFORM) {
+					String split[] = msg.getContent().split(";");
+					if (split[0].equals("Local")) {
+						p1 = map.get(split[1]);
+						p2 = map.get(split[2]);
+						// TODO ver qual mais perto
+						System.out.println("a mover para: ");
 
-					} else if(myJob.the_Job == to_do.MOUNT && mountB.step == 2){
-						System.out.println("Dumping like a boy");
-
-						myAgent.removeBehaviour(mountB);
-						Working = false;
-						return 0;
-						
-					}
-					
-					else if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
-
-						if (position.equals(myJob.local.getName())) {
-							cfp.setContent("depositei;" + myJob.toString());
-							cfp.setConversationId("delivery");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-
-							mountB.doingStep = false;
-							return 0;
-
-						}
-						
-						
-
-						mountB.doingStep = false;
-						return 0;
-					} else if (myJob.the_Job == to_do.MOUNT) {
-						mountB.doingStep = false;
-
-						if (position.equals(myJob.local.getName())) {
-							cfp.setContent("Here;" + myJob.toString());
-							cfp.setConversationId("here");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-							cfp.removeReceiver(tempAmbient);
-							cfp.addReceiver(mountB.Patrao);
-							// value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-							return 0;
-
-						}
+						moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p1, p2);
+						myAgent.addBehaviour(moveBehav);
 
 					}
-					myJob = null;
-					for (int i = 0; i < chargers.size(); i++)
-						if (position.equals(chargers.get(i).getName())) {
-							myAgent.addBehaviour(new ChargeBehaviour(myAgent));
-							Working = true;
-							return 0;
-						}
 				}
-				return 0;
+				step++;
+				doingStep = true;
+
+				break;
+			case 1:
+
+				System.out.println("STEP 1");
+				String ools[] = myJob.product.getTool().split(",");
+				if (!getToolsString().contains(ools[0])) {
+					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
+							+ position + ";" + position + ";" + getLocalName());
+				} else if (!getToolsString().contains(ools[1])) {
+					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[1] + ";-,-;0;0;"
+							+ position + ";" + position + ";" + getLocalName());
+				} else {
+					step = 4;
+					break;
+				}
+				send(cfp);
+				step++;
+				break;
+			case 2:
+				System.out.println("STEP 2");
+				// System.out.println(tick_espera);
+				tick_espera++;
+
+				if (tick_espera > 200) {
+					try {
+
+						doingStep = true;
+
+						moveBehav = new MoveRequestDrone((DroneAgent) myAgent, dumps.get(0), dumps.get(0));
+						myAgent.addBehaviour(moveBehav);
+
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+
+				}
+
+				break;
+			case 3:
+
+				System.out.println("STEP 3");
+				break;
+			case 4:
+
+				System.out.println("STEP 4");
+				try {
+					Thread.sleep(7000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				step++;
+				break;
+			case 5:
+				System.out.println("STEP 5");
+				moveBehav = new MoveRequestDrone((DroneAgent) myAgent, map.get(myJob.local.getName()),
+						map.get(myJob.local.getName()));
+				myAgent.addBehaviour(moveBehav);
+				step++;
+				doingStep = true;
+				break;
+			case 6:
+				System.out.println("STEP 6");
+				try {
+					credit += myJob.getReward() * 0.75;
+
+					Working = false;
+					step++;
+					finalize();
+					myAgent.removeBehaviour(this);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				break;
+			case 8:
+
+				cfp = new ACLMessage(ACLMessage.INFORM);
+				// ID do ambiente
+
+				cfp.addReceiver(Patrao);
+
+				cfp.setContent("Going;" + getLocalName());
+				cfp.setConversationId("help");
+				cfp.setReplyWith("cfp" + System.currentTimeMillis());
+				System.out.println("Enviei Procura Produtos" + cfp.getContent());
+				send(cfp);
+
+				// System.out.println("STEP 8");
+				moveBehav = new MoveRequestDrone((DroneAgent) myAgent, map.get(myJob.local.getName()),
+						map.get(myJob.local.getName()));
+				System.out.println("MY POSITION" + position);
+
+				myAgent.addBehaviour(moveBehav);
+				doingStep = true;
+				step++;
+				break;
+			case 9:
+
+				// System.out.println("STEP 9");
+				try {
+					Thread.sleep(7000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				step++;
+				break;
+			case 10:
+				// System.out.println("STEP 10");
+				try {
+
+					credit += myJob.getReward();
+
+					Working = false;
+					step++;
+					finalize();
+					myAgent.removeBehaviour(this);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				break;
+			default:
+				break;
 			}
 
 		}
 
+	}
 
 	@Override
 	public void checkForBattery() {
@@ -644,7 +855,7 @@ public class DroneAgent extends Worker {
 			}
 		}
 		if (batteryLeft < (temp + temp2) && (Jobs_Created.size() != 0)) {
-			moveBehav = new MoveRequestDrone(this, nearest,nearest);
+			moveBehav = new MoveRequestDrone(this, nearest, nearest);
 			addBehaviour(moveBehav);
 			this.batteryLeft = BATTERY_CAPACITY;
 		}
