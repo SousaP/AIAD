@@ -170,17 +170,17 @@ public class Job {
 				&& (!(temp.getName().contains(W.getToolsString()) || (W.getLoadLeft() < product.getSize())))) {
 			// System.out.println(W.getToolsString());
 			// System.out.println(temp.getName());
-			System.out.println("falha aqui1");
+			//System.out.println("falha aqui1");
 			return false;
 		}
 		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize())) {
-			System.out.println("falha aqui2");
-			System.out.println(W.getLoadLeft());
-			System.out.println(product.getSize());
+			//System.out.println("falha aqui2");
+			//System.out.println(W.getLoadLeft());
+			//System.out.println(product.getSize());
 			return false;
 		}
 		if (the_Job == to_do.ACQUISITION && (W.credit < product.price)) {
-			System.out.println("falha aqui3");
+			//System.out.println("falha aqui3");
 
 			// System.out.println(W.credit );
 			// System.out.println(product.price);
@@ -222,7 +222,7 @@ public class Job {
 			// System.out.println( W.batteryLeft );
 			// System.out.println(temp1);
 			// System.out.println(temp2);
-			System.out.println("falha aqui4");
+			//System.out.println("falha aqui4");
 			return false;
 		}
 		return true;

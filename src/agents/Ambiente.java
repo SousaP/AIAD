@@ -476,11 +476,11 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			/*
-			 * for (int i = 0; i < 5; i++) { Job tempJob = createRandomJob();
-			 * System.out.println(tempJob.toString());
-			 * Jobs_Created.add(tempJob); }
-			 */
+			
+			 for (int i = 0; i < 5; i++) { Job tempJob = createRandomJob();
+			 System.out.println(tempJob.toString());
+			 Jobs_Created.add(tempJob); }
+			 
 
 		}
 
@@ -582,9 +582,9 @@ public class Ambiente extends Worker {
 						// myAgent.
 
 					}
-					// winning.remove(Jobs_Created.get(i));
-					// Jobs_Created.set(i, createRandomJob());
-					// bids.put(Jobs_Created.get(i), new ArrayList<AID>());
+					 winning.remove(Jobs_Created.get(i));
+					 Jobs_Created.set(i, createRandomJob());
+					 bids.put(Jobs_Created.get(i), new ArrayList<AID>());
 
 				}
 

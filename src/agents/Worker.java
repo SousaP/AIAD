@@ -252,6 +252,8 @@ public class Worker extends Agent {
 	class ReceiveMessageBehaviour extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
 
+		int nrPosicoes = 0;
+		
 		public ReceiveMessageBehaviour(Worker w) {
 			super(w);
 		}
@@ -271,12 +273,15 @@ public class Worker extends Agent {
 				ACLMessage reply = msg.createReply();
 
 				if (msg.getConversationId() == "posicao") {
-
+					nrPosicoes++;
 					reply.setPerformative(ACLMessage.INFORM);
 					// System.out.println("Posicao " + getLocalName() + " " +
 					// position);
 					reply.setContent(getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
-
+					if(nrPosicoes == 10)
+					{System.out.println(getLocalName() + " Saldo: " + credit);
+					nrPosicoes = 0;
+					}
 					send(reply);
 
 				}
