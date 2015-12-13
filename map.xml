@@ -150,6 +150,6 @@
 	<Product nome="Banana" tool="f3" preço="2" Local="I">234</Product>
 	<Product nome="Morango" tool="f2" preço="4" Local="I">543</Product>
 	<Product nome="Cereja" tool="f1" preço="5" Local="I">543</Product>
-	<Job thejob="MOUNT" type="BID" reward="800" time="25" fine="100" tool="f1,f1" product="Batido,Banana,Laranja" price="3.0" quantidade="10" local="I" local2="B"></Job>
+	<Job thejob="MOUNT" type="BID" reward="800" time="25" fine="100" tool="f1,f1" product="Batido,Banana,Laranja" price="3.0" quantidade="10" local="I" local2="I"></Job>
 	<!--Job thejob="TRANSPORT" type="BID" reward="800" time="25" fine="100" tool="" product="Banana" price="" quantidade="10" local="B" local2="I"></Job-->
 </map>
