@@ -486,7 +486,7 @@ public class Ambiente extends Worker {
 
 		Job createRandomJob() {
 
-			to_do temp = to_do.MOUNT;
+			to_do temp = to_do.getRandom();
 			Random random = new Random();
 
 			List<Local> keysList = new ArrayList<Local>();

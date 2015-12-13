@@ -107,7 +107,7 @@ public class DroneAgent extends Worker {
 
 	class ReceiveMessageBehaviourDrone extends CyclicBehaviour {
 		private static final long serialVersionUID = 1L;
-
+		int nrPosicoes = 0;
 		public ReceiveMessageBehaviourDrone(DroneAgent w) {
 			super(w);
 		}
@@ -138,6 +138,9 @@ public class DroneAgent extends Worker {
 						// + position);
 						reply.setContent(
 								getLocalName() + ";" + map.get(position).getI() + ";" + map.get(position).getJ());
+						if(nrPosicoes == 10)
+						{System.out.println(getLocalName() + " Saldo: " + credit);
+						nrPosicoes = 0;}
 
 					}
 
