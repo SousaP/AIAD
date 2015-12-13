@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
-
-import agents.Worker.MountBehaviour;
-import agents.Worker.MoveRequest;
 import locals.*;
 import product.Product;
 import tools.Tool;
@@ -70,6 +66,7 @@ public class DroneAgent extends Worker {
 		}
 	}
 
+	@Override
 	List<Job> orderJobs(List<Job> jobs_available) {
 		// Precisa de um produto -> Pode precisar de uma ferramenta
 		// (reward * 3 - time)/fine
@@ -364,6 +361,7 @@ public class DroneAgent extends Worker {
 			this.Destiny = Destiny;
 			counter = 0;
 			midpoint = 0;
+			this.Destiny2 = Destiny2;
 			this.w = w;
 
 			if (w.position.equals(Destiny.getName())) {

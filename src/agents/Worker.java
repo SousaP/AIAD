@@ -1105,7 +1105,7 @@ public class Worker extends Agent {
 	}
 
 	public int getBatLeft() {
-		return 0;
+		return batteryLeft;
 	}
 
 	public int getMaxBat() {
@@ -1113,7 +1113,7 @@ public class Worker extends Agent {
 	}
 
 	public int getLoadLeft() {
-		return 0;
+		return loadLeft;
 	}
 
 	public void checkForBattery() {
