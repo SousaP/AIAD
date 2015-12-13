@@ -1,16 +1,15 @@
 package agents;
 
-
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+
 public class TruckAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	private static int LOAD_CAPACITY = 1000;
 
-	
-	protected void setup(){
+	protected void setup() {
 		BATTERY_CAPACITY = 3000;
 		this.batteryLeft = BATTERY_CAPACITY;
 		this.loadLeft = LOAD_CAPACITY;
@@ -28,8 +27,7 @@ public class TruckAgent extends Worker {
 		}
 		super.setup();
 	}
-	
-	
+
 	protected void takeDown() {
 		// retira registo no DF
 		try {
@@ -39,15 +37,14 @@ public class TruckAgent extends Worker {
 		}
 	}
 
-	
-	public int getBatLeft(){
+	public int getBatLeft() {
 		return batteryLeft;
 	}
-	
-	public int getMaxBat(){
+
+	public int getMaxBat() {
 		return BATTERY_CAPACITY;
 	}
-	
+
 	public int getLoadLeft() {
 		return loadLeft;
 	}

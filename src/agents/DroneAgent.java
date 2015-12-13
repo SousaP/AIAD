@@ -155,7 +155,7 @@ public class DroneAgent extends Worker {
 				if (split.length < 2)
 					return;
 
-				//String content = "";
+				// String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
@@ -459,7 +459,7 @@ public class DroneAgent extends Worker {
 					if (MountDrone != null) {
 						if (myJob.the_Job == to_do.MOUNT && !MountDrone.helper && MountDrone.step == 1) {
 
-							if (position.equals(MountDrone.p1.getName()) ) {
+							if (position.equals(MountDrone.p1.getName())) {
 								Job temp = myJob;
 								String oldP = temp.product.getName();
 								String split[] = oldP.split(",");
@@ -468,7 +468,7 @@ public class DroneAgent extends Worker {
 								temp.product.setName(oldP);
 								cfp.setConversationId("apanhei");
 								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-								
+
 								send(cfp);
 
 							}
@@ -481,9 +481,9 @@ public class DroneAgent extends Worker {
 								temp.product.setName(oldP);
 								cfp.setConversationId("apanhei");
 								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-							
+
 								send(cfp);
-								
+
 								Destiny = MountDrone.p2;
 								Destiny2 = hands.get(0);
 
@@ -559,7 +559,7 @@ public class DroneAgent extends Worker {
 
 				else if (myJob.the_Job == to_do.MOUNT && !MountDrone.helper) {
 
-					if (position.equals(myJob.local.getName()) ) {
+					if (position.equals(myJob.local.getName())) {
 						cfp.setContent("depositei;" + myJob.toString());
 						cfp.setConversationId("delivery");
 						cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
@@ -685,13 +685,13 @@ public class DroneAgent extends Worker {
 					if (split[0].equals("Local")) {
 						p1 = map.get(split[1]);
 						p2 = map.get(split[2]);
-						double distance1 = Math.sqrt(Math.pow(map.get(position).getJ()- p1.getJ(), 2)
-								+ Math.pow(map.get(position).getI()- p1.getI(), 2));
-						double distance2 = Math.sqrt(Math.pow(map.get(position).getJ()- p2.getJ(), 2)
-								+ Math.pow(map.get(position).getI()- p2.getI(), 2));
+						double distance1 = Math.sqrt(Math.pow(map.get(position).getJ() - p1.getJ(), 2)
+								+ Math.pow(map.get(position).getI() - p1.getI(), 2));
+						double distance2 = Math.sqrt(Math.pow(map.get(position).getJ() - p2.getJ(), 2)
+								+ Math.pow(map.get(position).getI() - p2.getI(), 2));
 
-						if(distance1 < distance2)
-						moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p1, p2);
+						if (distance1 < distance2)
+							moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p1, p2);
 						else
 							moveBehav = new MoveRequestDrone((DroneAgent) myAgent, p2, p1);
 						myAgent.addBehaviour(moveBehav);

@@ -100,7 +100,7 @@ public class Job {
 			fined = true;
 		if (the_Job == to_do.TRANSPORT) {
 			if (fined)
-				return ((reward * 3 - fine) /temp2);
+				return ((reward * 3 - fine) / temp2);
 			else
 				return ((reward * 3) / temp2);
 		} else
@@ -122,32 +122,30 @@ public class Job {
 
 		double myProb = 0;
 		double rewardTemp = reward * 0.95;
-		//System.out.println("rewardTemp " + rewardTemp);
-		//System.out.println("dijkstra.getPathLength() " + temp2);
-		
+		// System.out.println("rewardTemp " + rewardTemp);
+		// System.out.println("dijkstra.getPathLength() " + temp2);
+
 		if (the_Job == to_do.TRANSPORT) {
 			if (fined) {
-				myProb = ((rewardTemp* 3 - fine) /temp2);
+				myProb = ((rewardTemp * 3 - fine) / temp2);
 			} else {
-				myProb = ((rewardTemp* 3) / temp2);
+				myProb = ((rewardTemp * 3) / temp2);
 			}
 		} else
 			myProb = ((rewardTemp * 3 - fine) / time);
 
-		
-		if(myProb > probB){
-			//System.out.println("myProb " + myProb);
-			//System.out.println("probB " + probB);
-		return (double)Math.round(rewardTemp* 100)/100;
-		}
-		else
+		if (myProb > probB) {
+			// System.out.println("myProb " + myProb);
+			// System.out.println("probB " + probB);
+			return (double) Math.round(rewardTemp * 100) / 100;
+		} else
 			return -1;
 	}
 
 	public double getProbabilityOfChoose(DroneAgent d) {
 		boolean fined = false;
-		double distance = Math
-				.sqrt(Math.pow((d.map.get(d.position).getI() - local.getI()), 2) + Math.pow((d.map.get(d.position).getJ()- local.getJ()), 2));
+		double distance = Math.sqrt(Math.pow((d.map.get(d.position).getI() - local.getI()), 2)
+				+ Math.pow((d.map.get(d.position).getJ() - local.getJ()), 2));
 		// double length = dijkstra.getPathLength();
 		if (time * 1000 < (((10 - d.VELOCITY) * 100) * distance))
 			fined = true;
@@ -170,15 +168,15 @@ public class Job {
 		Tool temp = new Tool(product.getTool());
 		if (the_Job == to_do.MOUNT
 				&& (!(temp.getName().contains(W.getToolsString()) || (W.getLoadLeft() < product.getSize())))) {
-		//	 System.out.println(W.getToolsString());
-	//		 System.out.println(temp.getName());
-		System.out.println("falha aqui1");
+			// System.out.println(W.getToolsString());
+			// System.out.println(temp.getName());
+			System.out.println("falha aqui1");
 			return false;
 		}
 		if (the_Job == to_do.TRANSPORT && (W.getLoadLeft() < product.getSize())) {
 			System.out.println("falha aqui2");
-			 System.out.println(W.getLoadLeft());
-			 System.out.println(product.getSize());
+			System.out.println(W.getLoadLeft());
+			System.out.println(product.getSize());
 			return false;
 		}
 		if (the_Job == to_do.ACQUISITION && (W.credit < product.price)) {
@@ -224,7 +222,7 @@ public class Job {
 			// System.out.println( W.batteryLeft );
 			// System.out.println(temp1);
 			// System.out.println(temp2);
-			 System.out.println("falha aqui4");
+			System.out.println("falha aqui4");
 			return false;
 		}
 		return true;

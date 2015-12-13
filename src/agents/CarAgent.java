@@ -9,7 +9,7 @@ public class CarAgent extends Worker {
 	private static final long serialVersionUID = 1L;
 	private static int LOAD_CAPACITY = 550;
 
-	protected void setup(){
+	protected void setup() {
 		BATTERY_CAPACITY = 500;
 		this.batteryLeft = BATTERY_CAPACITY;
 		loadLeft = LOAD_CAPACITY;
@@ -27,8 +27,7 @@ public class CarAgent extends Worker {
 		}
 		super.setup();
 	}
-	
-	
+
 	protected void takeDown() {
 		try {
 			DFService.deregister(this);
@@ -37,18 +36,16 @@ public class CarAgent extends Worker {
 		}
 	}
 
-	
-	public int getBatLeft(){
+	public int getBatLeft() {
 		return batteryLeft;
 	}
-	
-	public int getMaxBat(){
+
+	public int getMaxBat() {
 		return BATTERY_CAPACITY;
 	}
-	
+
 	public int getLoadLeft() {
 		return loadLeft;
 	}
-
 
 }

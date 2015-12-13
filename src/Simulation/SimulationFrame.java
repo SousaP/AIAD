@@ -112,32 +112,28 @@ public class SimulationFrame extends JFrame {
 		for (int i = 0; i < myAgent.dumps.size(); i++) {
 			g.drawRect(myAgent.dumps.get(i).getJ() * 50 + 75, myAgent.dumps.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.BLUE);
-			g.drawString("Dumps", myAgent.dumps.get(i).getJ() * 50 + 85,
-					myAgent.dumps.get(i).getI() * 50 + 100);
+			g.drawString("Dumps", myAgent.dumps.get(i).getJ() * 50 + 85, myAgent.dumps.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.dumps.get(i).getJ() * 50 + 75, myAgent.dumps.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.stores.size(); i++) {
 			g.drawRect(myAgent.stores.get(i).getJ() * 50 + 75, myAgent.stores.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.RED);
-			g.drawString("Stores", myAgent.stores.get(i).getJ() * 50 + 85,
-					myAgent.stores.get(i).getI() * 50 + 100);
+			g.drawString("Stores", myAgent.stores.get(i).getJ() * 50 + 85, myAgent.stores.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.stores.get(i).getJ() * 50 + 75, myAgent.stores.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.houses.size(); i++) {
 			g.drawRect(myAgent.houses.get(i).getJ() * 50 + 75, myAgent.houses.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.MAGENTA);
-			g.drawString("WareHouse", myAgent.houses.get(i).getJ() * 50 + 85,
-					myAgent.houses.get(i).getI() * 50 + 100);
+			g.drawString("WareHouse", myAgent.houses.get(i).getJ() * 50 + 85, myAgent.houses.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.houses.get(i).getJ() * 50 + 75, myAgent.houses.get(i).getI() * 50 + 75, 10, 10);
 		}
 
 		for (int i = 0; i < myAgent.hands.size(); i++) {
 			g.drawRect(myAgent.hands.get(i).getJ() * 50 + 75, myAgent.hands.get(i).getI() * 50 + 75, 10, 10);
 			g.setColor(Color.ORANGE);
-			g.drawString("Hands", myAgent.hands.get(i).getJ() * 50 + 85,
-					myAgent.hands.get(i).getI() * 50 + 100);
+			g.drawString("Hands", myAgent.hands.get(i).getJ() * 50 + 85, myAgent.hands.get(i).getI() * 50 + 100);
 			g.fillRect(myAgent.hands.get(i).getJ() * 50 + 75, myAgent.hands.get(i).getI() * 50 + 75, 10, 10);
 		}
 

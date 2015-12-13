@@ -241,12 +241,11 @@ public class Worker extends Agent {
 		// Iterator<DefaultWeightedEdge> iter = edges.iterator();
 
 		List<DefaultWeightedEdge> temp1 = dijkstra.getPathEdgeList();
-		/*Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
-		
-		while (iter1.hasNext()) {
-			DefaultWeightedEdge edge = iter1.next();
-		} 
-		*/
+		/*
+		 * Iterator<DefaultWeightedEdge> iter1 = temp1.iterator();
+		 * 
+		 * while (iter1.hasNext()) { DefaultWeightedEdge edge = iter1.next(); }
+		 */
 		return temp1;
 	}
 
@@ -292,7 +291,7 @@ public class Worker extends Agent {
 				if (split.length < 2)
 					return;
 
-				//String content = "";
+				// String content = "";
 				// System.out.println("split[0]: " + split[0]);
 				// System.out.println("split[1]: " + split[1]);
 				// System.out.println("Sender: " + msg.getSender());
@@ -351,16 +350,15 @@ public class Worker extends Agent {
 					// MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
 				}
-				
+
 				if (split[0].equals("Going")) {
 					mountB.Empregado = split[1];
 					mountB.step++;
-					
-				}
-				else if (split[0].equals("Here")) {
+
+				} else if (split[0].equals("Here")) {
 
 					mountB.step++;
-					
+
 				}
 
 			} else if (msg.getPerformative() == ACLMessage.FAILURE) {
@@ -413,7 +411,6 @@ public class Worker extends Agent {
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
 
-		
 				myJob = job_accepted;
 
 				if (myJob.the_Job == to_do.TRANSPORT) {
@@ -433,15 +430,14 @@ public class Worker extends Agent {
 					addBehaviour(moveBehav);
 
 				} else if (myJob.the_Job == to_do.MOUNT) {
-					
-					if(job_accepted.product.getName().contains("-"))
+
+					if (job_accepted.product.getName().contains("-"))
 						myJob.criador = split[11];
 
 					mountB = new MountBehaviour((Worker) myAgent);
 					myAgent.addBehaviour(mountB);
-					
-					
-				//	System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
+
+					// System.out.println("AGRREEEEEEEEEEEEEEEEEEEEEEEE");
 
 				}
 
@@ -605,42 +601,42 @@ public class Worker extends Agent {
 						}
 
 					}
-					
-					if(mountB != null){
-					if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
 
-						if (position.equals(mountB.p1.getName())) {
-							Job temp = myJob;
-							String oldP = temp.product.getName();
-							String split[] = oldP.split(",");
-							temp.product.setName(split[1]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							temp.product.setName(oldP);
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																					// value
-							//System.out.println("APANHEI P1");
-							// cfp.getContent());
-							send(cfp);
+					if (mountB != null) {
+						if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
+
+							if (position.equals(mountB.p1.getName())) {
+								Job temp = myJob;
+								String oldP = temp.product.getName();
+								String split[] = oldP.split(",");
+								temp.product.setName(split[1]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								temp.product.setName(oldP);
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																						// value
+								// System.out.println("APANHEI P1");
+								// cfp.getContent());
+								send(cfp);
+
+							}
+							if (position.equals(mountB.p2.getName())) {
+								Job temp = myJob;
+								String oldP = temp.product.getName();
+								String split[] = oldP.split(",");
+								temp.product.setName(split[1]);
+								cfp.setContent("apanhei;" + myJob.toString());
+								temp.product.setName(oldP);
+								cfp.setConversationId("apanhei");
+								cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+								// System.out.println("APANHEI P2"); // value
+								// System.out.println("Enviei um DEPOSITEI" +
+								// cfp.getContent());
+								send(cfp);
+
+							}
 
 						}
-						if (position.equals(mountB.p2.getName())) {
-							Job temp = myJob;
-							String oldP = temp.product.getName();
-							String split[] = oldP.split(",");
-							temp.product.setName(split[1]);
-							cfp.setContent("apanhei;" + myJob.toString());
-							temp.product.setName(oldP);
-							cfp.setConversationId("apanhei");
-							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-							//System.out.println("APANHEI P2"); // value
-							// System.out.println("Enviei um DEPOSITEI" +
-							// cfp.getContent());
-							send(cfp);
-
-						}
-
-					}
 					}
 				}
 
@@ -702,15 +698,15 @@ public class Worker extends Agent {
 					}
 				} else if (myJob.the_Job == to_do.ACQUISITION) {
 
-				} else if(myJob.the_Job == to_do.MOUNT && mountB.step == 2){
+				} else if (myJob.the_Job == to_do.MOUNT && mountB.step == 2) {
 					System.out.println("Dumping like a boy");
 
 					myAgent.removeBehaviour(mountB);
 					Working = false;
 					return 0;
-					
+
 				}
-				
+
 				else if (myJob.the_Job == to_do.MOUNT && !mountB.helper) {
 
 					if (position.equals(myJob.local.getName())) {
@@ -726,8 +722,6 @@ public class Worker extends Agent {
 						return 0;
 
 					}
-					
-					
 
 					mountB.doingStep = false;
 					return 0;
@@ -889,7 +883,7 @@ public class Worker extends Agent {
 				break;
 			case 1:
 
-				//System.out.println("STEP 1");
+				// System.out.println("STEP 1");
 				String ools[] = myJob.product.getTool().split(",");
 				if (!getToolsString().contains(ools[0])) {
 					cfp.setContent("criar;MOUNT;PRICE;" + 0.20 * myJob.getReward() + ";7;0;" + ools[0] + ";-,-;0;0;"
@@ -906,33 +900,32 @@ public class Worker extends Agent {
 				break;
 			case 2:
 
-				//System.out.println(tick_espera);
-				tick_espera ++;
-				
-				if(tick_espera > 200)
-				{
+				// System.out.println(tick_espera);
+				tick_espera++;
+
+				if (tick_espera > 200) {
 					try {
-						
+
 						doingStep = true;
-						
+
 						List<DefaultWeightedEdge> path = pathTo(map.get(position), dumps.get(0));
 						moveBehav = new MoveRequest((Worker) myAgent, dumps.get(0), path);
 						myAgent.addBehaviour(moveBehav);
-						
+
 					} catch (Throwable e) {
 						e.printStackTrace();
 					}
-				
+
 				}
 
 				break;
 			case 3:
 
-				//System.out.println("STEP 3");
+				// System.out.println("STEP 3");
 				break;
 			case 4:
 
-				//System.out.println("STEP 4");
+				// System.out.println("STEP 4");
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
@@ -942,7 +935,7 @@ public class Worker extends Agent {
 				step++;
 				break;
 			case 5:
-				//System.out.println("STEP 5");
+				// System.out.println("STEP 5");
 				List<DefaultWeightedEdge> path = pathTo(map.get(position), map.get(myJob.local.getName()));
 				moveBehav = new MoveRequest((Worker) myAgent, map.get(myJob.local.getName()), path);
 				myAgent.addBehaviour(moveBehav);
@@ -950,10 +943,10 @@ public class Worker extends Agent {
 				doingStep = true;
 				break;
 			case 6:
-			//	System.out.println("STEP 6");
+				// System.out.println("STEP 6");
 				try {
 					credit += myJob.getReward() * 0.75;
-					
+
 					Working = false;
 					step++;
 					finalize();
@@ -963,7 +956,7 @@ public class Worker extends Agent {
 				}
 				break;
 			case 8:
-				
+
 				cfp = new ACLMessage(ACLMessage.INFORM);
 				// ID do ambiente
 
@@ -975,19 +968,19 @@ public class Worker extends Agent {
 				System.out.println("Enviei Procura Produtos" + cfp.getContent());
 				send(cfp);
 
-			//	System.out.println("STEP 8");
+				// System.out.println("STEP 8");
 				List<DefaultWeightedEdge> caminho = pathTo(map.get(position), map.get(myJob.local.getName()));
 				System.out.println("RUAS A PERCORRER " + caminho.size());
 				moveBehav = new MoveRequest((Worker) myAgent, map.get(myJob.local.getName()), caminho);
-				System.out.println("MY POSITION" +  position);
-				
+				System.out.println("MY POSITION" + position);
+
 				myAgent.addBehaviour(moveBehav);
 				doingStep = true;
 				step++;
 				break;
 			case 9:
 
-			//	System.out.println("STEP 9");
+				// System.out.println("STEP 9");
 				try {
 					Thread.sleep(7000);
 				} catch (InterruptedException e) {
@@ -997,9 +990,9 @@ public class Worker extends Agent {
 				step++;
 				break;
 			case 10:
-			//	System.out.println("STEP 10");
+				// System.out.println("STEP 10");
 				try {
-					
+
 					credit += myJob.getReward();
 
 					Working = false;

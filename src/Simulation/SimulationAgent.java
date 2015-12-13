@@ -65,7 +65,8 @@ public class SimulationAgent extends GuiAgent {
 
 				}
 				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-				//System.out.println(getLocalName() + ": recebi " + cfp.getContent());
+				// System.out.println(getLocalName() + ": recebi " +
+				// cfp.getContent());
 				try {
 					DFAgentDescription template = new DFAgentDescription();
 					DFAgentDescription[] result = DFService.search(myAgent, template);
@@ -94,7 +95,7 @@ public class SimulationAgent extends GuiAgent {
 				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("posicao"),
 						MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
-				//System.out.println("Perguntou pelas posicoes");
+				// System.out.println("Perguntou pelas posicoes");
 				step = 1;
 				break;
 
@@ -107,8 +108,8 @@ public class SimulationAgent extends GuiAgent {
 						String resposta = reply.getContent().toString();
 						String[] tempSplit = resposta.split(";");
 
-						agentsReceiving.add(new Local(Integer.parseInt(tempSplit[1]),
-								Integer.parseInt(tempSplit[2]), tempSplit[0]));
+						agentsReceiving.add(new Local(Integer.parseInt(tempSplit[1]), Integer.parseInt(tempSplit[2]),
+								tempSplit[0]));
 
 						// This is the best offer at present
 
@@ -206,7 +207,6 @@ public class SimulationAgent extends GuiAgent {
 				Node nNode = storeList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					
 
 					String node_temp = eElement.getElementsByTagName("node").item(0).getTextContent();
 					stores.add(map.get(node_temp));

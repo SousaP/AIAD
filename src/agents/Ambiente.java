@@ -66,7 +66,7 @@ public class Ambiente extends Worker {
 								Double.parseDouble(eElement.getAttribute("preço")),
 								Integer.parseInt(eElement.getTextContent()));
 						value.add(p);
-						
+
 						produtosLista.put(eElement.getAttribute("nome"), p);
 
 						produtos.put(map.get(eElement.getAttribute("Local")), value);
@@ -78,7 +78,7 @@ public class Ambiente extends Worker {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void readJobs() {
 		try {
 
@@ -96,61 +96,59 @@ public class Ambiente extends Worker {
 					String todo = eElement.getAttribute("thejob");
 					String tipo = eElement.getAttribute("type");
 					Product p_temp = produtosLista.get(eElement.getAttribute("product"));
-					if(todo.equals("MOUNT")){
-						Product p_job = new Product(new Tool(eElement.getAttribute("tool")), eElement.getAttribute("product"), 
-								Double.parseDouble(eElement.getAttribute("price")) * 
-								Integer.parseInt(eElement.getAttribute("quantidade")), 
+					if (todo.equals("MOUNT")) {
+						Product p_job = new Product(new Tool(eElement.getAttribute("tool")),
+								eElement.getAttribute("product"),
+								Double.parseDouble(eElement.getAttribute("price"))
+										* Integer.parseInt(eElement.getAttribute("quantidade")),
 								Integer.parseInt(eElement.getAttribute("quantidade")));
-						if(tipo.equals("BID")){
+						if (tipo.equals("BID")) {
 							System.out.println("MOUNT BID JOB READING");
-							jobTemp = new Job(to_do.MOUNT, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_job, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
+							jobTemp = new Job(to_do.MOUNT, type.BIDS,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_job,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
+						} else {
+							jobTemp = new Job(to_do.MOUNT, type.PRICE,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_job,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
 						}
-						else{
-							jobTemp = new Job(to_do.MOUNT, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_job, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
+					} else if (todo.equals("TRANSPORT")) {
+						Product p_transport = new Product(new Tool(p_temp.getTool()), p_temp.getName(),
+								Integer.parseInt(eElement.getAttribute("quantidade")) * p_temp.getPrice(),
+								Integer.parseInt(eElement.getAttribute("quantidade")));
+						if (tipo.equals("BID")) {
+							jobTemp = new Job(to_do.TRANSPORT, type.BIDS,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_transport,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
+						} else {
+							jobTemp = new Job(to_do.TRANSPORT, type.PRICE,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_transport,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
 						}
-					}
-					else if(todo.equals("TRANSPORT")){
-						Product p_transport = new Product(new Tool(p_temp.getTool()), p_temp.getName(), 
-								Integer.parseInt(eElement.getAttribute("quantidade")) * p_temp.getPrice(), Integer.parseInt(eElement.getAttribute("quantidade")));
-						if(tipo.equals("BID")){
-							jobTemp = new Job(to_do.TRANSPORT, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_transport, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
-						}
-						else{
-							jobTemp = new Job(to_do.TRANSPORT, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_transport, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
-						}
-					}
-					else if(todo.equals("ACQUISITION")){
-						Product p_acquisition = new Product(new Tool(p_temp.getTool()), p_temp.getName(), 
-								Integer.parseInt(eElement.getAttribute("quantidade")) * p_temp.getPrice(), Integer.parseInt(eElement.getAttribute("quantidade")));
-						if(tipo.equals("BID")){
-							jobTemp = new Job(to_do.ACQUISITION, type.BIDS, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_acquisition, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
-						}
-						else{
-							jobTemp = new Job(to_do.ACQUISITION, type.PRICE, Double.parseDouble(eElement.getAttribute("reward")), 
-									Integer.parseInt(eElement.getAttribute("time"))
-									, Double.parseDouble(eElement.getAttribute("fine")),
-									p_acquisition, map.get(eElement.getAttribute("local")), 
-									map.get(eElement.getAttribute("local2")));
+					} else if (todo.equals("ACQUISITION")) {
+						Product p_acquisition = new Product(new Tool(p_temp.getTool()), p_temp.getName(),
+								Integer.parseInt(eElement.getAttribute("quantidade")) * p_temp.getPrice(),
+								Integer.parseInt(eElement.getAttribute("quantidade")));
+						if (tipo.equals("BID")) {
+							jobTemp = new Job(to_do.ACQUISITION, type.BIDS,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_acquisition,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
+						} else {
+							jobTemp = new Job(to_do.ACQUISITION, type.PRICE,
+									Double.parseDouble(eElement.getAttribute("reward")),
+									Integer.parseInt(eElement.getAttribute("time")),
+									Double.parseDouble(eElement.getAttribute("fine")), p_acquisition,
+									map.get(eElement.getAttribute("local")), map.get(eElement.getAttribute("local2")));
 						}
 					}
 					Jobs_Created.add(jobTemp);
@@ -182,7 +180,6 @@ public class Ambiente extends Worker {
 		addBehaviour(new ambientBehaviour(this, 7000));
 		addBehaviour(new SalesBehaviour(this));
 		readJobs();
-		
 
 	}
 
@@ -228,22 +225,20 @@ public class Ambiente extends Worker {
 
 				if (split[0].contains("jobs") && split[1].contains("?")) {
 					String content = "jobs;";
-					
-					
+
 					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
-						if (Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone() && 
-								Trabalhos_utilizador.get(i).criador.equals(msg.getSender().getLocalName())) {
+						if (Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone()
+								&& Trabalhos_utilizador.get(i).criador.equals(msg.getSender().getLocalName())) {
 							Trabalhos_utilizador.remove(i);
 						}
-					
-					
+
 					for (int i = 0; i < Jobs_Created.size(); i++)
 						if (!(Jobs_Created.get(i).beingDone() || Jobs_Created.get(i).isDone())) {
 							content = content + Jobs_Created.get(i).toString();
 							// System.out.println("Jobs identificados: " +
 							// Jobs_Created.get(i).toString());
 						}
-					
+
 					for (int i = 0; i < Trabalhos_utilizador.size(); i++)
 						if (!(Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone())) {
 							content = content + Trabalhos_utilizador.get(i).toString()
@@ -302,18 +297,17 @@ public class Ambiente extends Worker {
 									Double.parseDouble(split[8]), Integer.parseInt(split[9])),
 							map.get(split[10]), map.get(split[11]));
 					job_to_complete.criador = split[12];
-					
+
 					Trabalhos_utilizador.add(job_to_complete);
 
 				} else if (split[0].contains("Produtos")) {
 					String[] produtos_recebidos = split[1].split(",");
 
 					List<Local> keysList = new ArrayList<Local>();
-				//	List<Product> listProdutos = new ArrayList<Product>();
+					// List<Product> listProdutos = new ArrayList<Product>();
 
 					keysList.addAll(produtos.keySet());
 					String content = "Local;";
-					
 
 					String localA = "";
 					String localB = "";
@@ -321,17 +315,16 @@ public class Ambiente extends Worker {
 					for (int i = 0; i < keysList.size(); i++)
 						for (int a = 0; a < produtos.get(keysList.get(i)).size(); a++) {
 							if ((produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[1])))
-									localA = keysList.get(i).getName();
-							if(produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[2]))
+								localA = keysList.get(i).getName();
+							if (produtos.get(keysList.get(i)).get(a).getName().equals(produtos_recebidos[2]))
 								localB = keysList.get(i).getName();
-							
-							if(localA.length() > 0 && localB.length() > 0)
+
+							if (localA.length() > 0 && localB.length() > 0)
 								break;
-				
-							
+
 						}
 					content += localA + ";" + localB;
-					
+
 					System.out.println("Enviei : Local" + content);
 					reply.setContent(content);
 					send(reply);
@@ -354,11 +347,9 @@ public class Ambiente extends Worker {
 						map.get(split[9]), map.get(split[9]));
 
 				// ver se job faz parte da lista de jobs
-				
-				for(int i = 0; i <Trabalhos_utilizador.size(); i++ )
-				{
-					if (Trabalhos_utilizador.get(i).compare(job_to_complete))
-					{
+
+				for (int i = 0; i < Trabalhos_utilizador.size(); i++) {
+					if (Trabalhos_utilizador.get(i).compare(job_to_complete)) {
 						if (Trabalhos_utilizador.get(i).beingDone() || Trabalhos_utilizador.get(i).isDone()) {
 							ACLMessage cfp = new ACLMessage(ACLMessage.FAILURE);
 							cfp.addReceiver(msg.getSender());
@@ -370,12 +361,12 @@ public class Ambiente extends Worker {
 
 							// myAgent.send(cfp);
 							send(cfp);
-						}
-						else {
+						} else {
 							ACLMessage cfp = new ACLMessage(ACLMessage.AGREE);
 							cfp.addReceiver(msg.getSender());
 							// Responde Agree com Job na mensagem
-							cfp.setContent(Trabalhos_utilizador.get(i).toString() + Trabalhos_utilizador.get(i).criador);
+							cfp.setContent(
+									Trabalhos_utilizador.get(i).toString() + Trabalhos_utilizador.get(i).criador);
 							Trabalhos_utilizador.get(i).setbeingDone();
 							cfp.setConversationId("job_proposal");
 							cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
@@ -383,11 +374,10 @@ public class Ambiente extends Worker {
 							// myAgent.send(cfp);
 							send(cfp);
 						}
-						
+
 					}
 				}
-				
-				
+
 				for (int i = 0; i < Jobs_Created.size(); i++)
 					if (Jobs_Created.get(i).compare(job_to_complete)) {
 
@@ -486,11 +476,11 @@ public class Ambiente extends Worker {
 		public ambientBehaviour(Agent a, long period) {
 			super(a, period);
 
-			/*for (int i = 0; i < 5; i++) {
-				Job tempJob = createRandomJob();
-				System.out.println(tempJob.toString());
-				Jobs_Created.add(tempJob);
-			}*/
+			/*
+			 * for (int i = 0; i < 5; i++) { Job tempJob = createRandomJob();
+			 * System.out.println(tempJob.toString());
+			 * Jobs_Created.add(tempJob); }
+			 */
 
 		}
 
@@ -518,11 +508,11 @@ public class Ambiente extends Worker {
 			Local levantar = keysList.get(random.nextInt(keysList.size()));
 
 			listProdutos = produtos.get(levantar);
-			
+
 			List<Product> listProdutosMount = new ArrayList<Product>();
-			
-			if(temp == to_do.MOUNT){
-				for(int i = 0; i < keysList.size(); i++){
+
+			if (temp == to_do.MOUNT) {
+				for (int i = 0; i < keysList.size(); i++) {
 					listProdutosMount.addAll(produtos.get(keysList.get(i)));
 				}
 
@@ -561,8 +551,9 @@ public class Ambiente extends Worker {
 			else
 				return new Job(to_do.MOUNT, type.BIDS, getRandomInt(1000, 1500), getRandomInt(1, 5),
 						getRandomInt(50, 300),
-						new Product(new Tool(p.getTool()+","+p_mount.getTool()), "Batido," + p.getName() + "," + p_mount.getName(),
-								p.getPrice() + p_mount.getPrice(), 1),
+						new Product(new Tool(p.getTool() + "," + p_mount.getTool()),
+								"Batido," + p.getName() + "," + p_mount.getName(), p.getPrice() + p_mount.getPrice(),
+								1),
 						levantar, levantar);
 
 		}
