@@ -411,7 +411,7 @@ public class Worker extends Agent {
 								Double.parseDouble(split[7]), Integer.parseInt(split[8])),
 						map.get(split[9]), map.get(split[10]));
 
-				// TODO poe a trabalhar ja
+		
 				myJob = job_accepted;
 
 				if (myJob.the_Job == to_do.TRANSPORT) {

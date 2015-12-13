@@ -144,10 +144,10 @@ public class Job {
 			return -1;
 	}
 
-	public double getProbabilityOfChoose(Local myLocal, DroneAgent d) {
+	public double getProbabilityOfChoose(DroneAgent d) {
 		boolean fined = false;
 		double distance = Math
-				.sqrt(Math.pow((myLocal.getI() - local.getI()), 2) + Math.pow((myLocal.getJ() - local.getJ()), 2));
+				.sqrt(Math.pow((d.map.get(d.position).getI() - local.getI()), 2) + Math.pow((d.map.get(d.position).getJ()- local.getJ()), 2));
 		// double length = dijkstra.getPathLength();
 		if (time * 1000 < (((10 - d.VELOCITY) * 100) * distance))
 			fined = true;

@@ -33,7 +33,6 @@ public class CarAgent extends Worker {
 	
 	
 	protected void takeDown() {
-		// retira registo no DF
 		try {
 			DFService.deregister(this);
 		} catch (FIPAException e) {
@@ -41,24 +40,6 @@ public class CarAgent extends Worker {
 		}
 	}
 
-	class myBehaviour extends SimpleBehaviour {
-		private static final long serialVersionUID = 1L;
-
-		public myBehaviour(Agent a) {
-			super(a);
-		}
-
-		public void action() {
-			// ...this is where the real programming goes !!
-		}
-
-		private boolean finished = false;
-
-		public boolean done() {
-			return finished;
-		}
-
-	}
 	
 	public int getBatLeft(){
 		return batteryLeft;

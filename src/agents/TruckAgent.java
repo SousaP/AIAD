@@ -42,24 +42,6 @@ public class TruckAgent extends Worker {
 		}
 	}
 
-	class myBehaviour extends SimpleBehaviour {
-		private static final long serialVersionUID = 1L;
-
-		public myBehaviour(Agent a) {
-			super(a);
-		}
-
-		public void action() {
-			// ...this is where the real programming goes !!
-		}
-
-		private boolean finished = false;
-
-		public boolean done() {
-			return finished;
-		}
-
-	}
 	
 	public int getBatLeft(){
 		return batteryLeft;
